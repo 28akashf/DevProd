@@ -1,0 +1,61 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Dev Prod Dashboard</h1>
+    <div>
+        <div class="container form-control">
+            <div class="row">
+                <br /><br /><br /><br /><br />
+            </div>
+            <div class="row">
+
+                <div class="col-sm-2">
+                    Project
+                    <select>
+                        <option>Project 1</option>
+                        <option>Project 2</option>
+                        <option>Project 3</option>
+                    </select>
+                </div>
+                <div class="col-sm-2">
+                    Parameter
+                    <select >
+                        <option>Parameter 1</option>
+                        <option>Parameter 2</option>
+                        <option>Parameter 3</option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    Developer
+                    <select>
+                        <option>Developer 1</option>
+                        <option>Developer 2</option>
+                        <option>Developer 3</option>
+                    </select>
+                </div>
+
+
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    Start Date
+                    <input type="date" class="form-control" />
+
+                </div>
+                <div class="col-sm-4">
+                    End Date
+                    <input type="date" class="form-control" />
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-8">
+                    <a class="btn btn-primary" href="@Url.Action("GetCommits","Home", new{ username = "aa", project = "zzz"})">Submit</a>
+
+                </div>
+                </div
+        </div>
+    </div>
+</div>
