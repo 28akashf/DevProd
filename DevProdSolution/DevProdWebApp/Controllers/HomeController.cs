@@ -307,5 +307,50 @@ namespace DevProdWebApp.Controllers
         //}
 
 
+        public async Task<string> GetBugs()
+        {
+            string a = string.Empty;
+            // Replace with your GitHub personal access token
+            //      var token = "YOUR_PERSONAL_ACCESS_TOKEN";
+
+            // GitHub username
+            //  var username = "TARGET_USERNAME";
+
+            // Initialize GitHub client with authentication
+            //var client = new GitHubClient(new ProductHeaderValue("GitHubIssueFetcher"))
+            //{
+            //    Credentials = new Credentials(token)
+            //};
+         var username = "28akashf";
+         var project = "DevProd";
+         ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
+            var github = new GitHubClient(new Octokit.ProductHeaderValue(project));
+            try
+        {
+                // Fetch issues assigned to the specified user
+                //var issues = await github.Issue.GetAllForCurrent(new RepositoryIssueRequest
+                //{
+                //    Assignee = username,
+                //    Filter = IssueFilter.Assigned,
+                //    State = ItemStateFilter.All
+                //});
+
+                var issues = await github.Issue.GetAllForRepository(username,project);
+
+                Console.WriteLine($"Issues assigned to {username}:");
+                
+            foreach (var issue in issues)
+            {
+               a+= new string($"- [{project}] #{issue.Number}: {issue.Title}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching issues: {ex.Message}");
+        }
+
+            return a;
+        }
     }
 }
