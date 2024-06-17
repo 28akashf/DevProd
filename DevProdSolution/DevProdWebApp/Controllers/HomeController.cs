@@ -1,4 +1,5 @@
 using DevProdWebApp.Models;
+using DevProdWebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Octokit;
 using System.Diagnostics;
@@ -26,9 +27,13 @@ namespace DevProdWebApp.Controllers
             return "Testing....!"+param;
         }
 
-        public IActionResult Privacy()
+        public IActionResult Settings()
         {
-            return View();
+            var list = new MetricList();
+            list.Id = 1;
+            list.Project = "DevProd";
+            list.MetricSet = new List<Metric>() { new Metric() {Id=156,Name="Commits",Weight=0.2 }, new Metric() { Id = 213, Name = "LOC", Weight = 0.3 } };
+            return View(list);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
