@@ -14,4 +14,9 @@
         public List<Metric> MetricSet { get; set; }
        
     }
+
+    public class Result
+    {
+          public object Data { get; set; }
+    }
 }

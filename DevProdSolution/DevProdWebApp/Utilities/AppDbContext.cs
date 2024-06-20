@@ -1,0 +1,24 @@
+﻿using DevProdWebApp.Models;
+using Microsoft.EntityFrameworkCore;
+using Octokit;
+using System.Data;
+using System.Reflection;
+
+namespace DevProdWebApp.Utilities
+{
+        public class AppDbContext : DbContext
+        {
+
+        public DbSet<Developer> Developers { get; set; }
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+            {
+            }
+
+
+            protected override void OnModelCreating(ModelBuilder modelBuilder)
+            {
+                modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+            }
+        }
+    
+}
