@@ -44,7 +44,7 @@ namespace DevProdWebApp.Controllers
 
 
         //GET COMMITS
-        public string GetCommits(string username, string project)
+        public IActionResult GetCommits(string username, string project)
         {
             username = "28akashf";
             project = "Meet";
@@ -75,7 +75,8 @@ namespace DevProdWebApp.Controllers
             {
                a += commit.Commit.Message + "\n";
             }
-            return a;
+            Result result = new Result() { Data = a };
+            return View("./Index", result);
         }
 
 
@@ -312,7 +313,7 @@ namespace DevProdWebApp.Controllers
         //}
 
 
-        public async Task<string> GetBugs()
+        public async Task<IActionResult> GetBugs()
         {
             string a = string.Empty;
             // Replace with your GitHub personal access token
@@ -354,8 +355,8 @@ namespace DevProdWebApp.Controllers
         {
             Console.WriteLine($"Error fetching issues: {ex.Message}");
         }
-
-            return a;
+            Result result = new Result() { Data= a};
+            return View("./Index",result);
         }
     }
 }
