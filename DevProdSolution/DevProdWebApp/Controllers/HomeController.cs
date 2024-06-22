@@ -61,14 +61,10 @@ namespace DevProdWebApp.Controllers
                  new CommitRequest
                  {
                      Sha = "main", // Retrieve commits from a specific branch
-                     Since = DateTime.Now.AddDays(-777) // Retrieve commits from the last 7 days
+                     Since = DateTime.Now.AddDays(-777) // Retrieve commits from the last 7 days                                        
                  },
                  new ApiOptions { PageSize = 100, PageCount = 1 }
-                //new CommitRequest
-                //{
-                //    Sha = "branch-name", // Retrieve commits from a specific branch
-                //    Since = DateTime.Now.AddDays(-7) // Retrieve commits from the last 7 days
-                //}
+         
                 ).Result;
             string a = "";
             foreach (var commit in commits)
@@ -84,41 +80,48 @@ namespace DevProdWebApp.Controllers
 
 
         //GET LINES OF CODE COMMITTED
-        //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+        public IActionResult GetLinesOfCodeFromCommits(string username, string project)
+        {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
-        //var github = new GitHubClient(new Octokit.ProductHeaderValue("Meet"));
-        ////  var tokenAuth = new Credentials("your-github-token");
-        //// github.Credentials = tokenAuth;
+            var github = new GitHubClient(new Octokit.ProductHeaderValue("Meet"));
+            //  var tokenAuth = new Credentials("your-github-token");
+            // github.Credentials = tokenAuth;
 
-        //var owner = "28akashf";
-        //var repoName = "Meet";
-        //var startDate = new DateTime(2022, 1, 1);
-        //var endDate = new DateTime(2023, 12, 31);
+            var owner = "28akashf";
+            var repoName = "Meet";
+            var startDate = new DateTime(2022, 1, 1);
+            var endDate = new DateTime(2023, 12, 31);
 
-        //var request = new CommitRequest
-        //{
-        //    Since = startDate,
-        //    Until = endDate
-        //};
+            var request = new CommitRequest
+            {
+                Since = startDate,
+                Until = endDate
+            };
 
-        //var commits = github.Repository.Commit.GetAll(owner, repoName, request).Result;
+            var commits = github.Repository.Commit.GetAll(owner, repoName, request).Result;
 
-        //int totalLinesAdded = 0;
-        //int totalLinesDeleted = 0;
+            int totalLinesAdded = 0;
+            int totalLinesDeleted = 0;
 
-        //foreach (var commit in commits)
-        //{
-        //    var commitStats = github.Repository.Commit.Get(owner, repoName, commit.Sha).Result.Stats;
-        //    if (commitStats != null)
-        //    {
-        //        totalLinesAdded += commitStats.Additions;
-        //        totalLinesDeleted += commitStats.Deletions;
-        //    }
-        //}
+            foreach (var commit in commits)
+            {
+                //var zz = github.Repository.Commit.Get(owner, repoName, commit.Sha).Result;
+                var commitStats = github.Repository.Commit.Get(owner, repoName, commit.Sha).Result.Stats;
+                if (commitStats != null)
+                {
+                    totalLinesAdded += commitStats.Additions;
+                    totalLinesDeleted += commitStats.Deletions;
+                }
+            }
+            string a = string.Empty;
+            a += ($"Total lines added: {totalLinesAdded}");
+            a += ($"Total lines deleted: {totalLinesDeleted}");
+            a += ($"Net lines added: {totalLinesAdded - totalLinesDeleted}");
+            Result result = new Result() { Data = a };
+            return View("./Index", result);
+        }
 
-        //Console.WriteLine($"Total lines added: {totalLinesAdded}");
-        //Console.WriteLine($"Total lines deleted: {totalLinesDeleted}");
-        //Console.WriteLine($"Net lines added: {totalLinesAdded - totalLinesDeleted}");
 
 
         //GET TOTAL LINES OF CODE
