@@ -124,6 +124,26 @@ namespace DevProdWebApp.Controllers
 
 
 
+
+        //GET ALL TASKS FROM THE TRELLO BOARD
+        public async Task<IActionResult> GetTaskList(string username, string project)
+        {
+            string a = string.Empty;
+            var client = new TrelloDotNet.TrelloClient("a9fd64c9429e1577e6e7b973d2df303f", "ATTA912c6c3cc630adc321a7f668f8883cef1ea49f3df685aa97ff957be4633e7fac670CD8C5");
+            var lists =  await client.GetListsOnBoardAsync("6dzGyuJX");
+            lists = lists.Where(x=>x.Name.ToLower() == "completed").ToList();
+            foreach (var list in lists)
+            {
+               var card =  await client.GetCardsInListAsync(list.Id);
+                card.ForEach(x => a += x.Name+"\n");
+            }           
+            Result result = new Result() { Data = a };
+            return View("./Index", result);
+        }
+
+
+
+
         //GET TOTAL LINES OF CODE
         // var token = "your-github-token";
         //var owner = "28akashf";
