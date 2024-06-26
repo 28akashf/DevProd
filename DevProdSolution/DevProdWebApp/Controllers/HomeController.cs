@@ -1,4 +1,5 @@
 using DevProdWebApp.Models;
+using DevProdWebApp.Repository;
 using DevProdWebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Octokit;
@@ -11,10 +12,12 @@ namespace DevProdWebApp.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IProjectRepo _projectRepo;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IProjectRepo projectRepo)
         {
             _logger = logger;
+            _projectRepo = projectRepo;
         }
 
         public IActionResult Index()
@@ -34,6 +37,20 @@ namespace DevProdWebApp.Controllers
             list.Project = "DevProd";
             list.MetricSet = new List<ViewModels.Metric>() { new ViewModels.Metric() {Id=156,Name="Commits",Weight=0.2 }, new ViewModels.Metric() { Id = 213, Name = "LOC", Weight = 0.3 } };
             return View(list);
+        }
+
+        public async Task<IActionResult> Projects()
+        {
+            var list = await _projectRepo.GetAllProjects();
+            return View(list);
+        }
+
+        public async Task<bool> AddProject(string name, string description)
+        {
+           await _projectRepo.AddProject(new Models.Project() { Name=name,Description=description});
+            //   var list = await _projectRepo.GetAllProjects();
+            //   return View("./Projects",list);
+            return true;
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

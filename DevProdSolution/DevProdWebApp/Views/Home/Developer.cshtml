@@ -1,0 +1,42 @@
+﻿@{
+    ViewData["Title"] = "Developers";
+}
+
+@model List<DevProdWebApp.Models.Developer>
+<h1>@ViewData["Title"]</h1>
+
+<p>Add Metrics for performance evaluation</p>
+Name :
+<input type="text" id="proj_name" />
+Description :
+<input type="text" id="proj_description" />
+<button class="btn btn-primary" onclick="send()" type="submit">Add Developer</button>
+
+
+<p>Available Developers</p>
+@foreach (var x in Model)
+{
+    <div>@x.Username</div>
+}
+
+
+
+<script type="text/javascript">
+    function send() {
+        var projName = document.getElementById('proj_name').value;
+        var projDesc = document.getElementById('proj_description').value;
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("AddDeveloper", "Home")',
+            data: { name: projName, description: projDesc },
+            success: function (response) {
+                alert('Success: ');
+                location.reload();
+            },
+            error: function (xhr, status, error) {
+                alert('Error: ');
+            }
+        });
+
+    }
+</script>

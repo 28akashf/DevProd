@@ -1,3 +1,4 @@
+using DevProdWebApp.Repository;
 using DevProdWebApp.Utilities;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +9,9 @@ builder.Services.AddControllersWithViews();
 var connectionString = builder.Configuration.GetConnectionString("DbConn");
 builder.Services.AddDbContext<AppDbContext>(options => 
     options.UseSqlServer(connectionString));
+builder.Services.AddScoped<IDeveloperRepo,DeveloperRepo>();
+builder.Services.AddScoped<IProjectRepo,ProjectRepo>();
+builder.Services.AddScoped<IMetricRepo,MetricRepo>();
 
 
 var app = builder.Build();
