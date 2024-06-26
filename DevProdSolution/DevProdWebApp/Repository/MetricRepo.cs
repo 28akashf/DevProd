@@ -1,5 +1,6 @@
 ﻿using DevProdWebApp.Models;
 using DevProdWebApp.Utilities;
+using Microsoft.EntityFrameworkCore;
 
 namespace DevProdWebApp.Repository
 {
