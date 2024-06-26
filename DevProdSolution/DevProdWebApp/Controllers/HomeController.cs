@@ -32,7 +32,7 @@ namespace DevProdWebApp.Controllers
             var list = new MetricList();
             list.Id = 1;
             list.Project = "DevProd";
-            list.MetricSet = new List<Metric>() { new Metric() {Id=156,Name="Commits",Weight=0.2 }, new Metric() { Id = 213, Name = "LOC", Weight = 0.3 } };
+            list.MetricSet = new List<ViewModels.Metric>() { new ViewModels.Metric() {Id=156,Name="Commits",Weight=0.2 }, new ViewModels.Metric() { Id = 213, Name = "LOC", Weight = 0.3 } };
             return View(list);
         }
 
