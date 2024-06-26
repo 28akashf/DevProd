@@ -13,11 +13,15 @@ namespace DevProdWebApp.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IProjectRepo _projectRepo;
+        private readonly IMetricRepo _metricRepo;
+        private readonly IDeveloperRepo _developerRepo;
 
-        public HomeController(ILogger<HomeController> logger, IProjectRepo projectRepo)
+        public HomeController(ILogger<HomeController> logger, IProjectRepo projectRepo, IMetricRepo metricRepo, IDeveloperRepo developerRepo)
         {
             _logger = logger;
             _projectRepo = projectRepo;
+            _metricRepo = metricRepo;
+            _developerRepo = developerRepo;
         }
 
         public IActionResult Index()
@@ -30,12 +34,13 @@ namespace DevProdWebApp.Controllers
             return "Testing....!"+param;
         }
 
-        public IActionResult Settings()
+        public async Task<IActionResult> Settings()
         {
-            var list = new MetricList();
-            list.Id = 1;
-            list.Project = "DevProd";
-            list.MetricSet = new List<ViewModels.Metric>() { new ViewModels.Metric() {Id=156,Name="Commits",Weight=0.2 }, new ViewModels.Metric() { Id = 213, Name = "LOC", Weight = 0.3 } };
+            //var list = new MetricList();
+            //list.Id = 1;
+            //list.Project = "DevProd";
+            //list.MetricSet = new List<ViewModels.Metric>() { new ViewModels.Metric() {Id=156,Name="Commits",Weight=0.2 }, new ViewModels.Metric() { Id = 213, Name = "LOC", Weight = 0.3 } };
+            var list = await _metricRepo.GetAllMetrics();
             return View(list);
         }
 
@@ -45,11 +50,28 @@ namespace DevProdWebApp.Controllers
             return View(list);
         }
 
+        public async Task<IActionResult> Developers()
+        {
+            var list = await _developerRepo.GetAllDevelopers();
+            return View(list);
+        }
         public async Task<bool> AddProject(string name, string description)
         {
            await _projectRepo.AddProject(new Models.Project() { Name=name,Description=description});
             //   var list = await _projectRepo.GetAllProjects();
             //   return View("./Projects",list);
+            return true;
+        }
+
+        public async Task<bool> AddDeveloper(string fname, string lname, string uname)
+        {
+            await _developerRepo.AddDeveloper(new Models.Developer() { FirstName=fname,LastName=lname,Username=uname });          
+            return true;
+        }
+
+        public async Task<bool> AddMetrics(string metric, string weight)
+        {
+            await _metricRepo.AddMetric(new Models.Metric() { Name = metric, Weight = Double.Parse(weight) });
             return true;
         }
 

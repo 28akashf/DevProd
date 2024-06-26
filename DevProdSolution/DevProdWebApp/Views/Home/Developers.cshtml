@@ -6,35 +6,38 @@
 <h1>@ViewData["Title"]</h1>
 
 <p>Add Metrics for performance evaluation</p>
-Name :
-<input type="text" id="proj_name" />
-Description :
-<input type="text" id="proj_description" />
+First Name :
+<input type="text" id="fname" />
+Last Name :
+<input type="text" id="lname" />
+User Name :
+<input type="text" id="uname" />
 <button class="btn btn-primary" onclick="send()" type="submit">Add Developer</button>
 
 
 <p>Available Developers</p>
 @foreach (var x in Model)
 {
-    <div>@x.Username</div>
+    <div>@x.Id  @x.Username</div>
 }
 
 
 
 <script type="text/javascript">
     function send() {
-        var projName = document.getElementById('proj_name').value;
-        var projDesc = document.getElementById('proj_description').value;
+        var fname = document.getElementById('fname').value;
+        var lname = document.getElementById('lname').value;
+        var uname = document.getElementById('uname').value;
         $.ajax({
             type: "POST",
             url: '@Url.Action("AddDeveloper", "Home")',
-            data: { name: projName, description: projDesc },
+            data: { fname: fname, lname: lname, uname: uname },
             success: function (response) {
-                alert('Success: ');
+                //alert('Success: ');
                 location.reload();
             },
             error: function (xhr, status, error) {
-                alert('Error: ');
+                //alert('Error: ');
             }
         });
 

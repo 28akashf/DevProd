@@ -2,18 +2,41 @@
     ViewData["Title"] = "Settings";
 }
 
-@model DevProdWebApp.ViewModels.MetricList
+@model List<DevProdWebApp.Models.Metric>
 <h1>@ViewData["Title"]</h1>
 
 <p>Add Metrics for performance evaluation</p>
 
-Metric : <input type="text"/>
-Weight : <input type="text" />
-<a class="btn btn-primary" href="@Url.Action("GetBugs","Home")">Add Metric</a>
+Metric : <input type="text" id="metric"/>
+Weight : <input type="text" id="weight"/>
+<button class="btn btn-primary" onclick="send()" type="submit">Add Metric</button>
 
 
 <p>Currently selected Performance Metrics</p>
-@foreach(var x in Model.MetricSet)
+@foreach(var x in Model)
 {
-    <div>@x.Name  @x.Weight</div>
+    <div>@x.Id  @x.Name  @x.Weight  @x.ProjectName</div>
 }
+
+
+
+
+<script type="text/javascript">
+    function send() {
+        var metric = document.getElementById('metric').value;
+        var weight = document.getElementById('weight').value;
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("AddMetrics", "Home")',
+            data: { metric: metric, weight: weight },
+            success: function (response) {
+             //   alert('Success: ');
+                location.reload();
+            },
+            error: function (xhr, status, error) {
+              //  alert('Error: ');
+            }
+        });
+
+    }
+</script>
