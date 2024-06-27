@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Settings";
+    ViewData["Title"] = "Metrics";
 }
 
 @model List<DevProdWebApp.Models.Metric>
@@ -13,10 +13,23 @@ Weight : <input type="text" id="weight"/>
 
 
 <p>Currently selected Performance Metrics</p>
-@foreach(var x in Model)
-{
-    <div>@x.Id  @x.Name  @x.Weight  @x.ProjectName</div>
-}
+<table class="table table-striped">
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Weight</th>
+        <th>Project Name</th>
+    </tr>
+    @foreach (var x in Model)
+    {
+        <tr>
+            <td>@x.Id</td>
+            <td>@x.Name</td>
+            <td>@x.Weight</td>
+            <td>@x.ProjectName</td>
+        </tr>
+    }
+</table>
 
 
 

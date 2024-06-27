@@ -5,7 +5,7 @@
 @model List<DevProdWebApp.Models.Developer>
 <h1>@ViewData["Title"]</h1>
 
-<p>Add Metrics for performance evaluation</p>
+<p>Add Developers for performance evaluation</p>
 First Name :
 <input type="text" id="fname" />
 Last Name :
@@ -16,10 +16,18 @@ User Name :
 
 
 <p>Available Developers</p>
+<table class="table table-striped">
+    <tr>
+        <th>Id</th>
+        <th>Username</th>
+    </tr>
 @foreach (var x in Model)
 {
-    <div>@x.Id  @x.Username</div>
+    <tr>
+    <td>@x.Id</td> <td> @x.Username</td>
+    </tr>
 }
+</table>
 
 
 
