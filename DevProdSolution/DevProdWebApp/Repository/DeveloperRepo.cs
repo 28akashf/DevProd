@@ -14,11 +14,11 @@ namespace DevProdWebApp.Repository
             _context = context;
         }
     
-      public async Task<bool> AddDeveloper(Developer dev)
+      public async Task<Developer> AddDeveloper(Developer dev)
         {
-                await _context.Developers.AddAsync(dev);
+             var developer =  await _context.Developers.AddAsync(dev);
                 _context.SaveChanges();
-                return true;
+                return developer.Entity;
         }
 
         public async Task<bool> DeleteDeveloper(int id)

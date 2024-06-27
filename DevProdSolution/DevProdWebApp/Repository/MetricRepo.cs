@@ -13,11 +13,11 @@ namespace DevProdWebApp.Repository
             _context = context;
         }
 
-        public async Task<bool> AddMetric(Metric dev)
+        public async Task<Metric> AddMetric(Metric dev)
         {
-            await _context.Metrics.AddAsync(dev);
+          var result = await _context.Metrics.AddAsync(dev);
             _context.SaveChanges();
-            return true;
+            return result.Entity;
         }
 
         public async Task<bool> DeleteMetric(int id)

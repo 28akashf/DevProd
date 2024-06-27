@@ -9,6 +9,13 @@
 
 Metric : <input type="text" id="metric"/>
 Weight : <input type="text" id="weight"/>
+Project :
+<select id="project" style="width:200px">
+    @foreach (var z in (List<Project>)ViewData["Projects"])
+    {
+        <option value="@z.Id">@z.Name</option>
+    }
+</select>
 <button class="btn btn-primary" onclick="send()" type="submit">Add Metric</button>
 
 
@@ -38,10 +45,11 @@ Weight : <input type="text" id="weight"/>
     function send() {
         var metric = document.getElementById('metric').value;
         var weight = document.getElementById('weight').value;
+        var project = document.getElementById('project').value;
         $.ajax({
             type: "POST",
             url: '@Url.Action("AddMetrics", "Home")',
-            data: { metric: metric, weight: weight },
+            data: { metric: metric, weight: weight, projectId: project },
             success: function (response) {
              //   alert('Success: ');
                 location.reload();

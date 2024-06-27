@@ -36,11 +36,8 @@ namespace DevProdWebApp.Controllers
 
         public async Task<IActionResult> Settings()
         {
-            //var list = new MetricList();
-            //list.Id = 1;
-            //list.Project = "DevProd";
-            //list.MetricSet = new List<ViewModels.Metric>() { new ViewModels.Metric() {Id=156,Name="Commits",Weight=0.2 }, new ViewModels.Metric() { Id = 213, Name = "LOC", Weight = 0.3 } };
             var list = await _metricRepo.GetAllMetrics();
+            ViewData["Projects"] = await _projectRepo.GetAllProjects();
             return View(list);
         }
 
@@ -53,8 +50,11 @@ namespace DevProdWebApp.Controllers
         public async Task<IActionResult> Developers()
         {
             var list = await _developerRepo.GetAllDevelopers();
+            ViewData["Projects"] = await _projectRepo.GetAllProjects(); 
             return View(list);
         }
+
+        #region crud
         public async Task<bool> AddProject(string name, string description)
         {
            await _projectRepo.AddProject(new Models.Project() { Name=name,Description=description});
@@ -63,17 +63,38 @@ namespace DevProdWebApp.Controllers
             return true;
         }
 
-        public async Task<bool> AddDeveloper(string fname, string lname, string uname)
+        public async Task<bool> AddDeveloper(string fname, string lname, string uname, int projectId)
         {
-            await _developerRepo.AddDeveloper(new Models.Developer() { FirstName=fname,LastName=lname,Username=uname });          
+            
+           var dev = await _developerRepo.AddDeveloper(new Models.Developer() { FirstName=fname,LastName=lname,Username=uname });
+            Models.Project? project = await _projectRepo.GetProjectById(projectId);
+            if (project?.Developers == null)
+            {
+                project.Developers = new List<Developer>();
+            }
+                project.Developers.Add(dev);
+            
+            _projectRepo.UpdateProject(project);
+
             return true;
         }
 
-        public async Task<bool> AddMetrics(string metric, string weight)
+        public async Task<bool> AddMetrics(string metric, string weight, int projectId)
         {
-            await _metricRepo.AddMetric(new Models.Metric() { Name = metric, Weight = Double.Parse(weight) });
+            var newMetric = await _metricRepo.AddMetric(new Models.Metric() { Name = metric, Weight = Double.Parse(weight) });
+            Models.Project? project = await _projectRepo.GetProjectById(projectId);
+            if (project?.ProjectMetrics == null)
+            {
+                project.ProjectMetrics = new List<Models.Metric>();
+            }
+            project.ProjectMetrics.Add(newMetric);
+            _projectRepo.UpdateProject(project);
+            newMetric.ProjectName = project.Name;
+            _metricRepo.UpdateMetric(newMetric);
             return true;
         }
+
+        #endregion
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
@@ -81,7 +102,7 @@ namespace DevProdWebApp.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-
+        #region PerfromanceMetrics
         //GET COMMITS
         public IActionResult GetCommits(string username, string project)
         {
@@ -113,9 +134,6 @@ namespace DevProdWebApp.Controllers
             Result result = new Result() { Data = a };
             return View("./Index", result);
         }
-
-
-
 
 
         //GET LINES OF CODE COMMITTED
@@ -420,5 +438,7 @@ namespace DevProdWebApp.Controllers
             Result result = new Result() { Data= a};
             return View("./Index",result);
         }
+
+        #endregion
     }
 }

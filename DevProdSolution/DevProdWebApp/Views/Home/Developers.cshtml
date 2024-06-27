@@ -12,6 +12,13 @@ Last Name :
 <input type="text" id="lname" />
 User Name :
 <input type="text" id="uname" />
+Project :
+<select id="project"  style="width:200px">
+    @foreach (var z in (List<Project>)ViewData["Projects"])
+    {
+        <option value="@z.Id">@z.Name</option>
+    }  
+</select>
 <button class="btn btn-primary" onclick="send()" type="submit">Add Developer</button>
 
 
@@ -30,16 +37,16 @@ User Name :
 </table>
 
 
-
 <script type="text/javascript">
     function send() {
         var fname = document.getElementById('fname').value;
         var lname = document.getElementById('lname').value;
         var uname = document.getElementById('uname').value;
+        var project = document.getElementById('project').value;
         $.ajax({
             type: "POST",
             url: '@Url.Action("AddDeveloper", "Home")',
-            data: { fname: fname, lname: lname, uname: uname },
+            data: { fname: fname, lname: lname, uname: uname, projectId: project },
             success: function (response) {
                 //alert('Success: ');
                 location.reload();

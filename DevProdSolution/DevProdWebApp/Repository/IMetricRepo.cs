@@ -6,7 +6,7 @@ namespace DevProdWebApp.Repository
     {
         Task<List<Metric>> GetAllMetrics();
         Task<Metric?> GetMetricById(int id);
-        Task<bool> AddMetric(Metric dev);
+        Task<Metric> AddMetric(Metric dev);
 
         bool UpdateMetric(Metric dev);
         Task<bool> DeleteMetric(int id);
