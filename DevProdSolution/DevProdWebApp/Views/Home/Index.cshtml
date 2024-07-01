@@ -38,6 +38,7 @@
 
 
             </div>
+            <br><br>
             <div class="row">
                 <div class="col-sm-4">
                     Start Date
@@ -50,12 +51,13 @@
 
                 </div>
             </div>
+            <br><br>
             <div class="row">
                 <div class="col-sm-8">
-                    <a class="btn btn-primary" href="@Url.Action("GetCommits","Home", new{ username = "aa", project = "zzz"})">Submit</a>
-                    <a class="btn btn-primary" href="@Url.Action("GetBugs","Home")">Submit2</a>
-                    <a class="btn btn-primary" href="@Url.Action("GetLinesOfCodeFromCommits","Home")">Submit3</a>
-                    <a class="btn btn-primary" href="@Url.Action("GetTaskList","Home")">Submit3</a>
+                    <a class="btn btn-primary" href="@Url.Action("GetCommits","Home", new{ username = "aa", project = "zzz"})">Test Git Commits</a>
+                    <a class="btn btn-primary" href="@Url.Action("GetBugs","Home")">Test Git Issues</a>
+                    <a class="btn btn-primary" href="@Url.Action("GetLinesOfCodeFromCommits","Home")">Test Lines of Code</a>
+                    <a class="btn btn-primary" href="@Url.Action("GetTaskList","Home")">Test Trello Task List</a>
                 </div>
                 </div>
 
@@ -65,7 +67,7 @@
         <div class="container form-control">
         <div class="row">
             <div class="col-sm-8">
-                Hello World !
+                 <p>Result</p>
                 @Model?.Data
             </div>
             </div>

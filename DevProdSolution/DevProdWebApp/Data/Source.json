@@ -1,0 +1,137 @@
+[
+  {
+    "Developer": "Dev1",
+    "Data": [
+      {
+        "TaskName": "Task1",
+        "TaskData": {
+          "LOC": 100,
+          "Commits": 1,
+          "Tasks_Completed": 1,
+          "No_of_emails": 1,
+          "Keystrokes_Mouseclicks": 50000
+        }
+      },
+      {
+        "TaskName": "Task2",
+        "TaskData": {
+          "LOC": 100,
+          "Commits": 1,
+          "Tasks_Completed": 1,
+          "No_of_emails": 1,
+          "Keystrokes_Mouseclicks": 50000
+        }
+      },
+      {
+        "TaskName": "Task3",
+        "TaskData": {
+          "LOC": 100,
+          "Commits": 1,
+          "Tasks_Completed": 1,
+          "No_of_emails": 1,
+          "Keystrokes_Mouseclicks": 50000
+        }
+      },
+      {
+        "TaskName": "Task4",
+        "TaskData": {
+          "LOC": 100,
+          "Commits": 1,
+          "Tasks_Completed": 1,
+          "No_of_emails": 1,
+          "Keystrokes_Mouseclicks": 50000
+        }
+      }
+    ]
+  },
+  {
+    "Developer": "Dev2",
+    "Data": [
+      {
+        "TaskName": "Task1",
+       "TaskData" : {
+          "LOC": 100,
+          "Commits": 1,
+          "Tasks_Completed": 1,
+          "No_of_emails": 1,
+          "Keystrokes_Mouseclicks": 50000
+        }
+      },
+      {
+        "TaskName": "Task2",
+        "TaskData":{
+          "LOC": 100,
+          "Commits": 1,
+          "Tasks_Completed": 1,
+          "No_of_emails": 0,
+          "Keystrokes_Mouseclicks": 50000
+        }
+      },
+      {
+        "TaskName": "Task3",
+        "TaskData": {
+          "LOC": 100,
+          "Commits": 1,
+          "Tasks_Completed": 1,
+          "No_of_emails": 0,
+          "Keystrokes_Mouseclicks": 50000
+        }
+      },
+      {
+        "TaskName": "Task4",
+        "TaskData": {
+          "LOC": 100,
+          "Commits": 1,
+          "Tasks_Completed": 1,
+          "No_of_emails": 0,
+          "Keystrokes_Mouseclicks": 50000
+        }
+      }
+    ]
+  },
+  {
+    "Developer": "Dev3",
+    "Data": [
+      {
+        "TaskName": "Task1",
+        "TaskData": {
+          "LOC": 100,
+          "Commits": 1,
+          "Tasks_Completed": 1,
+          "No_of_emails": 0,
+          "Keystrokes_Mouseclicks": 50000
+        }
+      },
+      {
+        "TaskName": "Task2",
+        "TaskData":{
+          "LOC": 100,
+          "Commits": 1,
+          "Tasks_Completed": 1,
+          "No_of_emails": 0,
+          "Keystrokes_Mouseclicks": 50000
+        }
+      },
+      {
+        "TaskName": "Task3",
+        "TaskData": {
+          "LOC": 100,
+          "Commits": 1,
+          "Tasks_Completed": 1,
+          "No_of_emails": 0,
+          "Keystrokes_Mouseclicks": 50000
+        }
+      },
+      {
+        "TaskName": "Task4",
+        "TaskData": {
+          "LOC": 100,
+          "Commits": 1,
+          "Tasks_Completed": 1,
+          "No_of_emails": 0,
+          "Keystrokes_Mouseclicks": 50000
+        }
+      }
+    ]
+  }
+]

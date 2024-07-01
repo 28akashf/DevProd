@@ -2,9 +2,13 @@ using DevProdWebApp.Models;
 using DevProdWebApp.Repository;
 using DevProdWebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Octokit;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using Activity = System.Diagnostics.Activity;
 
 namespace DevProdWebApp.Controllers
@@ -54,6 +58,204 @@ namespace DevProdWebApp.Controllers
             return View(list);
         }
 
+        public Dictionary<string,Dictionary<string,double>> GetMaxMinMeanStdDev(JArray arr)
+        {
+            Dictionary<string, List<double>> rawList = new Dictionary<string, List<double>>();
+            rawList["LOC"] = new List<double>();
+            rawList["Commits"] = new List<double>();
+            rawList["Tasks_Completed"] = new List<double>();
+            rawList["No_of_emails"] = new List<double>();
+            rawList["Keystrokes_Mouseclicks"] = new List<double>();
+            foreach (var item in arr)
+            {
+                foreach (var task in item["Data"])
+                {
+                    rawList["LOC"].Add((double)task["TaskData"]["LOC"]);
+                    rawList["Commits"].Add((double)task["TaskData"]["Commits"]);
+                    rawList["Tasks_Completed"].Add((double)task["TaskData"]["Tasks_Completed"]);
+                    rawList["No_of_emails"].Add((double)task["TaskData"]["No_of_emails"]);
+                    rawList["Keystrokes_Mouseclicks"].Add((double)task["TaskData"]["Keystrokes_Mouseclicks"]);
+                }
+            }
+            Dictionary<string, Dictionary<string, double>> metrics = new Dictionary<string, Dictionary<string, double>>();
+            foreach (var item in rawList.Keys)
+            {
+                metrics[item] = new Dictionary<string, double>();
+                metrics[item].Add("Min", rawList[item].Min());
+                metrics[item].Add("Max", rawList[item].Max());
+                metrics[item].Add("Mean", rawList[item].Average());
+                metrics[item].Add("Stddev", Math.Sqrt(rawList[item].Average(v => Math.Pow(v - rawList[item].Average(), 2))));
+            }
+  
+                return metrics;
+        }
+
+        public JArray MinMaxNormalizeRawData (JArray arr)
+        {
+             var dict = GetMaxMinMeanStdDev(arr);
+            foreach (var item in arr)
+            {
+                foreach (var task in item["Data"])
+                {
+                    task["TaskData"]["LOC"] = MinMaxNormalize((double)task["TaskData"]["LOC"], dict["LOC"]["Min"], dict["LOC"]["Max"]);
+                    task["TaskData"]["Commits"] = MinMaxNormalize((double)task["TaskData"]["Commits"], dict["Commits"]["Min"], dict["Commits"]["Max"]);
+                    task["TaskData"]["Tasks_Completed"] = MinMaxNormalize((double)task["TaskData"]["Tasks_Completed"], dict["Tasks_Completed"]["Min"], dict["Tasks_Completed"]["Max"]);
+                    task["TaskData"]["No_of_emails"] = MinMaxNormalize((double)task["TaskData"]["No_of_emails"], dict["No_of_emails"]["Min"], dict["No_of_emails"]["Max"]);
+                    task["TaskData"]["Keystrokes_Mouseclicks"] = MinMaxNormalize((double)task["TaskData"]["Keystrokes_Mouseclicks"], dict["Keystrokes_Mouseclicks"]["Min"], dict["Keystrokes_Mouseclicks"]["Max"]);
+                }
+
+            }
+            return arr;
+        }
+
+        public JArray ZScoreNormalizeRawData(JArray arr)
+        {
+            var dict = GetMaxMinMeanStdDev(arr);
+            foreach (var item in arr)
+            {
+                foreach (var task in item["Data"])
+                {
+                    task["TaskData"]["LOC"] = ZScoreNormalize((double)task["TaskData"]["LOC"], dict["LOC"]["Mean"], dict["LOC"]["Stddev"]);
+                    task["TaskData"]["Commits"] = ZScoreNormalize((double)task["TaskData"]["Commits"], dict["Commits"]["Mean"], dict["Commits"]["Stddev"]);
+                    task["TaskData"]["Tasks_Completed"] = ZScoreNormalize((double)task["TaskData"]["Tasks_Completed"], dict["Tasks_Completed"]["Mean"], dict["Tasks_Completed"]["Stddev"]);
+                    task["TaskData"]["No_of_emails"] = ZScoreNormalize((double)task["TaskData"]["No_of_emails"], dict["No_of_emails"]["Mean"], dict["No_of_emails"]["Stddev"]);
+                    task["TaskData"]["Keystrokes_Mouseclicks"] = ZScoreNormalize((double)task["TaskData"]["Keystrokes_Mouseclicks"], dict["Keystrokes_Mouseclicks"]["Mean"], dict["Keystrokes_Mouseclicks"]["Stddev"]);
+                }
+
+            }
+            return arr;
+        }
+        public JArray LoadJson(string preprocs)
+        {
+                      
+               using (StreamReader r = new StreamReader("Data/Source.json"))
+               {
+                string json = r.ReadToEnd();
+                JArray array = JsonConvert.DeserializeObject<JArray>(json);
+                if (!string.IsNullOrEmpty(preprocs))
+                {
+                    switch(preprocs)
+                    {
+                        case "zscore":
+                            break;
+                        case "minmax":
+                            break;
+                        default:
+                            break;
+
+                    }
+                }
+                    return array;
+                }
+            
+        }
+
+        public static double ZScoreNormalize(double value, double mean, double stdDev)
+        {
+            double normalizedValue = (value - mean) / stdDev;
+            return normalizedValue;
+        }
+        public static double MinMaxNormalize(double value, double min, double max )
+        {           
+            double normalizedValue = (value - min) / (max - min);
+            return normalizedValue;
+        }
+
+
+        public IActionResult Dashboard()
+        {
+            JArray array =  LoadJson(string.Empty);
+            List<string> developers = new List<string>();
+            foreach (var item in array)
+            {
+                developers.Add(item["Developer"].ToString());
+            }
+            ViewData["Developers"] = developers;
+            return View();
+        }
+
+        public IActionResult CalculateProductivity(string developer, string method, string preproc)
+        {
+            double? result = 0;
+            JArray array = LoadJson(preproc);
+            foreach (var item in array)
+            {
+                if(item["Developer"].ToString() == developer)
+                {
+                    foreach (var task in item["Data"])
+                    {
+                        var metricDictionary = JsonConvert.DeserializeObject<Dictionary<string, JToken>>(task["TaskData"].ToString());
+                        double? n = metricDictionary?.Values.Count;
+                        switch (method)
+                        {
+                            case "wtsum":
+                                var wtsum = metricDictionary?.Values.Sum(x => Convert.ToInt64(x));
+                                result += wtsum;
+                                break;
+                            case "wtavg":
+                                var wtavg = metricDictionary?.Values.Average(x => Convert.ToInt64(x));
+                                result += wtavg;
+                                break;
+                            case "gmean":
+                                double prod = 1;
+
+                             foreach(var x in metricDictionary?.Values.ToList())
+                                {
+                                    prod *= Convert.ToInt64(x);
+                                }
+                                var gmean = Math.Pow(prod,(1.0/n.Value));
+;                                result += gmean;
+                                break;
+                            case "hmean":
+                                double reciprocalsum = 0;
+                                foreach (var x in metricDictionary?.Values.ToList())
+                                {
+                                    reciprocalsum += (1/Convert.ToInt64(x));
+                                }
+                                var hmean = (n.Value / reciprocalsum);
+                                result += hmean;
+                                break;
+                            case "amean":
+                                var amean = metricDictionary?.Values.Sum(x => Convert.ToInt64(x));
+                                result += (amean/n);
+                                break;
+                            case "median":
+                                var list = metricDictionary?.Values.ToList();
+                                list = list.OrderBy(x=>(int)x).ToList();
+                                var median =  (n%2==0)? ((int)list.ElementAt((int)n/2) + (int)list.ElementAt(((int)n/2)+1))/2 : (int)list.ElementAt(((int)n/2));
+                                result += median;
+                                break;
+                            case "mode":
+                                list = metricDictionary?.Values.ToList();
+                                Dictionary<string, int> occurrence = new Dictionary<string, int>();
+                                foreach(var i in list)
+                                {
+                                    if(occurrence.ContainsKey(i.ToString()))
+                                    {
+                                        occurrence[i.ToString()] = occurrence[i.ToString()] + 1;
+                                    }
+                                    else
+                                    {
+                                        occurrence[i.ToString()] = 1;
+                                    }
+                                }
+                                result = occurrence.Values.Max(x=>x);
+                                break;
+                            default: 
+                                break;
+                        }
+                      
+                     
+                    }
+                }
+                
+            }
+            Productivity z = new Productivity();
+            z.Score = result.Value;
+           z.Method = method;
+            z.Developer = developer;
+            return PartialView("PartialViewDashboard",z);   
+        }
         #region crud
         public async Task<bool> AddProject(string name, string description)
         {
@@ -172,9 +374,9 @@ namespace DevProdWebApp.Controllers
                 }
             }
             string a = string.Empty;
-            a += ($"Total lines added: {totalLinesAdded}");
-            a += ($"Total lines deleted: {totalLinesDeleted}");
-            a += ($"Net lines added: {totalLinesAdded - totalLinesDeleted}");
+            a += ($"Total lines added: {totalLinesAdded}"+"\n");
+            a += ($"Total lines deleted: {totalLinesDeleted}" + "\n");
+            a += ($"Net lines added: {totalLinesAdded - totalLinesDeleted}" + "\n");
             Result result = new Result() { Data = a };
             return View("./Index", result);
         }
@@ -186,7 +388,7 @@ namespace DevProdWebApp.Controllers
         public async Task<IActionResult> GetTaskList(string username, string project)
         {
             string a = string.Empty;
-            var client = new TrelloDotNet.TrelloClient("", "");
+            var client = new TrelloDotNet.TrelloClient("a9fd64c9429e1577e6e7b973d2df303f", "ATTA912c6c3cc630adc321a7f668f8883cef1ea49f3df685aa97ff957be4633e7fac670CD8C5");
             var lists =  await client.GetListsOnBoardAsync("6dzGyuJX");
             lists = lists.Where(x=>x.Name.ToLower() == "completed").ToList();
             foreach (var list in lists)
@@ -428,7 +630,7 @@ namespace DevProdWebApp.Controllers
                 
             foreach (var issue in issues)
             {
-               a+= new string($"- [{project}] #{issue.Number}: {issue.Title}");
+               a+= new string($"- [{project}] #{issue.Number}: {issue.Title}" + "\n");
             }
         }
         catch (Exception ex)

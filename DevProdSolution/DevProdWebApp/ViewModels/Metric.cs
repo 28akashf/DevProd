@@ -19,4 +19,13 @@
     {
           public object Data { get; set; }
     }
+
+    public class Productivity
+    {
+        public double Score { get; set; }
+        public string? Developer { get; set; }
+        public string? Method { get; set; }
+
+
+    }
 }

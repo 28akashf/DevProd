@@ -1,0 +1,56 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+<h1>@ViewData["Title"]</h1>
+Developer :
+<select id="developer" style="width:200px">
+    @foreach (var z in (List<string>)ViewData["Developers"])
+    {
+        <option value="@z">@z</option>
+    }
+</select>
+Methodology:
+<select id="method" style="width:200px">
+    <option value="wtsum">Weighted Sum</option>
+    <option value="gmean">Geometric Mean</option>
+    <option value="amean">Arithmetic Mean</option>
+    <option value="hmean">Harmonic Mean</option>
+    <option value="wtavg">Weighted Average</option>
+    <option value="median">Median</option>
+    <option value="mode">Mode</option>
+</select>
+Data Preprocessing:
+<select id="preproc" style="width:200px">
+    <option value="minmax">Min Max</option>
+    <option value="zscore">Z-Score</option>
+</select>
+<button class="btn btn-primary" onclick="send()" type="submit">Calculate</button>
+
+
+<p>Productivity of @ViewData["Dev"] using @ViewData["Method"] is @ViewData["Result"]</p>
+<div id="itemlist">
+<partial name="PartialViewDashboard"></partial>
+</div>
+
+<script type="text/javascript">
+    function send() {
+        var developer = document.getElementById('developer').value;
+        var method = document.getElementById('method').value;
+        var preproc = document.getElementById('preproc').value;
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("CalculateProductivity", "Home")',
+            data: { developer:developer, method:method },
+            success: function (response) {
+                alert(response);
+                $('#itemlist').html('');
+                $('#itemlist').html(response);
+                
+            },
+            error: function (xhr, status, error) {
+                //alert('Error: ');
+            }
+        });
+
+    }
+</script>
