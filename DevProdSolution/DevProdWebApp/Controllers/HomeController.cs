@@ -1,3 +1,4 @@
+using Azure;
 using DevProdWebApp.Models;
 using DevProdWebApp.Repository;
 using DevProdWebApp.ViewModels;
@@ -5,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Octokit;
+using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -136,9 +138,11 @@ namespace DevProdWebApp.Controllers
                 {
                     switch(preprocs)
                     {
-                        case "zscore":
-                            break;
                         case "minmax":
+                            MinMaxNormalizeRawData(array);
+                            break;
+                        case "zscore":
+                            ZScoreNormalizeRawData(array);
                             break;
                         default:
                             break;
@@ -174,7 +178,7 @@ namespace DevProdWebApp.Controllers
             return View();
         }
 
-        public IActionResult CalculateProductivity(string developer, string method, string preproc)
+        public IActionResult CalculateProductivity(string developer, string method, string preproc, string weights)
         {
             double? result = 0;
             JArray array = LoadJson(preproc);
@@ -188,20 +192,46 @@ namespace DevProdWebApp.Controllers
                         double? n = metricDictionary?.Values.Count;
                         switch (method)
                         {
+                            case "sum":
+                                var sum = metricDictionary?.Values.Sum(x => Convert.ToDouble(x));
+                                result += sum;
+                                break;
                             case "wtsum":
-                                var wtsum = metricDictionary?.Values.Sum(x => Convert.ToInt64(x));
+                                var Jweight = JsonConvert.DeserializeObject<JObject>(weights);
+                                double wtsum = 0.0;
+                              foreach(var key in metricDictionary?.Keys)
+                                {
+                                    wtsum += ((double)metricDictionary[key] * (double)Jweight[key]);
+                                }
                                 result += wtsum;
                                 break;
-                            case "wtavg":
-                                var wtavg = metricDictionary?.Values.Average(x => Convert.ToInt64(x));
-                                result += wtavg;
+                            case "wtamean":
+                                 Jweight = JsonConvert.DeserializeObject<JObject>(weights);
+                                double wtamean = 0.0;
+                                foreach (var key in metricDictionary?.Keys)
+                                {
+                                    wtamean += ((double)metricDictionary[key] * (double)Jweight[key]);
+                                }
+                               double sumOfWeights =  Jweight.ToObject<Dictionary<string, double>>().Values.Sum();
+                                result += (wtamean / sumOfWeights);
+                                break;
+                            case "wtprodmodel":
+                                Jweight = JsonConvert.DeserializeObject<JObject>(weights);
+                                double wtprodmodel = 1.0;
+                                result = 1.0;
+                                foreach (var key in metricDictionary?.Keys)
+                                {
+                                    wtprodmodel *= Math.Pow((double)metricDictionary[key],(double)Jweight[key]);
+                                }
+                               
+                                result *= wtprodmodel;
                                 break;
                             case "gmean":
                                 double prod = 1;
 
                              foreach(var x in metricDictionary?.Values.ToList())
                                 {
-                                    prod *= Convert.ToInt64(x);
+                                    prod *= Convert.ToDouble(x);
                                 }
                                 var gmean = Math.Pow(prod,(1.0/n.Value));
 ;                                result += gmean;
@@ -210,13 +240,13 @@ namespace DevProdWebApp.Controllers
                                 double reciprocalsum = 0;
                                 foreach (var x in metricDictionary?.Values.ToList())
                                 {
-                                    reciprocalsum += (1/Convert.ToInt64(x));
+                                    reciprocalsum += (1/Convert.ToDouble(x));
                                 }
                                 var hmean = (n.Value / reciprocalsum);
                                 result += hmean;
                                 break;
                             case "amean":
-                                var amean = metricDictionary?.Values.Sum(x => Convert.ToInt64(x));
+                                var amean = metricDictionary?.Values.Sum(x => Convert.ToDouble(x));
                                 result += (amean/n);
                                 break;
                             case "median":

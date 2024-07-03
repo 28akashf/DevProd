@@ -11,38 +11,81 @@ Developer :
 </select>
 Methodology:
 <select id="method" style="width:200px">
-    <option value="wtsum">Weighted Sum</option>
+    <option value="sum">Sum</option>
     <option value="gmean">Geometric Mean</option>
     <option value="amean">Arithmetic Mean</option>
+    <option value="wtamean">Weighted Arithmetic Mean</option>
+    <option value="wtprodmodel">Weighted Product Model</option>
     <option value="hmean">Harmonic Mean</option>
-    <option value="wtavg">Weighted Average</option>
+    <option value="wtsum">Weighted Sum</option>
     <option value="median">Median</option>
     <option value="mode">Mode</option>
 </select>
 Data Preprocessing:
 <select id="preproc" style="width:200px">
+    <option value="">None</option>
     <option value="minmax">Min Max</option>
     <option value="zscore">Z-Score</option>
 </select>
-<button class="btn btn-primary" onclick="send()" type="submit">Calculate</button>
+<button class="btn btn-primary" onclick="checkForWeightedFunc()" type="submit">Calculate</button>
 
-
-<p>Productivity of @ViewData["Dev"] using @ViewData["Method"] is @ViewData["Result"]</p>
 <div id="itemlist">
 <partial name="PartialViewDashboard"></partial>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="wtModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Weights</h5>
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                LOC <input type="text" id="txtLoc"/><br>
+                Commits <input type="text" id="txtCommits" /><br>
+                Tasks_Completed <input type="text" id="txtTasks_Completed" /><br>
+                No_of_emails <input type="text" id="txtNo_of_emails" /><br>
+                Keystrokes_Mouseclicks <input type="text" id="txtKeystrokes_Mouseclicks" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeModal()">Close</button>
+                <button type="button" class="btn btn-primary" onclick="closeModal()">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script type="text/javascript">
-    function send() {
+    function openModal() {        
+        $('#wtModal').modal('toggle');
+    }
+    function closeModal() {
+      
+        var weights = { 'LOC': $('#txtLoc').val(), 'Commits': $('#txtCommits').val(), 'Tasks_Completed': $('#txtTasks_Completed').val(), 'No_of_emails': $('#txtNo_of_emails').val(), 'Keystrokes_Mouseclicks': $('#txtKeystrokes_Mouseclicks').val() }
+        send(weights);
+        $('#wtModal').modal('toggle');
+    }
+    function checkForWeightedFunc() {
+        var method = document.getElementById('method').value;
+        if (method == 'wtamean' || method == 'wtsum' || method == 'wtprodmodel') {
+            openModal();
+        }
+        else 
+        {
+            send({});
+        }            
+    }    
+    function send(weights) {
         var developer = document.getElementById('developer').value;
         var method = document.getElementById('method').value;
         var preproc = document.getElementById('preproc').value;
         $.ajax({
             type: "POST",
             url: '@Url.Action("CalculateProductivity", "Home")',
-            data: { developer:developer, method:method },
+            data: { developer:developer, method:method, preproc:preproc, weights: JSON.stringify(weights) },
             success: function (response) {
-                alert(response);
                 $('#itemlist').html('');
                 $('#itemlist').html(response);
                 
