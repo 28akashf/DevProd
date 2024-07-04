@@ -2,32 +2,65 @@
     ViewData["Title"] = "Dashboard";
 }
 <h1>@ViewData["Title"]</h1>
-Developer :
-<select id="developer" style="width:200px">
-    @foreach (var z in (List<string>)ViewData["Developers"])
-    {
-        <option value="@z">@z</option>
-    }
-</select>
-Methodology:
-<select id="method" style="width:200px">
-    <option value="sum">Sum</option>
-    <option value="gmean">Geometric Mean</option>
-    <option value="amean">Arithmetic Mean</option>
-    <option value="wtamean">Weighted Arithmetic Mean</option>
-    <option value="wtprodmodel">Weighted Product Model</option>
-    <option value="hmean">Harmonic Mean</option>
-    <option value="wtsum">Weighted Sum</option>
-    <option value="median">Median</option>
-    <option value="mode">Mode</option>
-</select>
-Data Preprocessing:
-<select id="preproc" style="width:200px">
-    <option value="">None</option>
-    <option value="minmax">Min Max</option>
-    <option value="zscore">Z-Score</option>
-</select>
-<button class="btn btn-primary" onclick="checkForWeightedFunc()" type="submit">Calculate</button>
+<br />
+<br />
+<div class="container">
+    <div class="row">
+         <div class="col-md-1">
+            Developer :
+         </div>
+        <div class="col-md-3">
+            <select id="developer" style="width:200px">
+                @foreach (var z in (List<string>)ViewData["Developers"])
+                {
+                    <option value="@z">@z</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-1">
+            Methodology:
+        </div>
+        <div class="col-md-3">
+            <select id="method" style="width:200px">
+                <option value="sum">Sum</option>
+                <option value="gmean">Geometric Mean</option>
+                <option value="amean">Arithmetic Mean</option>
+                <option value="wtamean">Weighted Arithmetic Mean</option>
+                <option value="wtprodmodel">Weighted Product Model</option>
+                <option value="hmean">Harmonic Mean</option>
+                <option value="wtsum">Weighted Sum</option>
+                <option value="median">Median</option>
+                <option value="mode">Mode</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            Data Preprocessing:
+        </div>
+        <div class="col-md-2">
+            <select id="preproc" style="width:200px">
+                <option value="">None</option>
+                <option value="minmax">Min Max</option>
+                <option value="zscore">Z-Score</option>
+            </select>
+        </div>
+    </div>
+    <br />
+    <br />
+    <div class="row">
+        <div class="col-md-5"></div>
+        <div class="col-md-2">
+            <button class="btn btn-primary" onclick="checkForWeightedFunc()" type="submit">Calculate</button>
+        </div>
+        <div class="col-md-5"></div>
+    </div>
+</div>
+
+
+
+
+
+
+
 
 <div id="itemlist">
 <partial name="PartialViewDashboard"></partial>
@@ -43,14 +76,55 @@ Data Preprocessing:
                 </button>
             </div>
             <div class="modal-body">
-                LOC <input type="text" id="txtLoc"/><br>
-                Commits <input type="text" id="txtCommits" /><br>
-                Tasks_Completed <input type="text" id="txtTasks_Completed" /><br>
-                No_of_emails <input type="text" id="txtNo_of_emails" /><br>
-                Keystrokes_Mouseclicks <input type="text" id="txtKeystrokes_Mouseclicks" />
+                <div class="container">
+                     <div class="row">
+                           <div class="col-md-4">
+                            LOC
+                           </div>
+                        <div class="col-md-6">
+                             <input type="text" id="txtLoc" /><br>
+                           </div>
+                     </div>
+                <br/>
+                    <div class="row">
+                        <div class="col-md-4">
+                            Commits
+                            </div>
+                            <div class="col-md-6">
+                             <input type="text" id="txtCommits" /><br>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-md-4">
+                            Tasks Completed
+                        </div>
+                        <div class="col-md-6">
+                             <input type="text" id="txtTasks_Completed" /><br>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-md-4">
+                            No. of emails
+                        </div>
+                        <div class="col-md-6">
+                             <input type="text" id="txtNo_of_emails" /><br>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-md-4">
+                            Keystrokes and Mouseclicks
+                        </div>
+                        <div class="col-md-6">
+                             <input type="text" id="txtKeystrokes_Mouseclicks" />
+                        </div>
+                    </div>
+                </div>     
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeModal()">Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="toggleModal()">Close</button>
                 <button type="button" class="btn btn-primary" onclick="closeModal()">Submit</button>
             </div>
         </div>
@@ -58,7 +132,7 @@ Data Preprocessing:
 </div>
 
 <script type="text/javascript">
-    function openModal() {        
+    function toggleModal() {        
         $('#wtModal').modal('toggle');
     }
     function closeModal() {
@@ -70,7 +144,7 @@ Data Preprocessing:
     function checkForWeightedFunc() {
         var method = document.getElementById('method').value;
         if (method == 'wtamean' || method == 'wtsum' || method == 'wtprodmodel') {
-            openModal();
+            toggleModal();
         }
         else 
         {

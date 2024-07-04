@@ -182,10 +182,12 @@ namespace DevProdWebApp.Controllers
         {
             double? result = 0;
             JArray array = LoadJson(preproc);
+            int taskCount = 0;
             foreach (var item in array)
             {
                 if(item["Developer"].ToString() == developer)
                 {
+                    taskCount = item["Data"].Count();
                     foreach (var task in item["Data"])
                     {
                         var metricDictionary = JsonConvert.DeserializeObject<Dictionary<string, JToken>>(task["TaskData"].ToString());
@@ -281,7 +283,7 @@ namespace DevProdWebApp.Controllers
                 
             }
             Productivity z = new Productivity();
-            z.Score = result.Value;
+            z.Score = result.Value/ taskCount;
            z.Method = method;
             z.Developer = developer;
             return PartialView("PartialViewDashboard",z);   
