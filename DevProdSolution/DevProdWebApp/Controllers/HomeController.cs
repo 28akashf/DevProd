@@ -21,13 +21,15 @@ namespace DevProdWebApp.Controllers
         private readonly IProjectRepo _projectRepo;
         private readonly IMetricRepo _metricRepo;
         private readonly IDeveloperRepo _developerRepo;
+        private readonly ISettingsRepo _settingsRepo;
 
-        public HomeController(ILogger<HomeController> logger, IProjectRepo projectRepo, IMetricRepo metricRepo, IDeveloperRepo developerRepo)
+        public HomeController(ILogger<HomeController> logger, IProjectRepo projectRepo, IMetricRepo metricRepo, IDeveloperRepo developerRepo, ISettingsRepo settingsRepo)
         {
             _logger = logger;
             _projectRepo = projectRepo;
             _metricRepo = metricRepo;
             _developerRepo = developerRepo;
+            _settingsRepo = settingsRepo;
         }
 
         public IActionResult Index()
@@ -47,6 +49,23 @@ namespace DevProdWebApp.Controllers
             return View(list);
         }
 
+        public async Task<bool> SaveSettings(string methodology, string preprocessing, string scale)
+        {
+            Setting defaultSetting =  await _settingsRepo.GetSettingsById(1);
+            if (defaultSetting == null)
+            {
+                await _settingsRepo.AddSettings(new Setting() { Methodolgy = methodology, Preprocessing = preprocessing, Scale = scale });
+            }
+            else
+            {
+                 defaultSetting.Methodolgy = methodology;
+                 defaultSetting.Preprocessing = preprocessing;
+                 defaultSetting.Scale = scale;
+                _settingsRepo.UpdateSettings(defaultSetting);
+            }
+          
+            return true;
+        }
         public async Task<IActionResult> Projects()
         {
             var list = await _projectRepo.GetAllProjects();

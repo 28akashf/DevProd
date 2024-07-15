@@ -3,39 +3,49 @@
 }
 <h1>@ViewData["Tool Settings"]</h1>
 <div>
-    <h3> Customization</h3>
+   
   
     <div class="container">
-      
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-4"> <h3> Customization</h3></div>
+            </div>
            <div class="row">
-                  <div class="col-md-12">
+                  <div class="col-md-8">
                       <div class="row">
-                    <div class="col-md-1">
-                        <label><h7>Methodology</h7></label>
-                    </div>
-                    <div class="input-field col-md-4">
+ 
+                      
+            
+                    <div class="input-field col-md-8">
                         <select id="method" title="method">
-                            <option value="sum">Sum</option>
-                            <option value="gmean">Geometric Mean</option>
+                            <option value="sum">Sum</option>                          
                             <option value="wtamean">Weighted Sum Model</option>
                             <option value="wtprodmodel">Weighted Product Model</option>
                             <option value="wtsumprodmodel">Weighted Average Sum and Product Model</option>
+                            <option value="gmean" selected="true">Geometric Mean</option>
                         </select>
+                        <label for="method">Methodology</label>
                     </div>
                     </div>
                     <div class="row">
-                    <div class="col-md-1">
-                        <label><h7>Data Preprocessing</h7></label>
-                    </div>
-                    <div class="input-field col-md-4">
+                  
+                    <div class="input-field col-md-8">
                         <select id="preproc" title="preproc">
                             <option value="">None</option>
                             <option value="minmax">Min Max</option>
                             <option value="zscore">Z-Score</option>
                         </select>
+                        <label for="preproc">Data Preprocessing</label>
                     </div>
                       </div>
           
+                  </div>
+                  <div class="col-md-4">
+                      <div class="row">
+                            <div class="col-md-2">
+                        <a class="waves-effect waves-light btn" onclick="saveSettings()">Save</a>
+                            </div>
+                      </div>
                   </div>
          
          
@@ -176,12 +186,14 @@
 </div>
 <script type="text/javascript">
     
-   function settings() {
-
+   function saveSettings() {
+        var method = document.getElementById('method').value;
+        var preproc = document.getElementById('preproc').value;
+       var scale = '';
         $.ajax({
             type: "POST",
-            url: '@Url.Action("ToolSettings", "Home")',
-            data: { },
+            url: '@Url.Action("SaveSettings", "Home")',
+            data: { methodology:method, preprocessing:preproc, scale:scale },
             success: function (response) {
              
 
@@ -211,7 +223,7 @@
 
         newRow.html('<td><input id = "r_' + rowNumberNew + '" type = "text" placeholder = "Rating" ></td><td><input id="rl_' + rowNumberNew + '" type = "text" placeholder = "Lower Bound"></td><td><input id="ru_' + rowNumberNew + '" type = "text" placeholder = "Upper Bound" ></td>');
 
-        // var selectedRow = $("input:checked").parent().parent();
+       
 
          $(newRow).insertAfter(lastRow);
 

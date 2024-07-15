@@ -12,6 +12,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IDeveloperRepo,DeveloperRepo>();
 builder.Services.AddScoped<IProjectRepo,ProjectRepo>();
 builder.Services.AddScoped<IMetricRepo,MetricRepo>();
+builder.Services.AddScoped<ISettingsRepo,SettingsRepo>();
 
 
 var app = builder.Build();
