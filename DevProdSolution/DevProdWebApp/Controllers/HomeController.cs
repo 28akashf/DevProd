@@ -1,3 +1,4 @@
+using Accord.Statistics;
 using Azure;
 using DevProdWebApp.Models;
 using DevProdWebApp.Repository;
@@ -12,6 +13,7 @@ using System.Linq;
 using System.Net;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Activity = System.Diagnostics.Activity;
+
 
 namespace DevProdWebApp.Controllers
 {
@@ -178,6 +180,28 @@ namespace DevProdWebApp.Controllers
             }
             return arr;
         }
+
+        public List<double> MinMaxNormalizeRawData(List<double> arrCast)
+        { 
+           var min = arrCast.Min();
+            var max = arrCast.Max();
+            for (int i = 0; i < arrCast.Count; i++)
+            {
+                arrCast[i] = MinMaxNormalize(arrCast[i],min,max);
+            }
+            return arrCast;
+        }
+
+        public List<double> ZScoreNormalizeRawData(List<double> arrCast)
+        {
+            var mean = Measures.Mean(arrCast.ToArray());
+            var stdDev = Measures.StandardDeviation(arrCast.ToArray());
+            for (int i = 0; i < arrCast.Count; i++)
+            {
+                arrCast[i] =  ZScoreNormalize(arrCast[i], mean,stdDev);
+            }
+            return arrCast;
+        }
         public JArray LoadJson(string preprocs)
         {
                       
@@ -216,7 +240,7 @@ namespace DevProdWebApp.Controllers
             return normalizedValue;
         }
 
-        public IActionResult ToolDashboard()
+        public async Task<IActionResult> ToolDashboard()
         {
             var a = GenerateRandomBinary();
             var b = GenerateRandomContinuous();
@@ -226,6 +250,23 @@ namespace DevProdWebApp.Controllers
             list.m2List = b;
             list.m3List = c;
             list.maxCount = Math.Max(a.Count, Math.Max(b.Count,c.Count));
+            var settings =  await _settingsRepo.GetSettingsById(1);
+            switch(settings.Preprocessing)
+            {
+                case "minmax":
+                    list.m1ListProc = MinMaxNormalizeRawData(a.ConvertAll(x => (double)x));
+                    list.m2ListProc = MinMaxNormalizeRawData(b);
+                    list.m3ListProc = MinMaxNormalizeRawData(c.ConvertAll(x => (double)x));
+                    break;
+                case "zscore":
+                    list.m1ListProc = ZScoreNormalizeRawData(a.ConvertAll(x => (double)x));
+                    list.m2ListProc = ZScoreNormalizeRawData(b);
+                    list.m3ListProc = ZScoreNormalizeRawData(c.ConvertAll(x => (double)x));
+                    break;
+                default:
+                    break;
+            }
+    
             return View(list);
         }
 
