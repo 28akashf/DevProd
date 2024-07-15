@@ -1,0 +1,228 @@
+﻿@{
+    ViewData["Title"] = "Tool";
+}
+<h1>@ViewData["Tool Settings"]</h1>
+<div>
+    <h3> Customization</h3>
+  
+    <div class="container">
+      
+           <div class="row">
+                  <div class="col-md-12">
+                      <div class="row">
+                    <div class="col-md-1">
+                        <label><h7>Methodology</h7></label>
+                    </div>
+                    <div class="input-field col-md-4">
+                        <select id="method" title="method">
+                            <option value="sum">Sum</option>
+                            <option value="gmean">Geometric Mean</option>
+                            <option value="wtamean">Weighted Sum Model</option>
+                            <option value="wtprodmodel">Weighted Product Model</option>
+                            <option value="wtsumprodmodel">Weighted Average Sum and Product Model</option>
+                        </select>
+                    </div>
+                    </div>
+                    <div class="row">
+                    <div class="col-md-1">
+                        <label><h7>Data Preprocessing</h7></label>
+                    </div>
+                    <div class="input-field col-md-4">
+                        <select id="preproc" title="preproc">
+                            <option value="">None</option>
+                            <option value="minmax">Min Max</option>
+                            <option value="zscore">Z-Score</option>
+                        </select>
+                    </div>
+                      </div>
+          
+                  </div>
+         
+         
+           </div>
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="tabs">
+                    <li class="tab col-md-3"><a href="#test1">m1</a></li>
+                    <li class="tab col-md-3"><a class="active" href="#test2">m2</a></li>
+                    <li class="tab col-md-3"><a href="#test3">m3</a></li>
+                </ul>
+            </div>
+            <div id="test1" class="col-md-12">
+                 <div class="row">
+                       <div class="col-md-4">
+
+                       </div>
+                    <div class="col-md-4">
+                          <h3>SCALE (m1)</h3>
+                          <table id="tblm1" class="table-responsive">
+                              <thead>
+                                  <tr>
+                                <th>Rating</th>
+                                <th>Lower Bound</th>
+                                 <th>Upper Bound</th>
+                                  </tr>
+                           
+                              </thead>
+                             
+                                  <tbody>
+                                      <tr>
+                                    <td>
+                                        <input id="r_1" type="text" placeholder="Rating">
+                                    </td>
+                                    <td>
+                                        <input id="rl_1" type="text" placeholder="Lower Bound">
+                                    </td>
+                                    <td>
+                                        <input id="ru_1" type="text" placeholder="Upper Bound">
+                                    </td>
+                                      </tr>
+                                  </tbody>
+                           
+                          
+                          </table>
+                        <a class="waves-effect waves-light btn" onclick="addNewRowBelow('tblm1')">Add Row</a>
+                        <a class="waves-effect waves-light btn" onclick="deleteLastRow('tblm1')">Delete Row</a>
+                        <a class="waves-effect waves-light btn">Save</a>
+                    </div>
+                    <div class="col-md-4">
+                    </div>
+                 </div>
+            </div>
+            <div id="test2" class="col-md-12">
+                <div class="row">
+                    <div class="col-md-4">
+                    </div>
+                    <div class="col-md-4">
+                        <h3>SCALE (m2)</h3>
+                        <table id="tblm2" class="table-responsive">
+                            <thead>
+                                <tr>
+                                    <th>Rating</th>
+                                    <th>Lower Bound</th>
+                                    <th>Upper Bound</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <input id="r_1" type="text" placeholder="Rating">
+                                    </td>
+                                    <td>
+                                        <input id="rl_1" type="text" placeholder="Lower Bound">
+                                    </td>
+                                    <td>
+                                        <input id="ru_1" type="text" placeholder="Upper Bound">
+                                    </td>
+                                </tr>
+                            </tbody>
+
+
+                        </table>
+                        <a class="waves-effect waves-light btn" onclick="addNewRowBelow('tblm2')">Add Row</a>
+                        <a class="waves-effect waves-light btn" onclick="deleteLastRow('tblm2')">Delete Row</a>
+                        <a class="waves-effect waves-light btn">Save</a>
+                    </div>
+                    <div class="col-md-4">
+                    </div>
+                </div>
+            </div>
+            <div id="test3" class="col-md-12">
+                <div class="row">
+                    <div class="col-md-4">
+                    </div>
+                    <div class="col-md-4">
+                        <h3>SCALE (m3)</h3>
+                        <table id="tblm3" class="table-responsive">
+                            <thead>
+                                <tr>
+                                    <th>Rating</th>
+                                    <th>Lower Bound</th>
+                                    <th>Upper Bound</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <input id="r_1" type="text" placeholder="Rating">
+                                    </td>
+                                    <td>
+                                        <input id="rl_1" type="text" placeholder="Lower Bound">
+                                    </td>
+                                    <td>
+                                        <input id="ru_1" type="text" placeholder="Upper Bound">
+                                    </td>
+                                </tr>
+                            </tbody>
+
+
+                        </table>
+                        <a class="waves-effect waves-light btn" onclick="addNewRowBelow('tblm3')">Add Row</a>
+                        <a class="waves-effect waves-light btn" onclick="deleteLastRow('tblm3')">Delete Row</a>
+                        <a class="waves-effect waves-light btn">Save</a>
+                    </div>
+                    <div class="col-md-4">
+                    </div>
+                </div>
+            </div>
+      
+        </div>
+    </div>
+
+</div>
+<script type="text/javascript">
+    
+   function settings() {
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("ToolSettings", "Home")',
+            data: { },
+            success: function (response) {
+             
+
+            },
+            error: function (xhr, status, error) {
+               
+            }
+        });
+
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var elems = document.querySelectorAll('select');
+        var options = document.querySelectorAll('option');
+        var tabs = document.querySelectorAll('.tabs');
+        var taboptions = document.querySelectorAll('li');
+        var instances = M.FormSelect.init(elems, options);
+        var instance = M.Tabs.init(tabs, taboptions);
+    });
+
+    function addNewRowBelow(tblName) {
+        var totalRows = document.getElementById(tblName).rows.length;
+        var rowNumberNew = parseInt(totalRows);
+        var lastRow = document.getElementById(tblName).rows[totalRows - 1];
+        console.log(lastRow);
+         var newRow = $('<tr/>');
+
+        newRow.html('<td><input id = "r_' + rowNumberNew + '" type = "text" placeholder = "Rating" ></td><td><input id="rl_' + rowNumberNew + '" type = "text" placeholder = "Lower Bound"></td><td><input id="ru_' + rowNumberNew + '" type = "text" placeholder = "Upper Bound" ></td>');
+
+        // var selectedRow = $("input:checked").parent().parent();
+
+         $(newRow).insertAfter(lastRow);
+
+      
+    }
+
+    function deleteLastRow(tblName) {
+        var tbl = document.getElementById(tblName);
+        var totalRows = tbl.rows.length;
+        if (totalRows > 2) {
+            tbl.deleteRow(totalRows - 1);
+        }
+    }
+</script>

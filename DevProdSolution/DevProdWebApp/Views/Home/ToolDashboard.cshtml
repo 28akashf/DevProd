@@ -1,0 +1,57 @@
+﻿@{
+    ViewData["Title"] = "Tool";
+}
+@model DevProdWebApp.ViewModels.MList;
+<h1>@ViewData["Title"]</h1>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <table class="responsive-table">
+                <thead>
+                    <tr>
+                        <th>m1</th>
+                        <th>m2</th>
+                        <th>m3</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @for (int i = 0; i < Model.maxCount; i++)
+                    {
+                        <tr>
+                            <td>@Model.m1List[i] </td>
+                            <td>@Model.m2List[i] </td>
+                            <td>@Model.m3List[i] </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-4">
+               <h3>Productivity Score</h3> <br/><br/>
+               <h1>8.2</h1>
+        </div>
+        <div class="col-md-2">
+            <a class="waves-effect waves-light btn" asp-controller="Home" asp-action="ToolSettings"><i class="material-icons center">build</i></a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    function settings() {
+        alert("click...");
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("ToolSettings", "Home")',
+            data: {},
+            success: function (response) {
+
+
+            },
+            error: function (xhr, status, error) {
+
+            }
+        });
+
+    }
+</script>

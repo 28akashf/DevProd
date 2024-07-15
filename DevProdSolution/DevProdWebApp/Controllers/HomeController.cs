@@ -53,6 +53,38 @@ namespace DevProdWebApp.Controllers
             return View(list);
         }
 
+        public List<int> GenerateRandomDiscrete()
+        {
+            List<int> discrete = new List<int>();
+             Random random = new Random();
+            for (int i = 0; i < 1000; i++)
+            {
+                discrete.Add(random.Next(0, 1000));
+            }          
+            return discrete;
+        }
+        public List<double> GenerateRandomContinuous()
+        {
+            List<double> continuous = new List<double>();
+            Random random = new Random();
+            for (int i = 0; i < 1000; i++)
+            {
+                continuous.Add(0 + (random.NextDouble() * (100 - 0)));
+            }
+            return continuous;
+        }
+
+        public List<int> GenerateRandomBinary()
+        {
+            List<int> binary = new List<int>();
+            Random random = new Random();
+            for (int i = 0; i < 1000; i++)
+            {
+               binary.Add(random.Next(0,2));
+            }
+            return binary;
+        }
+
         public async Task<IActionResult> Developers()
         {
             var list = await _developerRepo.GetAllDevelopers();
@@ -165,9 +197,25 @@ namespace DevProdWebApp.Controllers
             return normalizedValue;
         }
 
-
-        public IActionResult Dashboard()
+        public IActionResult ToolDashboard()
         {
+            var a = GenerateRandomBinary();
+            var b = GenerateRandomContinuous();
+            var c = GenerateRandomDiscrete();
+            MList list = new MList();
+            list.m1List = a;
+            list.m2List = b;
+            list.m3List = c;
+            list.maxCount = Math.Max(a.Count, Math.Max(b.Count,c.Count));
+            return View(list);
+        }
+
+        public IActionResult ToolSettings()
+        {
+            return View();
+        }
+            public IActionResult Dashboard()
+        {   
             JArray array =  LoadJson(string.Empty);
             List<string> developers = new List<string>();
             foreach (var item in array)
