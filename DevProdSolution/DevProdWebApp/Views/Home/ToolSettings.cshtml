@@ -1,6 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Tool";
 }
+@model DevProdWebApp.Models.Setting
 <h1>@ViewData["Tool Settings"]</h1>
 <div>
    
@@ -17,12 +18,12 @@
                       
             
                     <div class="input-field col-md-8">
-                        <select id="method" title="method">
+                        <select id="method" title="method" asp-for="@Model.Methodolgy">
                             <option value="sum">Sum</option>                          
                             <option value="wtamean">Weighted Sum Model</option>
                             <option value="wtprodmodel">Weighted Product Model</option>
                             <option value="wtsumprodmodel">Weighted Average Sum and Product Model</option>
-                            <option value="gmean" selected="true">Geometric Mean</option>
+                            <option value="gmean">Geometric Mean</option>
                         </select>
                         <label for="method">Methodology</label>
                     </div>
@@ -30,7 +31,7 @@
                     <div class="row">
                   
                     <div class="input-field col-md-8">
-                        <select id="preproc" title="preproc">
+                        <select id="preproc" title="preproc" asp-for="@Model.Preprocessing">
                             <option value="">None</option>
                             <option value="minmax">Min Max</option>
                             <option value="zscore">Z-Score</option>
@@ -45,6 +46,9 @@
                             <div class="col-md-2">
                         <a class="waves-effect waves-light btn" onclick="saveSettings()">Save</a>
                             </div>
+                    <div class="col-md-2">
+                        <a class="waves-effect waves-light btn" asp-action="ToolDashboard" asp-controller="Home">Back</a>
+                    </div>
                       </div>
                   </div>
          
@@ -78,13 +82,13 @@
                                   <tbody>
                                       <tr>
                                     <td>
-                                        <input id="r_1" type="text" placeholder="Rating">
+                                        <input id="tblm1_1" type="text" placeholder="Rating">
                                     </td>
                                     <td>
-                                        <input id="rl_1" type="text" placeholder="Lower Bound">
+                                        <input id="tblm1l_1" type="text" placeholder="Lower Bound">
                                     </td>
                                     <td>
-                                        <input id="ru_1" type="text" placeholder="Upper Bound">
+                                        <input id="tblm1u_1" type="text" placeholder="Upper Bound">
                                     </td>
                                       </tr>
                                   </tbody>
@@ -93,7 +97,7 @@
                           </table>
                         <a class="waves-effect waves-light btn" onclick="addNewRowBelow('tblm1')">Add Row</a>
                         <a class="waves-effect waves-light btn" onclick="deleteLastRow('tblm1')">Delete Row</a>
-                        <a class="waves-effect waves-light btn">Save</a>
+                        <a class="waves-effect waves-light btn" onclick="createScale('tblm1')">Save</a>
                     </div>
                     <div class="col-md-4">
                     </div>
@@ -118,13 +122,13 @@
                             <tbody>
                                 <tr>
                                     <td>
-                                        <input id="r_1" type="text" placeholder="Rating">
+                                        <input id="tblm2_1" type="text" placeholder="Rating">
                                     </td>
                                     <td>
-                                        <input id="rl_1" type="text" placeholder="Lower Bound">
+                                        <input id="tblm2l_1" type="text" placeholder="Lower Bound">
                                     </td>
                                     <td>
-                                        <input id="ru_1" type="text" placeholder="Upper Bound">
+                                        <input id="tblm2u_1" type="text" placeholder="Upper Bound">
                                     </td>
                                 </tr>
                             </tbody>
@@ -133,7 +137,7 @@
                         </table>
                         <a class="waves-effect waves-light btn" onclick="addNewRowBelow('tblm2')">Add Row</a>
                         <a class="waves-effect waves-light btn" onclick="deleteLastRow('tblm2')">Delete Row</a>
-                        <a class="waves-effect waves-light btn">Save</a>
+                        <a class="waves-effect waves-light btn" onclick ="createScale('tblm2')">Save</a>
                     </div>
                     <div class="col-md-4">
                     </div>
@@ -158,13 +162,13 @@
                             <tbody>
                                 <tr>
                                     <td>
-                                        <input id="r_1" type="text" placeholder="Rating">
+                                        <input id="tblm3_1" type="text" placeholder="Rating">
                                     </td>
                                     <td>
-                                        <input id="rl_1" type="text" placeholder="Lower Bound">
+                                        <input id="tblm3l_1" type="text" placeholder="Lower Bound">
                                     </td>
                                     <td>
-                                        <input id="ru_1" type="text" placeholder="Upper Bound">
+                                        <input id="tblm3u_1" type="text" placeholder="Upper Bound">
                                     </td>
                                 </tr>
                             </tbody>
@@ -173,7 +177,7 @@
                         </table>
                         <a class="waves-effect waves-light btn" onclick="addNewRowBelow('tblm3')">Add Row</a>
                         <a class="waves-effect waves-light btn" onclick="deleteLastRow('tblm3')">Delete Row</a>
-                        <a class="waves-effect waves-light btn">Save</a>
+                        <a class="waves-effect waves-light btn" onclick="createScale('tblm3')">Save</a>
                     </div>
                     <div class="col-md-4">
                     </div>
@@ -221,7 +225,7 @@
         console.log(lastRow);
          var newRow = $('<tr/>');
 
-        newRow.html('<td><input id = "r_' + rowNumberNew + '" type = "text" placeholder = "Rating" ></td><td><input id="rl_' + rowNumberNew + '" type = "text" placeholder = "Lower Bound"></td><td><input id="ru_' + rowNumberNew + '" type = "text" placeholder = "Upper Bound" ></td>');
+        newRow.html('<td><input id = "' + tblName + '_' + rowNumberNew + '" type = "text" placeholder = "Rating" ></td><td><input id="' + tblName + 'l_' + rowNumberNew + '" type = "text" placeholder = "Lower Bound"></td><td><input id="' + tblName + 'u_' + rowNumberNew + '" type = "text" placeholder = "Upper Bound" ></td>');
 
        
 
@@ -236,5 +240,33 @@
         if (totalRows > 2) {
             tbl.deleteRow(totalRows - 1);
         }
+    }
+
+    function createScale(tbl) 
+    {
+        var tblElem = document.getElementById(tbl);
+        var totalRows = tblElem.rows.length - 1;
+        var scaleDef = [];
+        for (var i = 1; i <= totalRows; i++) 
+        {
+            var name = document.getElementById(tbl + '_' + i).value
+            var lower = document.getElementById(tbl + 'l_' + i).value
+            var upper = document.getElementById(tbl + 'u_' + i).value;
+            var item = {desc:name,lbound:lower,ubound:upper}
+            scaleDef.push(item);
+        }
+        var scaleObj = {values:scaleDef}
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SaveScale", "Home")',
+            data: { scaleObject: JSON.stringify(scaleObj), table:tbl },
+            success: function (response) {
+
+
+            },
+            error: function (xhr, status, error) {
+
+            }
+        });
     }
 </script>

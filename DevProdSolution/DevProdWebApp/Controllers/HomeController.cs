@@ -11,6 +11,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using static System.Formats.Asn1.AsnWriter;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Activity = System.Diagnostics.Activity;
 
@@ -66,6 +67,44 @@ namespace DevProdWebApp.Controllers
                 _settingsRepo.UpdateSettings(defaultSetting);
             }
           
+            return true;
+        }
+
+        public async Task<bool> SaveScale(string scaleObj, string table)
+        {
+            Setting defaultSetting = await _settingsRepo.GetSettingsById(1);
+            if (defaultSetting == null)
+            {
+                await _settingsRepo.AddSettings(new Setting() { Scale = scaleObj });
+            }
+            else
+            {
+                if (defaultSetting.Scale == null)
+                {
+                    Dictionary<string, string> scaleDict = new Dictionary<string, string>();                   
+                  var values =  JsonConvert.DeserializeObject<JObject>(scaleObj)["values"];
+                    scaleDict.Add(table, JsonConvert.SerializeObject(values));
+                    defaultSetting.Scale = JsonConvert.SerializeObject(scaleDict);
+                }
+                else
+                {
+                 var scaleDict =   JsonConvert.DeserializeObject<Dictionary<string,string>>(defaultSetting.Scale);
+                   if(scaleDict.ContainsKey(table))
+                    {
+                        var values = JsonConvert.DeserializeObject<JObject>(scaleObj)["values"];
+                        scaleDict[table] = JsonConvert.SerializeObject(values);
+                        defaultSetting.Scale = JsonConvert.SerializeObject(scaleDict);
+                    }
+                    else
+                    {
+                        var values = JsonConvert.DeserializeObject<JObject>(scaleObj)["values"];
+                        scaleDict.Add(table, JsonConvert.SerializeObject(values));
+                        defaultSetting.Scale = JsonConvert.SerializeObject(scaleDict);
+                    }
+                }
+                _settingsRepo.UpdateSettings(defaultSetting);
+            }
+
             return true;
         }
         public async Task<IActionResult> Projects()
@@ -270,9 +309,10 @@ namespace DevProdWebApp.Controllers
             return View(list);
         }
 
-        public IActionResult ToolSettings()
+        public async Task<IActionResult> ToolSettings()
         {
-            return View();
+            var settings = await _settingsRepo.GetSettingsById(1);
+            return View(settings);
         }
             public IActionResult Dashboard()
         {   
