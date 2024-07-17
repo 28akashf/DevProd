@@ -70,19 +70,19 @@ namespace DevProdWebApp.Controllers
             return true;
         }
 
-        public async Task<bool> SaveScale(string scaleObj, string table)
+        public async Task<bool> SaveScale(string scaleObject, string table)
         {
             Setting defaultSetting = await _settingsRepo.GetSettingsById(1);
             if (defaultSetting == null)
             {
-                await _settingsRepo.AddSettings(new Setting() { Scale = scaleObj });
+                await _settingsRepo.AddSettings(new Setting() { Scale = scaleObject });
             }
             else
             {
                 if (defaultSetting.Scale == null)
                 {
                     Dictionary<string, string> scaleDict = new Dictionary<string, string>();                   
-                  var values =  JsonConvert.DeserializeObject<JObject>(scaleObj)["values"];
+                  var values =  JsonConvert.DeserializeObject<JObject>(scaleObject)["values"];
                     scaleDict.Add(table, JsonConvert.SerializeObject(values));
                     defaultSetting.Scale = JsonConvert.SerializeObject(scaleDict);
                 }
@@ -91,13 +91,13 @@ namespace DevProdWebApp.Controllers
                  var scaleDict =   JsonConvert.DeserializeObject<Dictionary<string,string>>(defaultSetting.Scale);
                    if(scaleDict.ContainsKey(table))
                     {
-                        var values = JsonConvert.DeserializeObject<JObject>(scaleObj)["values"];
+                        var values = JsonConvert.DeserializeObject<JObject>(scaleObject)["values"];
                         scaleDict[table] = JsonConvert.SerializeObject(values);
                         defaultSetting.Scale = JsonConvert.SerializeObject(scaleDict);
                     }
                     else
                     {
-                        var values = JsonConvert.DeserializeObject<JObject>(scaleObj)["values"];
+                        var values = JsonConvert.DeserializeObject<JObject>(scaleObject)["values"];
                         scaleDict.Add(table, JsonConvert.SerializeObject(values));
                         defaultSetting.Scale = JsonConvert.SerializeObject(scaleDict);
                     }
@@ -312,7 +312,13 @@ namespace DevProdWebApp.Controllers
         public async Task<IActionResult> ToolSettings()
         {
             var settings = await _settingsRepo.GetSettingsById(1);
-            return View(settings);
+            SettingsViewModel vm = new SettingsViewModel();
+            vm.Methodolgy = settings.Methodolgy;
+            vm.Preprocessing = settings.Preprocessing;
+            vm.ScaleM1 = JsonConvert.DeserializeObject<JArray>(JsonConvert.DeserializeObject<Dictionary<string, string>>(settings.Scale)["tblm1"]);
+            vm.ScaleM2 = JsonConvert.DeserializeObject<JArray>(JsonConvert.DeserializeObject<Dictionary<string, string>>(settings.Scale)["tblm2"]);
+            vm.ScaleM3 = JsonConvert.DeserializeObject<JArray>(JsonConvert.DeserializeObject<Dictionary<string, string>>(settings.Scale)["tblm3"]);
+            return View(vm);
         }
             public IActionResult Dashboard()
         {   

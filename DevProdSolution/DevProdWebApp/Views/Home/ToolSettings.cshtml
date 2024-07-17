@@ -1,7 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Tool";
 }
-@model DevProdWebApp.Models.Setting
+@model DevProdWebApp.ViewModels.SettingsViewModel
 <h1>@ViewData["Tool Settings"]</h1>
 <div>
    
@@ -75,25 +75,49 @@
                                 <th>Rating</th>
                                 <th>Lower Bound</th>
                                  <th>Upper Bound</th>
-                                  </tr>
-                           
+                                  </tr>                           
                               </thead>
-                             
-                                  <tbody>
-                                      <tr>
-                                    <td>
-                                        <input id="tblm1_1" type="text" placeholder="Rating">
-                                    </td>
-                                    <td>
-                                        <input id="tblm1l_1" type="text" placeholder="Lower Bound">
-                                    </td>
-                                    <td>
-                                        <input id="tblm1u_1" type="text" placeholder="Upper Bound">
-                                    </td>
-                                      </tr>
-                                  </tbody>
-                           
-                          
+                            @if (Model.ScaleM2.Count > 0)
+                            {
+                                <tbody>
+                                        
+                                        @for (int i = 0; i < Model.ScaleM1.Count; i++)
+                                        {
+                                       
+                                        string row = "tblm1_" + (i+1);
+                                        string rowl = "tblm1l_" + (i + 1);
+                                        string rowu = "tblm1u_" + (i + 1);
+                                        <tr>
+                                            <td>
+                                                <input id="@row" type="text" placeholder="Rating" value="@Model.ScaleM1[i]["desc"]">
+                                            </td>
+                                            <td>
+                                                <input id="@rowl" type="text" placeholder="Lower Bound" value="@Model.ScaleM1[i]["lbound"]">
+                                            </td>
+                                            <td>
+                                                <input id="@rowu" type="text" placeholder="Upper Bound" value="@Model.ScaleM1[i]["ubound"]">
+                                            </td>
+                                        </tr>                                       
+                                }
+                                  
+                                </tbody>
+                            }
+                            else
+                            {
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <input id="tblm1_1" type="text" placeholder="Rating">
+                                        </td>
+                                        <td>
+                                            <input id="tblm1l_1" type="text" placeholder="Lower Bound">
+                                        </td>
+                                        <td>
+                                            <input id="tblm1u_1" type="text" placeholder="Upper Bound">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            }                                                                  
                           </table>
                         <a class="waves-effect waves-light btn" onclick="addNewRowBelow('tblm1')">Add Row</a>
                         <a class="waves-effect waves-light btn" onclick="deleteLastRow('tblm1')">Delete Row</a>
@@ -119,19 +143,48 @@
 
                             </thead>
 
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <input id="tblm2_1" type="text" placeholder="Rating">
-                                    </td>
-                                    <td>
-                                        <input id="tblm2l_1" type="text" placeholder="Lower Bound">
-                                    </td>
-                                    <td>
-                                        <input id="tblm2u_1" type="text" placeholder="Upper Bound">
-                                    </td>
-                                </tr>
-                            </tbody>
+                            @if (Model.ScaleM2.Count > 0)
+                            {
+                                <tbody>
+
+                                    @for (int i = 0; i < Model.ScaleM2.Count; i++)
+                                    {
+
+                                        string row = "tblm2_" + (i + 1);
+                                        string rowl = "tblm2l_" + (i + 1);
+                                        string rowu = "tblm2u_" + (i + 1);
+                                        <tr>
+                                            <td>
+                                                <input id="@row" type="text" placeholder="Rating" value="@Model.ScaleM2[i]["desc"]">
+                                            </td>
+                                            <td>
+                                                <input id="@rowl" type="text" placeholder="Lower Bound" value="@Model.ScaleM2[i]["lbound"]">
+                                            </td>
+                                            <td>
+                                                <input id="@rowu" type="text" placeholder="Upper Bound" value="@Model.ScaleM2[i]["ubound"]">
+                                            </td>
+                                        </tr>
+                                    }
+
+                                </tbody>
+                            }
+                            else
+                            {
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <input id="tblm2_1" type="text" placeholder="Rating">
+                                        </td>
+                                        <td>
+                                            <input id="tblm2l_1" type="text" placeholder="Lower Bound">
+                                        </td>
+                                        <td>
+                                            <input id="tblm2u_1" type="text" placeholder="Upper Bound">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            }
+                          
 
 
                         </table>
@@ -158,22 +211,48 @@
                                 </tr>
 
                             </thead>
+                            @if (Model.ScaleM2.Count > 0)
+                            {
+                                <tbody>
 
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <input id="tblm3_1" type="text" placeholder="Rating">
-                                    </td>
-                                    <td>
-                                        <input id="tblm3l_1" type="text" placeholder="Lower Bound">
-                                    </td>
-                                    <td>
-                                        <input id="tblm3u_1" type="text" placeholder="Upper Bound">
-                                    </td>
-                                </tr>
-                            </tbody>
+                                    @for (int i = 0; i < Model.ScaleM3.Count; i++)
+                                    {
 
+                                        string row = "tblm3_" + (i + 1);
+                                        string rowl = "tblm3l_" + (i + 1);
+                                        string rowu = "tblm3u_" + (i + 1);
+                                        <tr>
+                                            <td>
+                                                <input id="@row" type="text" placeholder="Rating" value="@Model.ScaleM3[i]["desc"]">
+                                            </td>
+                                            <td>
+                                                <input id="@rowl" type="text" placeholder="Lower Bound" value="@Model.ScaleM3[i]["lbound"]">
+                                            </td>
+                                            <td>
+                                                <input id="@rowu" type="text" placeholder="Upper Bound" value="@Model.ScaleM3[i]["ubound"]">
+                                            </td>
+                                        </tr>
+                                    }
 
+                                </tbody>
+                            }
+                            else
+                            {
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <input id="tblm3_1" type="text" placeholder="Rating">
+                                        </td>
+                                        <td>
+                                            <input id="tblm3l_1" type="text" placeholder="Lower Bound">
+                                        </td>
+                                        <td>
+                                            <input id="tblm3u_1" type="text" placeholder="Upper Bound">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            }
+                          
                         </table>
                         <a class="waves-effect waves-light btn" onclick="addNewRowBelow('tblm3')">Add Row</a>
                         <a class="waves-effect waves-light btn" onclick="deleteLastRow('tblm3')">Delete Row</a>
@@ -256,10 +335,11 @@
             scaleDef.push(item);
         }
         var scaleObj = {values:scaleDef}
+        var jsonStr = JSON.stringify(scaleObj);
         $.ajax({
             type: "POST",
             url: '@Url.Action("SaveScale", "Home")',
-            data: { scaleObject: JSON.stringify(scaleObj), table:tbl },
+            data: { scaleObject:jsonStr , table:tbl },
             success: function (response) {
 
 
