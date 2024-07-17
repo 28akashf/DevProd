@@ -52,18 +52,17 @@ namespace DevProdWebApp.Controllers
             return View(list);
         }
 
-        public async Task<bool> SaveSettings(string methodology, string preprocessing, string scale)
+        public async Task<bool> SaveSettings(string methodology, string preprocessing)
         {
             Setting defaultSetting =  await _settingsRepo.GetSettingsById(1);
             if (defaultSetting == null)
             {
-                await _settingsRepo.AddSettings(new Setting() { Methodolgy = methodology, Preprocessing = preprocessing, Scale = scale });
+                await _settingsRepo.AddSettings(new Setting() { Methodolgy = methodology, Preprocessing = preprocessing });
             }
             else
             {
                  defaultSetting.Methodolgy = methodology;
                  defaultSetting.Preprocessing = preprocessing;
-                 defaultSetting.Scale = scale;
                 _settingsRepo.UpdateSettings(defaultSetting);
             }
           
@@ -290,6 +289,7 @@ namespace DevProdWebApp.Controllers
             list.m3List = c;
             list.maxCount = Math.Max(a.Count, Math.Max(b.Count,c.Count));
             var settings =  await _settingsRepo.GetSettingsById(1);
+            //PREPROCESSING
             switch(settings.Preprocessing)
             {
                 case "minmax":
@@ -305,7 +305,55 @@ namespace DevProdWebApp.Controllers
                 default:
                     break;
             }
-    
+            //SCALING
+
+            //METHODOLOGY
+            double result = 0;
+            switch (settings.Methodolgy)
+            {               
+                case "sum":
+                    result = (list.m1ListProc.Average() + list.m2ListProc.Average() + list.m3ListProc.Average())/3;
+                    break;
+                //case "wtsum":
+                //    var Jweight = JsonConvert.DeserializeObject<JObject>(weights);
+                //    double wtsum = 0.0;
+                //    foreach (var key in metricDictionary?.Keys)
+                //    {
+                //        wtsum += ((double)metricDictionary[key] * (double)Jweight[key]);
+                //    }
+                //    result += wtsum;
+                //    break;
+                //case "wtprodmodel":
+                //    Jweight = JsonConvert.DeserializeObject<JObject>(weights);
+                //    double wtprodmodel = 1.0;
+                //    result = 1.0;
+                //    foreach (var key in metricDictionary?.Keys)
+                //    {
+                //        wtprodmodel *= Math.Pow((double)metricDictionary[key], (double)Jweight[key]);
+                //    }
+
+                //    result *= wtprodmodel;
+                //    break;
+                //case "wtsumprodmodel":
+                //    Jweight = JsonConvert.DeserializeObject<JObject>(weights);
+                //    double wtprodmodel = 1.0;
+                //    result = 1.0;
+                //    foreach (var key in metricDictionary?.Keys)
+                //    {
+                //        wtprodmodel *= Math.Pow((double)metricDictionary[key], (double)Jweight[key]);
+                //    }
+
+                //    result *= wtprodmodel;
+                //    break;
+                case "gmean":
+                    double prod = (list.m1ListProc.Average() * list.m2ListProc.Average() * list.m3ListProc.Average());                
+                    result = Math.Pow(prod, (1.0 / 3));                    
+                    break;
+                default:
+                    break;
+            }
+            list.score = Math.Round(result,2);
+
             return View(list);
         }
 
@@ -315,9 +363,30 @@ namespace DevProdWebApp.Controllers
             SettingsViewModel vm = new SettingsViewModel();
             vm.Methodolgy = settings.Methodolgy;
             vm.Preprocessing = settings.Preprocessing;
-            vm.ScaleM1 = JsonConvert.DeserializeObject<JArray>(JsonConvert.DeserializeObject<Dictionary<string, string>>(settings.Scale)["tblm1"]);
-            vm.ScaleM2 = JsonConvert.DeserializeObject<JArray>(JsonConvert.DeserializeObject<Dictionary<string, string>>(settings.Scale)["tblm2"]);
-            vm.ScaleM3 = JsonConvert.DeserializeObject<JArray>(JsonConvert.DeserializeObject<Dictionary<string, string>>(settings.Scale)["tblm3"]);
+            try
+            {
+                vm.ScaleM1 = JsonConvert.DeserializeObject<JArray>(JsonConvert.DeserializeObject<Dictionary<string, string>>(settings.Scale)["tblm1"]);
+            }
+            catch (Exception)
+            {
+            }
+            try
+            {
+                vm.ScaleM2 = JsonConvert.DeserializeObject<JArray>(JsonConvert.DeserializeObject<Dictionary<string, string>>(settings.Scale)["tblm2"]);
+            }
+            catch (Exception)
+            {
+
+               
+            }
+            try
+            {
+                vm.ScaleM3 = JsonConvert.DeserializeObject<JArray>(JsonConvert.DeserializeObject<Dictionary<string, string>>(settings.Scale)["tblm3"]);
+            }
+            catch (Exception)
+            {
+
+            }
             return View(vm);
         }
             public IActionResult Dashboard()

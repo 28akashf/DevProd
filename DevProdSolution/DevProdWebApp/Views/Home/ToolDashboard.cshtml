@@ -5,7 +5,7 @@
 <h1>@ViewData["Title"]</h1>
 <div class="container">
     <div class="row">     
-            <div class="col-md-4">
+            <div class="col-md-6">
             <div class="row">
                 <div class="col-md-4"></div>
                 <div class="col-md-4"><h3>Data</h3></div>
@@ -70,9 +70,9 @@
            
                
        
-        <div class="col-md-4">
+        <div class="col-md-2">
                <h3>Productivity Score</h3> <br/><br/>
-               <h1>8.2</h1>
+               <h1>@Model.score</h1>
         </div>
         <div class="col-md-2">
             <a class="waves-effect waves-light btn" asp-controller="Home" asp-action="ToolSettings"><i class="material-icons center">build</i></a>

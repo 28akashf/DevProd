@@ -40,5 +40,6 @@
         public List<double> m2ListProc { get; set; }
         public List<double> m3ListProc { get; set; }
         public int maxCount { get; set; }
+        public double score { get; set; }
     }
 }
