@@ -2,6 +2,7 @@ using Accord.Statistics;
 using Azure;
 using DevProdWebApp.Models;
 using DevProdWebApp.Repository;
+using DevProdWebApp.Utilities;
 using DevProdWebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -52,17 +53,18 @@ namespace DevProdWebApp.Controllers
             return View(list);
         }
 
-        public async Task<bool> SaveSettings(string methodology, string preprocessing)
+        public async Task<bool> SaveSettings(string methodology, string preprocessing, string param)
         {
             Setting defaultSetting =  await _settingsRepo.GetSettingsById(1);
             if (defaultSetting == null)
             {
-                await _settingsRepo.AddSettings(new Setting() { Methodolgy = methodology, Preprocessing = preprocessing });
+                await _settingsRepo.AddSettings(new Setting() { Methodolgy = methodology, Preprocessing = preprocessing, Parameters=param });
             }
             else
             {
                  defaultSetting.Methodolgy = methodology;
                  defaultSetting.Preprocessing = preprocessing;
+                 defaultSetting.Parameters = param;
                 _settingsRepo.UpdateSettings(defaultSetting);
             }
           
@@ -112,37 +114,7 @@ namespace DevProdWebApp.Controllers
             return View(list);
         }
 
-        public List<int> GenerateRandomDiscrete()
-        {
-            List<int> discrete = new List<int>();
-             Random random = new Random();
-            for (int i = 0; i < 1000; i++)
-            {
-                discrete.Add(random.Next(0, 1000));
-            }          
-            return discrete;
-        }
-        public List<double> GenerateRandomContinuous()
-        {
-            List<double> continuous = new List<double>();
-            Random random = new Random();
-            for (int i = 0; i < 1000; i++)
-            {
-                continuous.Add(0 + (random.NextDouble() * (100 - 0)));
-            }
-            return continuous;
-        }
-
-        public List<int> GenerateRandomBinary()
-        {
-            List<int> binary = new List<int>();
-            Random random = new Random();
-            for (int i = 0; i < 1000; i++)
-            {
-               binary.Add(random.Next(0,2));
-            }
-            return binary;
-        }
+      
 
         public async Task<IActionResult> Developers()
         {
@@ -280,27 +252,24 @@ namespace DevProdWebApp.Controllers
 
         public async Task<IActionResult> ToolDashboard()
         {
-            var a = GenerateRandomBinary();
-            var b = GenerateRandomContinuous();
-            var c = GenerateRandomDiscrete();
             MList list = new MList();
-            list.m1List = a;
-            list.m2List = b;
-            list.m3List = c;
-            list.maxCount = Math.Max(a.Count, Math.Max(b.Count,c.Count));
+            list.m1List = Initializer.Binary;
+            list.m2List = Initializer.Continuous;
+            list.m3List = Initializer.Discrete;
+            list.maxCount = Math.Max(list.m1List.Count, Math.Max(list.m2List.Count, list.m3List.Count));
             var settings =  await _settingsRepo.GetSettingsById(1);
             //PREPROCESSING
             switch(settings.Preprocessing)
             {
                 case "minmax":
-                    list.m1ListProc = MinMaxNormalizeRawData(a.ConvertAll(x => (double)x));
-                    list.m2ListProc = MinMaxNormalizeRawData(b);
-                    list.m3ListProc = MinMaxNormalizeRawData(c.ConvertAll(x => (double)x));
+                    list.m1ListProc = MinMaxNormalizeRawData(list.m1List.ConvertAll(x => (double)x));
+                    list.m2ListProc = MinMaxNormalizeRawData(list.m2List);
+                    list.m3ListProc = MinMaxNormalizeRawData(list.m3List.ConvertAll(x => (double)x));
                     break;
                 case "zscore":
-                    list.m1ListProc = ZScoreNormalizeRawData(a.ConvertAll(x => (double)x));
-                    list.m2ListProc = ZScoreNormalizeRawData(b);
-                    list.m3ListProc = ZScoreNormalizeRawData(c.ConvertAll(x => (double)x));
+                    list.m1ListProc = ZScoreNormalizeRawData(list.m1List.ConvertAll(x => (double)x));
+                    list.m2ListProc = ZScoreNormalizeRawData(list.m2List);
+                    list.m3ListProc = ZScoreNormalizeRawData(list.m3List.ConvertAll(x => (double)x));
                     break;
                 default:
                     break;
@@ -314,37 +283,20 @@ namespace DevProdWebApp.Controllers
                 case "sum":
                     result = (list.m1ListProc.Average() + list.m2ListProc.Average() + list.m3ListProc.Average())/3;
                     break;
-                //case "wtsum":
-                //    var Jweight = JsonConvert.DeserializeObject<JObject>(weights);
-                //    double wtsum = 0.0;
-                //    foreach (var key in metricDictionary?.Keys)
-                //    {
-                //        wtsum += ((double)metricDictionary[key] * (double)Jweight[key]);
-                //    }
-                //    result += wtsum;
-                //    break;
-                //case "wtprodmodel":
-                //    Jweight = JsonConvert.DeserializeObject<JObject>(weights);
-                //    double wtprodmodel = 1.0;
-                //    result = 1.0;
-                //    foreach (var key in metricDictionary?.Keys)
-                //    {
-                //        wtprodmodel *= Math.Pow((double)metricDictionary[key], (double)Jweight[key]);
-                //    }
-
-                //    result *= wtprodmodel;
-                //    break;
-                //case "wtsumprodmodel":
-                //    Jweight = JsonConvert.DeserializeObject<JObject>(weights);
-                //    double wtprodmodel = 1.0;
-                //    result = 1.0;
-                //    foreach (var key in metricDictionary?.Keys)
-                //    {
-                //        wtprodmodel *= Math.Pow((double)metricDictionary[key], (double)Jweight[key]);
-                //    }
-
-                //    result *= wtprodmodel;
-                //    break;
+                case "wtsum":
+                    var weights = JsonConvert.DeserializeObject<JObject>(settings.Parameters);
+                    result = list.m1ListProc.Average() * (double)weights["wtm1"] + list.m2ListProc.Average() * (double)weights["wtm2"] + list.m3ListProc.Average() * (double)weights["wtm3"];
+                    break;
+                case "wtprod":
+                    weights = JsonConvert.DeserializeObject<JObject>(settings.Parameters);
+                    result = Math.Pow(list.m1ListProc.Average(),(double)weights["wtm1"]) * Math.Pow(list.m2ListProc.Average(), (double)weights["wtm2"]) * Math.Pow(list.m3ListProc.Average(), (double)weights["wtm3"]);
+                    break;
+                case "wtwaspas":
+                    weights = JsonConvert.DeserializeObject<JObject>(settings.Parameters);
+                    var wtsum = list.m1ListProc.Average() * (double)weights["wtm1"] + list.m2ListProc.Average() * (double)weights["wtm2"] + list.m3ListProc.Average() * (double)weights["wtm3"];
+                    var wtprod = Math.Pow(list.m1ListProc.Average(), (double)weights["wtm1"]) * Math.Pow(list.m2ListProc.Average(), (double)weights["wtm2"]) * Math.Pow(list.m3ListProc.Average(), (double)weights["wtm3"]);
+                    result = ((double)weights["lam"] * wtsum) + ((1 - (double)weights["lam"]) * wtprod);
+                    break;
                 case "gmean":
                     double prod = (list.m1ListProc.Average() * list.m2ListProc.Average() * list.m3ListProc.Average());                
                     result = Math.Pow(prod, (1.0 / 3));                    
@@ -363,6 +315,14 @@ namespace DevProdWebApp.Controllers
             SettingsViewModel vm = new SettingsViewModel();
             vm.Methodolgy = settings.Methodolgy;
             vm.Preprocessing = settings.Preprocessing;
+            try
+            {
+                vm.Parameters = JsonConvert.DeserializeObject<JObject>(settings.Parameters);
+            }
+            catch (Exception)
+            {
+
+            }
             try
             {
                 vm.ScaleM1 = JsonConvert.DeserializeObject<JArray>(JsonConvert.DeserializeObject<Dictionary<string, string>>(settings.Scale)["tblm1"]);

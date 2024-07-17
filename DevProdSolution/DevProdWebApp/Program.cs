@@ -16,6 +16,7 @@ builder.Services.AddScoped<ISettingsRepo,SettingsRepo>();
 
 
 var app = builder.Build();
+Initializer init = new Initializer();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
