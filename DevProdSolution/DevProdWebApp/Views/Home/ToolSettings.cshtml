@@ -19,7 +19,7 @@
             
                     <div class="input-field col-md-8">
                         <select id="method" title="method" asp-for="@Model.Methodolgy" onchange="checkForWeights()">
-                            <option value="sum">Sum</option>                          
+                            <option value="sum">SUM</option>                          
                             <option value="wtsum">Weighted Sum Model</option>
                             <option value="wtprod">Weighted Product Model</option>
                             <option value="wtwaspas">Weighted Average Sum and Product Model</option>
@@ -40,6 +40,22 @@
                     </div>
                       </div>
                 <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="file-field input-field">
+                            <div class="btn">
+                                <span>Upload File</span>
+                                <input type="file">
+                            </div>
+                            <div class="file-path-wrapper">
+                                <input class="file-path validate" type="text">
+                            </div>
+                        </div>
+
+                    </div>
+                    </div>
+                <div class="row">
+                   
                     <div class="col-md-2">
                         <a class="waves-effect waves-light btn" onclick="saveSettings()">Save</a>
                     </div>
@@ -47,6 +63,7 @@
                         <a class="waves-effect waves-light btn" asp-action="ToolDashboard" asp-controller="Home">Back</a>
                     </div>
                 </div>
+
           
                   </div>
                   <div class="col-md-4">
