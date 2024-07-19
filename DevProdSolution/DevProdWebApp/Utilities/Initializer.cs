@@ -7,9 +7,9 @@
         public static List<int> Binary { get; set; }
         public Initializer()
         {
-                Binary = GenerateRandomBinary();
-                Continuous = GenerateRandomContinuous();
-                Discrete = GenerateRandomDiscrete();
+                Binary = GenerateRandomBinary().OrderBy(x=>x).ToList();
+                Continuous = GenerateRandomContinuous().OrderBy(x => x).ToList();
+                Discrete = GenerateRandomDiscrete().OrderBy(x => x).ToList();
         }
         public List<int> GenerateRandomDiscrete()
         {

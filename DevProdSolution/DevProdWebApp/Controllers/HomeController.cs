@@ -253,6 +253,9 @@ namespace DevProdWebApp.Controllers
         public async Task<IActionResult> ToolDashboard()
         {
             MList list = new MList();
+            var binaryList = new List<int>(Initializer.Binary);
+            var continuousList = new List<double>(Initializer.Continuous);
+            var discreteList = new List<int>(Initializer.Discrete);
             list.m1List = Initializer.Binary;
             list.m2List = Initializer.Continuous;
             list.m3List = Initializer.Discrete;
@@ -262,14 +265,14 @@ namespace DevProdWebApp.Controllers
             switch(settings.Preprocessing)
             {
                 case "minmax":
-                    list.m1ListProc = MinMaxNormalizeRawData(list.m1List.ConvertAll(x => (double)x));
-                    list.m2ListProc = MinMaxNormalizeRawData(list.m2List);
-                    list.m3ListProc = MinMaxNormalizeRawData(list.m3List.ConvertAll(x => (double)x));
+                    list.m1ListProc = MinMaxNormalizeRawData(binaryList.ConvertAll(x => (double)x));
+                    list.m2ListProc = MinMaxNormalizeRawData(continuousList);
+                    list.m3ListProc = MinMaxNormalizeRawData(discreteList.ConvertAll(x => (double)x));
                     break;
                 case "zscore":
-                    list.m1ListProc = ZScoreNormalizeRawData(list.m1List.ConvertAll(x => (double)x));
-                    list.m2ListProc = ZScoreNormalizeRawData(list.m2List);
-                    list.m3ListProc = ZScoreNormalizeRawData(list.m3List.ConvertAll(x => (double)x));
+                    list.m1ListProc = ZScoreNormalizeRawData(binaryList.ConvertAll(x => (double)x));
+                    list.m2ListProc = ZScoreNormalizeRawData(continuousList);
+                    list.m3ListProc = ZScoreNormalizeRawData(discreteList.ConvertAll(x => (double)x));
                     break;
                 default:
                     break;
