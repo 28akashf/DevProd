@@ -1,5 +1,6 @@
 ﻿using DevProdWebApp.Models;
 using DevProdWebApp.Utilities;
+using Microsoft.EntityFrameworkCore;
 
 namespace DevProdWebApp.Repository
 {
@@ -38,6 +39,11 @@ namespace DevProdWebApp.Repository
         public async Task<ToolMetric?> GetToolMetricById(int id)
         {
             return await _context.ToolMetric.FindAsync(id);
+        }
+
+        public async Task<List<ToolMetric>> GetAllToolMetrics()
+        {
+            return await _context.ToolMetric.ToListAsync();
         }
 
         public bool UpdateToolMetric(ToolMetric metric)

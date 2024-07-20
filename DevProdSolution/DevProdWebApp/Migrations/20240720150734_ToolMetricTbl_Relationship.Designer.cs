@@ -4,6 +4,7 @@ using DevProdWebApp.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DevProdWebApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240720150734_ToolMetricTbl_Relationship")]
+    partial class ToolMetricTbl_Relationship
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -134,7 +137,7 @@ namespace DevProdWebApp.Migrations
                     b.Property<string>("Scale")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SettingId")
+                    b.Property<int?>("SettingId")
                         .HasColumnType("int");
 
                     b.Property<double>("Weight")
@@ -165,7 +168,7 @@ namespace DevProdWebApp.Migrations
 
                     b.HasIndex("ToolMetricId");
 
-                    b.ToTable("ToolMetricValues");
+                    b.ToTable("ToolMetricValue");
                 });
 
             modelBuilder.Entity("DevProdWebApp.Models.Developer", b =>
@@ -184,24 +187,20 @@ namespace DevProdWebApp.Migrations
 
             modelBuilder.Entity("DevProdWebApp.Models.ToolMetric", b =>
                 {
-                    b.HasOne("DevProdWebApp.Models.Setting", "Setting")
+                    b.HasOne("DevProdWebApp.Models.Setting", null)
                         .WithMany("ToolMetricList")
-                        .HasForeignKey("SettingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Setting");
+                        .HasForeignKey("SettingId");
                 });
 
             modelBuilder.Entity("DevProdWebApp.Models.ToolMetricValue", b =>
                 {
-                    b.HasOne("DevProdWebApp.Models.ToolMetric", "ToolMetric")
+                    b.HasOne("DevProdWebApp.Models.ToolMetric", "toolMetric")
                         .WithMany("ToolMetricValues")
                         .HasForeignKey("ToolMetricId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ToolMetric");
+                    b.Navigation("toolMetric");
                 });
 
             modelBuilder.Entity("DevProdWebApp.Models.Project", b =>

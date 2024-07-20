@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Octokit;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -26,14 +27,18 @@ namespace DevProdWebApp.Controllers
         private readonly IMetricRepo _metricRepo;
         private readonly IDeveloperRepo _developerRepo;
         private readonly ISettingsRepo _settingsRepo;
+        private readonly IToolMetricRepo _toolMetricRepo;
+        private readonly IToolMetricValueRepo _toolMetricValueRepo;
 
-        public HomeController(ILogger<HomeController> logger, IProjectRepo projectRepo, IMetricRepo metricRepo, IDeveloperRepo developerRepo, ISettingsRepo settingsRepo)
+        public HomeController(ILogger<HomeController> logger, IProjectRepo projectRepo, IMetricRepo metricRepo, IDeveloperRepo developerRepo, ISettingsRepo settingsRepo, IToolMetricRepo toolMetricRepo, IToolMetricValueRepo toolMetricValueRepo)
         {
             _logger = logger;
             _projectRepo = projectRepo;
             _metricRepo = metricRepo;
             _developerRepo = developerRepo;
             _settingsRepo = settingsRepo;
+            _toolMetricRepo = toolMetricRepo;
+            _toolMetricValueRepo = toolMetricValueRepo;
         }
 
         public IActionResult Index()
@@ -191,26 +196,42 @@ namespace DevProdWebApp.Controllers
             return arr;
         }
 
-        public List<double> MinMaxNormalizeRawData(List<double> arrCast)
-        { 
-           var min = arrCast.Min();
-            var max = arrCast.Max();
-            for (int i = 0; i < arrCast.Count; i++)
+        public Dictionary<string, List<ToolMetricValue>> MinMaxNormalizeRawData(Dictionary<string,List<ToolMetricValue>> dictionaryRaw)
+        {
+            Dictionary<string, List<ToolMetricValue>> dictionaryProcessed = new Dictionary<string, List<ToolMetricValue>>();
+           
+            foreach (var item in dictionaryRaw.Keys)
             {
-                arrCast[i] = MinMaxNormalize(arrCast[i],min,max);
+               var arrCast = dictionaryRaw[item].ToList();
+                
+                var min = arrCast.Select(x=>Double.Parse(x.Value)).Min();
+                var max = arrCast.Select(x => Double.Parse(x.Value)).Max();
+                for (int i = 0; i < arrCast.Count; i++)
+                {
+                    arrCast[i].Value =  MinMaxNormalize(Double.Parse(arrCast[i].Value), min, max).ToString();
+                }
+                dictionaryProcessed.Add(item,arrCast);
             }
-            return arrCast;
+            return dictionaryProcessed;
         }
 
-        public List<double> ZScoreNormalizeRawData(List<double> arrCast)
+        public Dictionary<string, List<ToolMetricValue>> ZScoreNormalizeRawData(Dictionary<string, List<ToolMetricValue>> dictionaryRaw)
         {
-            var mean = Measures.Mean(arrCast.ToArray());
-            var stdDev = Measures.StandardDeviation(arrCast.ToArray());
-            for (int i = 0; i < arrCast.Count; i++)
+            Dictionary<string, List<ToolMetricValue>> dictionaryProcessed = new Dictionary<string, List<ToolMetricValue>>();
+            foreach (var item in dictionaryRaw.Keys)
             {
-                arrCast[i] =  ZScoreNormalize(arrCast[i], mean,stdDev);
+                var arrCast = dictionaryRaw[item].ToList();
+
+                var mean = Measures.Mean(arrCast.Select(x => Double.Parse(x.Value)).ToArray());
+                var stdDev = Measures.StandardDeviation(arrCast.Select(x => Double.Parse(x.Value)).ToArray());
+                for (int i = 0; i < arrCast.Count; i++)
+                {
+                    arrCast[i].Value = ZScoreNormalize(Double.Parse(arrCast[i].Value), mean, stdDev).ToString();
+                }
+                dictionaryProcessed.Add(item, arrCast);
             }
-            return arrCast;
+            return dictionaryProcessed; 
+            
         }
         public JArray LoadJson(string preprocs)
         {
@@ -252,27 +273,48 @@ namespace DevProdWebApp.Controllers
 
         public async Task<IActionResult> ToolDashboard()
         {
+
+            //var binaryList = new List<int>(Initializer.Binary);
+            //var continuousList = new List<double>(Initializer.Continuous);
+            //var discreteList = new List<int>(Initializer.Discrete);
+            // ToolMetric tm1 = await _toolMetricRepo.AddToolMetric(new ToolMetric() { Name = "m1",Weight=0.3,SettingId=1});
+            // ToolMetric tm2 = await _toolMetricRepo.AddToolMetric(new ToolMetric() { Name = "m2",Weight=0.4, SettingId = 1 });
+            // ToolMetric tm3 = await _toolMetricRepo.AddToolMetric(new ToolMetric() { Name = "m3",Weight=0.3, SettingId = 1 });
+            //foreach (var item in binaryList)
+            //{
+            // await  _toolMetricValueRepo.AddToolMetricValue(new ToolMetricValue() { ToolMetricId=2,Value=item.ToString()});
+            // }
+            //foreach (var item in continuousList)
+            //{
+            //    await _toolMetricValueRepo.AddToolMetricValue(new ToolMetricValue() { ToolMetricId = 3, Value = item.ToString() });
+            //}
+            //foreach (var item in discreteList)
+            //{
+            //    await _toolMetricValueRepo.AddToolMetricValue(new ToolMetricValue() { ToolMetricId = 4, Value = item.ToString() });
+            //}
+            var allMetrics = await _toolMetricRepo.GetAllToolMetrics();
+            Dictionary<string, List<ToolMetricValue>> metricDictionary = new Dictionary<string, List<ToolMetricValue>>();
+            List<int> listCount = new List<int>();
+            foreach(var metric in allMetrics)
+            {
+                var metricList = await _toolMetricValueRepo.GetToolMetricValuesByMetricId(metric.Id);
+                listCount.Add(metricList.Count);   
+                metricDictionary.Add(metric.Name,metricList);               
+            }
             MList list = new MList();
-            var binaryList = new List<int>(Initializer.Binary);
-            var continuousList = new List<double>(Initializer.Continuous);
-            var discreteList = new List<int>(Initializer.Discrete);
-            list.m1List = Initializer.Binary;
-            list.m2List = Initializer.Continuous;
-            list.m3List = Initializer.Discrete;
-            list.maxCount = Math.Max(list.m1List.Count, Math.Max(list.m2List.Count, list.m3List.Count));
+            list.metricDictionary = new Dictionary<string, List<ToolMetricValue>>(metricDictionary);
+            list.maxCount = listCount.Max();
+
+            //list.maxCount = Math.Max(list.m1List.Count, Math.Max(list.m2List.Count, list.m3List.Count));
             var settings =  await _settingsRepo.GetSettingsById(1);
             //PREPROCESSING
             switch(settings.Preprocessing)
             {
                 case "minmax":
-                    list.m1ListProc = MinMaxNormalizeRawData(binaryList.ConvertAll(x => (double)x));
-                    list.m2ListProc = MinMaxNormalizeRawData(continuousList);
-                    list.m3ListProc = MinMaxNormalizeRawData(discreteList.ConvertAll(x => (double)x));
+                 list.metricProcDictionary =  MinMaxNormalizeRawData(list.metricDictionary);
                     break;
                 case "zscore":
-                    list.m1ListProc = ZScoreNormalizeRawData(binaryList.ConvertAll(x => (double)x));
-                    list.m2ListProc = ZScoreNormalizeRawData(continuousList);
-                    list.m3ListProc = ZScoreNormalizeRawData(discreteList.ConvertAll(x => (double)x));
+                    list.metricProcDictionary = ZScoreNormalizeRawData(list.metricDictionary);
                     break;
                 default:
                     break;
@@ -280,33 +322,38 @@ namespace DevProdWebApp.Controllers
             //SCALING
 
             //METHODOLOGY
+
+             //STEP 1:
+
+
+            //STEP 2:
             double result = 0;
-            switch (settings.Methodolgy)
-            {               
-                case "sum":
-                    result = (list.m1ListProc.Average() + list.m2ListProc.Average() + list.m3ListProc.Average())/3;
-                    break;
-                case "wtsum":
-                    var weights = JsonConvert.DeserializeObject<JObject>(settings.Parameters);
-                    result = list.m1ListProc.Average() * (double)weights["wtm1"] + list.m2ListProc.Average() * (double)weights["wtm2"] + list.m3ListProc.Average() * (double)weights["wtm3"];
-                    break;
-                case "wtprod":
-                    weights = JsonConvert.DeserializeObject<JObject>(settings.Parameters);
-                    result = Math.Pow(list.m1ListProc.Average(),(double)weights["wtm1"]) * Math.Pow(list.m2ListProc.Average(), (double)weights["wtm2"]) * Math.Pow(list.m3ListProc.Average(), (double)weights["wtm3"]);
-                    break;
-                case "wtwaspas":
-                    weights = JsonConvert.DeserializeObject<JObject>(settings.Parameters);
-                    var wtsum = list.m1ListProc.Average() * (double)weights["wtm1"] + list.m2ListProc.Average() * (double)weights["wtm2"] + list.m3ListProc.Average() * (double)weights["wtm3"];
-                    var wtprod = Math.Pow(list.m1ListProc.Average(), (double)weights["wtm1"]) * Math.Pow(list.m2ListProc.Average(), (double)weights["wtm2"]) * Math.Pow(list.m3ListProc.Average(), (double)weights["wtm3"]);
-                    result = ((double)weights["lam"] * wtsum) + ((1 - (double)weights["lam"]) * wtprod);
-                    break;
-                case "gmean":
-                    double prod = (list.m1ListProc.Average() * list.m2ListProc.Average() * list.m3ListProc.Average());                
-                    result = Math.Pow(prod, (1.0 / 3));                    
-                    break;
-                default:
-                    break;
-            }
+            //switch (settings.Methodolgy)
+            //{               
+            //    case "sum":
+            //        result = (list.metricProcDictionary.Values.Select(x=>x.Select(z=>z.Value).Average()).Average() + list.m2ListProc.Average() + list.m3ListProc.Average())/3;
+            //        break;
+            //    case "wtsum":
+            //        var weights = JsonConvert.DeserializeObject<JObject>(settings.Parameters);
+            //        result = list.m1ListProc.Average() * (double)weights["wtm1"] + list.m2ListProc.Average() * (double)weights["wtm2"] + list.m3ListProc.Average() * (double)weights["wtm3"];
+            //        break;
+            //    case "wtprod":
+            //        weights = JsonConvert.DeserializeObject<JObject>(settings.Parameters);
+            //        result = Math.Pow(list.m1ListProc.Average(),(double)weights["wtm1"]) * Math.Pow(list.m2ListProc.Average(), (double)weights["wtm2"]) * Math.Pow(list.m3ListProc.Average(), (double)weights["wtm3"]);
+            //        break;
+            //    case "wtwaspas":
+            //        weights = JsonConvert.DeserializeObject<JObject>(settings.Parameters);
+            //        var wtsum = list.m1ListProc.Average() * (double)weights["wtm1"] + list.m2ListProc.Average() * (double)weights["wtm2"] + list.m3ListProc.Average() * (double)weights["wtm3"];
+            //        var wtprod = Math.Pow(list.m1ListProc.Average(), (double)weights["wtm1"]) * Math.Pow(list.m2ListProc.Average(), (double)weights["wtm2"]) * Math.Pow(list.m3ListProc.Average(), (double)weights["wtm3"]);
+            //        result = ((double)weights["lam"] * wtsum) + ((1 - (double)weights["lam"]) * wtprod);
+            //        break;
+            //    case "gmean":
+            //        double prod = (list.m1ListProc.Average() * list.m2ListProc.Average() * list.m3ListProc.Average());                
+            //        result = Math.Pow(prod, (1.0 / 3));                    
+            //        break;
+            //    default:
+            //        break;
+            //}
             list.score = Math.Round(result,2);
 
             return View(list);
