@@ -1,5 +1,6 @@
 ﻿using DevProdWebApp.Models;
 using DevProdWebApp.Utilities;
+using Microsoft.EntityFrameworkCore;
 
 namespace DevProdWebApp.Repository
 {
@@ -38,6 +39,11 @@ namespace DevProdWebApp.Repository
         public async Task<Setting?> GetSettingsById(int id)
         {
             return await _context.Settings.FindAsync(id);
+        }
+
+        public async Task<Setting?> GetSettingsWithMetricsById(int id)
+        {
+            return await _context.Settings.Include(x => x.ToolMetricList).FirstOrDefaultAsync(x=>x.Id==id);
         }
 
         public bool UpdateSettings(Setting dev)

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using DevProdWebApp.Models;
+using Newtonsoft.Json.Linq;
 
 namespace DevProdWebApp.ViewModels
 {
@@ -6,9 +7,21 @@ namespace DevProdWebApp.ViewModels
     {
         public string? Methodolgy { get; set; }
         public string? Preprocessing { get; set; }
-        public JObject? Parameters { get; set; }
-        public JArray ScaleM1 { get; set; }
-        public JArray ScaleM2 { get; set; }
-        public JArray ScaleM3 { get; set; }
+        public string? Parameters { get; set; }
+        public List<ToolMetric> ToolMetricList { get; set; }
+        public  List<MetricScale> ToolMetricScaleList { get; set; }
     }
+
+public class  ScaleObject
+{
+    public string Description { get; set; }
+    public string LowerBound { get; set; }
+    public string UpperBound { get; set; }
+}
+public class MetricScale
+{
+    public string MetricName { get; set; }
+    public List<ScaleObject> ScaleObjects { get; set; }
+}
+
 }

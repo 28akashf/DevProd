@@ -365,13 +365,22 @@ namespace DevProdWebApp.Controllers
 
         public async Task<IActionResult> ToolSettings()
         {
-            var settings = await _settingsRepo.GetSettingsById(1);
+            var settings = await _settingsRepo.GetSettingsWithMetricsById(1);
             SettingsViewModel vm = new SettingsViewModel();
             vm.Methodolgy = settings.Methodolgy;
             vm.Preprocessing = settings.Preprocessing;
             try
             {
-                vm.Parameters = JsonConvert.DeserializeObject<JObject>(settings.Parameters);
+            vm.Parameters = settings.Parameters;
+            vm.ToolMetricList = settings.ToolMetricList;
+            vm.ToolMetricScaleList = new List<MetricScale>();
+            foreach(var metric in settings.ToolMetricList)
+            {
+             var scaleObjList = JsonConvert.DeserializeObject<List<ScaleObject>>(metric.Scale);
+                vm.ToolMetricScaleList.Add(new MetricScale() { MetricName=metric.Name,ScaleObjects= scaleObjList });
+            }
+           
+               // vm.Parameters = JsonConvert.DeserializeObject<JObject>(settings.Parameters);
             }
             catch (Exception)
             {
@@ -379,14 +388,14 @@ namespace DevProdWebApp.Controllers
             }
             try
             {
-                vm.ScaleM1 = JsonConvert.DeserializeObject<JArray>(JsonConvert.DeserializeObject<Dictionary<string, string>>(settings.Scale)["tblm1"]);
+               // vm.ScaleM1 = JsonConvert.DeserializeObject<JArray>(JsonConvert.DeserializeObject<Dictionary<string, string>>(settings.Scale)["tblm1"]);
             }
             catch (Exception)
             {
             }
             try
             {
-                vm.ScaleM2 = JsonConvert.DeserializeObject<JArray>(JsonConvert.DeserializeObject<Dictionary<string, string>>(settings.Scale)["tblm2"]);
+              //  vm.ScaleM2 = JsonConvert.DeserializeObject<JArray>(JsonConvert.DeserializeObject<Dictionary<string, string>>(settings.Scale)["tblm2"]);
             }
             catch (Exception)
             {
@@ -395,7 +404,7 @@ namespace DevProdWebApp.Controllers
             }
             try
             {
-                vm.ScaleM3 = JsonConvert.DeserializeObject<JArray>(JsonConvert.DeserializeObject<Dictionary<string, string>>(settings.Scale)["tblm3"]);
+                //vm.ScaleM3 = JsonConvert.DeserializeObject<JArray>(JsonConvert.DeserializeObject<Dictionary<string, string>>(settings.Scale)["tblm3"]);
             }
             catch (Exception)
             {
