@@ -206,11 +206,13 @@ namespace DevProdWebApp.Controllers
                 
                 var min = arrCast.Select(x=>Double.Parse(x.Value)).Min();
                 var max = arrCast.Select(x => Double.Parse(x.Value)).Max();
+                List<ToolMetricValue> arrCastCopy = new List<ToolMetricValue>();
                 for (int i = 0; i < arrCast.Count; i++)
                 {
-                    arrCast[i].Value =  MinMaxNormalize(Double.Parse(arrCast[i].Value), min, max).ToString();
+                    arrCastCopy.Add(new ToolMetricValue() { Id = arrCast[i].Id, ToolMetric = arrCast[i].ToolMetric, ToolMetricId = arrCast[i].ToolMetricId, Value = arrCast[i].Value });
+                    arrCastCopy[i].Value =  MinMaxNormalize(Double.Parse(arrCast[i].Value), min, max).ToString();
                 }
-                dictionaryProcessed.Add(item,arrCast);
+                dictionaryProcessed.Add(item, arrCastCopy);
             }
             return dictionaryProcessed;
         }
@@ -221,14 +223,15 @@ namespace DevProdWebApp.Controllers
             foreach (var item in dictionaryRaw.Keys)
             {
                 var arrCast = dictionaryRaw[item].ToList();
-
                 var mean = Measures.Mean(arrCast.Select(x => Double.Parse(x.Value)).ToArray());
                 var stdDev = Measures.StandardDeviation(arrCast.Select(x => Double.Parse(x.Value)).ToArray());
+                List<ToolMetricValue> arrCastCopy = new List<ToolMetricValue>();
                 for (int i = 0; i < arrCast.Count; i++)
                 {
-                    arrCast[i].Value = ZScoreNormalize(Double.Parse(arrCast[i].Value), mean, stdDev).ToString();
+                    arrCastCopy.Add(new ToolMetricValue() { Id = arrCast[i].Id, ToolMetric = arrCast[i].ToolMetric, ToolMetricId = arrCast[i].ToolMetricId, Value = arrCast[i].Value });
+                    arrCastCopy[i].Value = ZScoreNormalize(Double.Parse(arrCastCopy[i].Value), mean, stdDev).ToString();
                 }
-                dictionaryProcessed.Add(item, arrCast);
+                dictionaryProcessed.Add(item, arrCastCopy);
             }
             return dictionaryProcessed; 
             
@@ -277,13 +280,13 @@ namespace DevProdWebApp.Controllers
             //var binaryList = new List<int>(Initializer.Binary);
             //var continuousList = new List<double>(Initializer.Continuous);
             //var discreteList = new List<int>(Initializer.Discrete);
-            // ToolMetric tm1 = await _toolMetricRepo.AddToolMetric(new ToolMetric() { Name = "m1",Weight=0.3,SettingId=1});
-            // ToolMetric tm2 = await _toolMetricRepo.AddToolMetric(new ToolMetric() { Name = "m2",Weight=0.4, SettingId = 1 });
-            // ToolMetric tm3 = await _toolMetricRepo.AddToolMetric(new ToolMetric() { Name = "m3",Weight=0.3, SettingId = 1 });
+            //ToolMetric tm1 = await _toolMetricRepo.AddToolMetric(new ToolMetric() { Name = "m1", Weight = 0.3, SettingId = 1 });
+            //ToolMetric tm2 = await _toolMetricRepo.AddToolMetric(new ToolMetric() { Name = "m2", Weight = 0.4, SettingId = 1 });
+            //ToolMetric tm3 = await _toolMetricRepo.AddToolMetric(new ToolMetric() { Name = "m3", Weight = 0.3, SettingId = 1 });
             //foreach (var item in binaryList)
             //{
-            // await  _toolMetricValueRepo.AddToolMetricValue(new ToolMetricValue() { ToolMetricId=2,Value=item.ToString()});
-            // }
+            //    await _toolMetricValueRepo.AddToolMetricValue(new ToolMetricValue() { ToolMetricId = 2, Value = item.ToString() });
+            //}
             //foreach (var item in continuousList)
             //{
             //    await _toolMetricValueRepo.AddToolMetricValue(new ToolMetricValue() { ToolMetricId = 3, Value = item.ToString() });
@@ -294,6 +297,7 @@ namespace DevProdWebApp.Controllers
             //}
             var allMetrics = await _toolMetricRepo.GetAllToolMetrics();
             Dictionary<string, List<ToolMetricValue>> metricDictionary = new Dictionary<string, List<ToolMetricValue>>();
+    
             List<int> listCount = new List<int>();
             foreach(var metric in allMetrics)
             {
@@ -302,7 +306,7 @@ namespace DevProdWebApp.Controllers
                 metricDictionary.Add(metric.Name,metricList);               
             }
             MList list = new MList();
-            list.metricDictionary = new Dictionary<string, List<ToolMetricValue>>(metricDictionary);
+            list.metricDictionary = metricDictionary;
             list.maxCount = listCount.Max();
 
             //list.maxCount = Math.Max(list.m1List.Count, Math.Max(list.m2List.Count, list.m3List.Count));
@@ -311,10 +315,10 @@ namespace DevProdWebApp.Controllers
             switch(settings.Preprocessing)
             {
                 case "minmax":
-                 list.metricProcDictionary =  MinMaxNormalizeRawData(list.metricDictionary);
+                 list.metricProcDictionary =  MinMaxNormalizeRawData(metricDictionary);
                     break;
                 case "zscore":
-                    list.metricProcDictionary = ZScoreNormalizeRawData(list.metricDictionary);
+                    list.metricProcDictionary = ZScoreNormalizeRawData(metricDictionary);
                     break;
                 default:
                     break;
