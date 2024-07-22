@@ -40,6 +40,10 @@ namespace DevProdWebApp.Repository
         {
             return await _context.ToolMetric.FindAsync(id);
         }
+        public async Task<ToolMetric?> GetToolMetricByName(string name)
+        {
+            return await _context.ToolMetric.FirstOrDefaultAsync(x=>x.Name==name);
+        }
 
         public async Task<List<ToolMetric>> GetAllToolMetrics()
         {

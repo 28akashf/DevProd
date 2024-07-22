@@ -10,5 +10,6 @@ namespace DevProdWebApp.Repository
         Task<ToolMetric> AddToolMetric(ToolMetric dev);
         Task<bool> DeleteToolMetric(int id);
         Task<List<ToolMetric>> GetAllToolMetrics();
+        Task<ToolMetric?> GetToolMetricByName(string name);
     }
 }

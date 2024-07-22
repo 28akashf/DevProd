@@ -78,40 +78,11 @@ namespace DevProdWebApp.Controllers
 
         public async Task<bool> SaveScale(string scaleObject, string table)
         {
-            Setting defaultSetting = await _settingsRepo.GetSettingsById(1);
-            if (defaultSetting == null)
-            {
-                await _settingsRepo.AddSettings(new Setting() { Scale = scaleObject });
-            }
-            else
-            {
-                if (defaultSetting.Scale == null)
-                {
-                    Dictionary<string, string> scaleDict = new Dictionary<string, string>();                   
-                  var values =  JsonConvert.DeserializeObject<JObject>(scaleObject)["values"];
-                    scaleDict.Add(table, JsonConvert.SerializeObject(values));
-                    defaultSetting.Scale = JsonConvert.SerializeObject(scaleDict);
-                }
-                else
-                {
-                 var scaleDict =   JsonConvert.DeserializeObject<Dictionary<string,string>>(defaultSetting.Scale);
-                   if(scaleDict.ContainsKey(table))
-                    {
-                        var values = JsonConvert.DeserializeObject<JObject>(scaleObject)["values"];
-                        scaleDict[table] = JsonConvert.SerializeObject(values);
-                        defaultSetting.Scale = JsonConvert.SerializeObject(scaleDict);
-                    }
-                    else
-                    {
-                        var values = JsonConvert.DeserializeObject<JObject>(scaleObject)["values"];
-                        scaleDict.Add(table, JsonConvert.SerializeObject(values));
-                        defaultSetting.Scale = JsonConvert.SerializeObject(scaleDict);
-                    }
-                }
-                _settingsRepo.UpdateSettings(defaultSetting);
-            }
 
-            return true;
+              var metric = await _toolMetricRepo.GetToolMetricByName(table);
+              metric.Scale = scaleObject;
+             _toolMetricRepo.UpdateToolMetric(metric);
+                 return true;
         }
         public async Task<IActionResult> Projects()
         {
@@ -376,7 +347,16 @@ namespace DevProdWebApp.Controllers
             vm.ToolMetricScaleList = new List<MetricScale>();
             foreach(var metric in settings.ToolMetricList)
             {
-             var scaleObjList = JsonConvert.DeserializeObject<List<ScaleObject>>(metric.Scale);
+                    List<ScaleObject> scaleObjList = new List<ScaleObject>();
+                    try
+                    {
+                        scaleObjList = JsonConvert.DeserializeObject<List<ScaleObject>>(metric.Scale);
+                    }
+                    catch (Exception)
+                    {
+
+                       
+                    }
                 vm.ToolMetricScaleList.Add(new MetricScale() { MetricName=metric.Name,ScaleObjects= scaleObjList });
             }
            

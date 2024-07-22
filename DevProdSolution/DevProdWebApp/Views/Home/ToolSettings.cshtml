@@ -69,20 +69,20 @@
                   <div class="col-md-4">
                       @for(int i = 0; i < Model.ToolMetricList.Count;i++)
                       {
-                    string wtrowid = "wtm"+(i+1)+"row";
-                    <div id="@wtrowid" class="row">
+                    string wtrowid = "wt" + @Model.ToolMetricList[i].Name + (i + 1) + "row";
+                    string inpId = "wt" + @Model.ToolMetricList[i].Name;
+                    <div id="@wtrowid" class="row wtrow">
                         <div class="input-field col-md-12">
-                            @if (Model.Methodolgy.Contains("wt"))
-                            {
-                                string inpId = "wtm" + (i + 1);
-                                <input id="@inpId" type="text" value="@Model.ToolMetricList[i].Weight">
+                  
+                              
+                                <input id="@inpId" type="text" value="@Model.ToolMetricList[i].Weight" class="wtinp">
                                 <label for="@inpId">Weight (@Model.ToolMetricList[i].Name)</label>
-                            }
+                       
                           
 
                         </div>
                     </div>
-                }
+                     }
               
                 <div id="lamrow" class="row">
                     <div class="input-field col-md-12">
@@ -109,7 +109,7 @@
                 <ul class="tabs">
                     @for(int i = 0; i < Model.ToolMetricList.Count; i++)
                     {
-                        string href = "#test"+i;
+                        string href = "#test"+Model.ToolMetricList[i].Name;
                    
                         string status = "active";
                         if(i>0)
@@ -123,13 +123,14 @@
             </div>
             @foreach(var metricScale in Model.ToolMetricScaleList)
             {
-                <div id="test1" class="col-md-12">
+                string divId = "test" + metricScale.MetricName;
+                <div id="@divId" class="col-md-12">
                     <div class="row">
                         <div class="col-md-4">
                         </div>
                         <div class="col-md-4">
                             <h3>SCALE (@metricScale.MetricName)</h3>
-                            <table id="tblm1" class="table-responsive">
+                            <table id="@metricScale.MetricName" class="table-responsive">
                                 <thead>
                                     <tr>
                                         <th>Rating</th>
@@ -143,10 +144,10 @@
 
                                       
                                            @{
-                                            int i = 0; 
-                                            string desc = "tblm1_" + (i + 1);
-                                            string ub = "tblm1l_" + (i + 1);
-                                            string lb = "tblm1u_" + (i + 1);
+                                            int i = 0;
+                                            string desc = "tbl" + metricScale.MetricName + "_" + (i + 1);
+                                            string ub = "tbl" + metricScale.MetricName + "u_" + (i + 1);
+                                            string lb = "tbl" + metricScale.MetricName + "l_" + (i + 1);
                                         }
                                             <tr>
                                                 <td>
@@ -168,18 +169,18 @@
                                     <tbody>
                                         @for(int i = 0; i < metricScale.ScaleObjects.Count; i++)
                                         {
-                                            string desc = "tblm1_"+(i+1);
-                                            string ub = "tblm1l_"+(i+1);
-                                            string lb = "tblm1u_"+(i+1);
+                                            string desc = "tbl" + metricScale.MetricName + "_"+(i+1);
+                                            string ub = "tbl" + metricScale.MetricName + "u_"+(i+1);
+                                            string lb = "tbl" + metricScale.MetricName + "l_"+(i+1);
                                             <tr>
                                                 <td>
-                                                    <input id="@desc" type="text" placeholder="Rating">
+                                                    <input id="@desc" type="text" placeholder="Rating" value="@metricScale.ScaleObjects[i].Description">
                                                 </td>
                                                 <td>
-                                                    <input id="@lb" type="text" placeholder="Lower Bound">
+                                                    <input id="@lb" type="text" placeholder="Lower Bound" value="@metricScale.ScaleObjects[i].LowerBound">
                                                 </td>
                                                 <td>
-                                                    <input id="@ub" type="text" placeholder="Upper Bound">
+                                                    <input id="@ub" type="text" placeholder="Upper Bound" value="@metricScale.ScaleObjects[i].UpperBound">
                                                 </td>
                                             </tr>
                                         }
@@ -187,9 +188,9 @@
                                     </tbody>
                                 }
                             </table>
-                            <a class="waves-effect waves-light btn" onclick="addNewRowBelow('tblm1')">Add Row</a>
-                            <a class="waves-effect waves-light btn" onclick="deleteLastRow('tblm1')">Delete Row</a>
-                            <a class="waves-effect waves-light btn" onclick="createScale('tblm1')">Save</a>
+                            <a class="waves-effect waves-light btn" onclick="addNewRowBelow('@metricScale.MetricName')">Add Row</a>
+                            <a class="waves-effect waves-light btn" onclick="deleteLastRow('@metricScale.MetricName')">Delete Row</a>
+                            <a class="waves-effect waves-light btn" onclick="createScale('@metricScale.MetricName')">Save</a>
                         </div>
                         <div class="col-md-4">
                         </div>
@@ -209,15 +210,26 @@
         var preproc = document.getElementById('preproc').value;
        var params = {};
        var paramJson = '';
+       var wtarr = [];
        if (method == 'wtwaspas') {
-            params = { 'wtm1': document.getElementById('wtm1').value, 'wtm2': document.getElementById('wtm2').value, 'wtm3': document.getElementById('wtm3').value, 'lam': document.getElementById('lam').value }
+            var txtInps = document.getElementsByClassName("wtinp");
+           for (i = 0; i < txtInps.length;i++) {
+                let wtVal = txtInps[i].value;
+                let metricName = txtInps[i].value;
+                wtarr.push({ metric: metricName, weight: wtVal });
+           }
+            params = { weights:wtarr, 'lam': document.getElementById('lam').value }
             paramJson = JSON.stringify(params);
        }
        else if(method.includes('wt'))
        {
-           params = {
-               'wtm1': document.getElementById('wtm1').value, 'wtm2': document.getElementById('wtm2').value, 'wtm3': document.getElementById('wtm3').value
-           }
+            var txtInps = document.getElementsByClassName("wtinp");
+            for (i = 0; i < txtInps.length; i++) {
+                let wtVal = txtInps[i].value;
+                let metricName = txtInps[i].id;
+                wtarr.push({ metric: metricName, weight: wtVal });
+            }
+            params = { weights: wtarr }
             paramJson = JSON.stringify(params);
        }
       
@@ -248,30 +260,29 @@
 
     function checkForWeights() {
         var method = document.getElementById('method').value;
-        var wtm1 = document.getElementById("wtm1row");
-        var wtm2 = document.getElementById("wtm2row");
-        var wtm3 = document.getElementById("wtm3row");
+        var wtm = document.getElementsByClassName("wtrow");
         var lam = document.getElementById("lamrow");
        
         if (method == 'wtwaspas') 
         {
-            wtm1.style.display = "block";
-            wtm2.style.display = "block";
-            wtm3.style.display = "block";
+            for (i = 0;i<wtm.length;i++) 
+            {
+                wtm[i].style.display = "block";
+            }
             lam.style.display = "block";
-
         }
         else if (method.includes('wt')) {
-            wtm1.style.display = "block";
-            wtm2.style.display = "block";
-            wtm3.style.display = "block";
+            for (i = 0; i < wtm.length; i++) 
+            {
+                wtm[i].style.display = "block";
+            }
             lam.style.display = "none";
         }
         else {
-           
-            wtm1.style.display = "none";
-            wtm2.style.display = "none";
-            wtm3.style.display = "none";
+
+            for (i = 0; i < wtm.length; i++) {
+                wtm[i].style.display = "none";
+            }
             lam.style.display = "none";
         }
        
@@ -283,14 +294,8 @@
         var lastRow = document.getElementById(tblName).rows[totalRows - 1];
         console.log(lastRow);
          var newRow = $('<tr/>');
-
-        newRow.html('<td><input id = "' + tblName + '_' + rowNumberNew + '" type = "text" placeholder = "Rating" ></td><td><input id="' + tblName + 'l_' + rowNumberNew + '" type = "text" placeholder = "Lower Bound"></td><td><input id="' + tblName + 'u_' + rowNumberNew + '" type = "text" placeholder = "Upper Bound" ></td>');
-
-       
-
-         $(newRow).insertAfter(lastRow);
-
-      
+        newRow.html('<td><input id = "tbl' + tblName + '_' + rowNumberNew + '" type = "text" placeholder = "Rating" ></td><td><input id="tbl' + tblName + 'l_' + rowNumberNew + '" type = "text" placeholder = "Lower Bound"></td><td><input id="tbl' + tblName + 'u_' + rowNumberNew + '" type = "text" placeholder = "Upper Bound" ></td>');
+         $(newRow).insertAfter(lastRow);      
     }
 
     function deleteLastRow(tblName) {
@@ -303,29 +308,27 @@
 
     function createScale(tbl) 
     {
+        console.log(tbl);
         var tblElem = document.getElementById(tbl);
         var totalRows = tblElem.rows.length - 1;
         var scaleDef = [];
         for (var i = 1; i <= totalRows; i++) 
         {
-            var name = document.getElementById(tbl + '_' + i).value
-            var lower = document.getElementById(tbl + 'l_' + i).value
-            var upper = document.getElementById(tbl + 'u_' + i).value;
-            var item = {desc:name,lbound:lower,ubound:upper}
+            var name = document.getElementById('tbl'+ tbl + '_' + i).value
+            var lower = document.getElementById('tbl' + tbl + 'l_' + i).value
+            var upper = document.getElementById('tbl' + tbl + 'u_' + i).value;
+            var item = {Description:name,LowerBound:lower,UpperBound:upper}
             scaleDef.push(item);
         }
-        var scaleObj = {values:scaleDef}
-        var jsonStr = JSON.stringify(scaleObj);
+        //var scaleObj = {values:scaleDef}
+        var jsonStr = JSON.stringify(scaleDef);
         $.ajax({
             type: "POST",
             url: '@Url.Action("SaveScale", "Home")',
             data: { scaleObject:jsonStr , table:tbl },
             success: function (response) {
-
-
             },
             error: function (xhr, status, error) {
-
             }
         });
     }
