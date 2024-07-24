@@ -1,6 +1,8 @@
 ﻿using DevProdWebApp.Models;
 using DevProdWebApp.Utilities;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace DevProdWebApp.Repository
 {
@@ -44,6 +46,7 @@ namespace DevProdWebApp.Repository
         {
             return await _context.Metrics.FindAsync(id);
         }
+
 
         public bool UpdateMetric(Metric dev)
         {

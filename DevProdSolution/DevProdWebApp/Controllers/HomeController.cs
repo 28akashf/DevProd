@@ -360,7 +360,7 @@ namespace DevProdWebApp.Controllers
                     groupValue = (await _developerRepo.GetDeveloperByUsername(settings.SubGrouping)).Id;
                     break;
                 case "project":
-                    groupValue = (_projectRepo.GetProjectByProjectName(settings.SubGrouping)).Id;
+                    groupValue = (await _projectRepo.GetProjectByProjectName(settings.SubGrouping)).Id;
                     break;
             }
             foreach(var metric in allMetrics)
@@ -388,41 +388,73 @@ namespace DevProdWebApp.Controllers
                 default:
                     break;
             }
-            //SCALING
 
             //METHODOLOGY
 
              //STEP 1:
+             Dictionary<ToolMetric,double> stdMetricValues = new Dictionary<ToolMetric, double>();
+            foreach (var keys in list.metricProcDictionary.Keys)
+            {
+                var metric = await _toolMetricRepo.GetToolMetricByName(keys);
+                var scale =  JsonConvert.DeserializeObject<JArray>(metric.Scale);
+                List<double> stdValList = new List<double>();
+                double acceptVal = (double)scale[scale.Count - 1]["UpperBound"];
+                foreach (var val in list.metricProcDictionary[keys])
+                {
+                    double currentVal = Double.Parse(val.Value);                  
+                    double stdVal = currentVal * (.5 / acceptVal);
+                    stdValList.Add(stdVal);
+                }
+                stdMetricValues.Add(metric,stdValList.Average());
 
+            }
 
             //STEP 2:
             double result = 0;
-            //switch (settings.Methodolgy)
-            //{               
-            //    case "sum":
-            //        result = (list.metricProcDictionary.Values.Select(x=>x.Select(z=>z.Value).Average()).Average() + list.m2ListProc.Average() + list.m3ListProc.Average())/3;
-            //        break;
-            //    case "wtsum":
-            //        var weights = JsonConvert.DeserializeObject<JObject>(settings.Parameters);
-            //        result = list.m1ListProc.Average() * (double)weights["wtm1"] + list.m2ListProc.Average() * (double)weights["wtm2"] + list.m3ListProc.Average() * (double)weights["wtm3"];
-            //        break;
-            //    case "wtprod":
-            //        weights = JsonConvert.DeserializeObject<JObject>(settings.Parameters);
-            //        result = Math.Pow(list.m1ListProc.Average(),(double)weights["wtm1"]) * Math.Pow(list.m2ListProc.Average(), (double)weights["wtm2"]) * Math.Pow(list.m3ListProc.Average(), (double)weights["wtm3"]);
-            //        break;
-            //    case "wtwaspas":
-            //        weights = JsonConvert.DeserializeObject<JObject>(settings.Parameters);
-            //        var wtsum = list.m1ListProc.Average() * (double)weights["wtm1"] + list.m2ListProc.Average() * (double)weights["wtm2"] + list.m3ListProc.Average() * (double)weights["wtm3"];
-            //        var wtprod = Math.Pow(list.m1ListProc.Average(), (double)weights["wtm1"]) * Math.Pow(list.m2ListProc.Average(), (double)weights["wtm2"]) * Math.Pow(list.m3ListProc.Average(), (double)weights["wtm3"]);
-            //        result = ((double)weights["lam"] * wtsum) + ((1 - (double)weights["lam"]) * wtprod);
-            //        break;
-            //    case "gmean":
-            //        double prod = (list.m1ListProc.Average() * list.m2ListProc.Average() * list.m3ListProc.Average());                
-            //        result = Math.Pow(prod, (1.0 / 3));                    
-            //        break;
-            //    default:
-            //        break;
-            //}
+            switch (settings.Methodolgy)
+            {
+                case "sum":
+                    result = stdMetricValues.Values.Average();
+                    break;
+                case "wtsum":   
+                    foreach(var key in stdMetricValues.Keys)
+                    {
+                        result += (stdMetricValues[key] * key.Weight);
+                    }
+
+                    break;
+                case "wtprod":
+                    result = 1;
+                    foreach (var key in stdMetricValues.Keys)
+                    {
+                        result *= Math.Pow(stdMetricValues[key],key.Weight);
+                    }
+                    break;
+                case "wtwaspas":
+                    double wtsum = 0;
+                    double wtprod = 1;
+                    foreach (var key in stdMetricValues.Keys)
+                    {
+                        wtsum += (stdMetricValues[key] * key.Weight);
+                    }
+                    foreach (var key in stdMetricValues.Keys)
+                    {
+                        wtprod *= Math.Pow(stdMetricValues[key], key.Weight);
+                    }
+                    double lambda = Double.Parse(settings.Parameters);
+                    result = (lambda * wtsum) + ((1 - lambda) * wtprod);
+                    break;
+                case "gmean":
+                    double prod = 1;
+                    foreach (var key in stdMetricValues.Keys)
+                    {
+                        prod *= stdMetricValues[key];
+                    }
+                    result = Math.Pow(prod, (1.0 / stdMetricValues.Keys.Count));
+                    break;
+                default:
+                    break;
+            }
             list.score = Math.Round(result,2);
 
             return View(list);
@@ -437,6 +469,7 @@ namespace DevProdWebApp.Controllers
             vm.Methodolgy = settings.Methodolgy;
             vm.Preprocessing = settings.Preprocessing;
             vm.Grouping = settings.Grouping;
+            vm.SubGrouping = settings.SubGrouping;
             try
             {
             vm.Parameters = settings.Parameters;
