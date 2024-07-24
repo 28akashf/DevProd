@@ -51,6 +51,9 @@ namespace DevProdWebApp.Repository
             _context.SaveChanges();
             return true;
         }
-
+        public async Task<Project?> GetProjectByProjectName(string pname)
+        {
+            return await _context.Projects.FirstOrDefaultAsync(x => x.Name == pname);
+        }
     }
 }

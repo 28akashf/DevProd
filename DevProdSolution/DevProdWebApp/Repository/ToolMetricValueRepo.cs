@@ -52,7 +52,35 @@ namespace DevProdWebApp.Repository
         {
             return await _context.ToolMetricValues.Where(x=>x.ToolMetricId==mid).ToListAsync();
         }
+        public async Task<List<ToolMetricValue>> GetFileteredToolMetricValuesByMetricId(int mid,string filter,int value)
+        {
+            List<ToolMetricValue> result = null;
+            switch(filter)
+            {
+                case "developer":
+                    result = await _context.ToolMetricValues.Where(x => x.ToolMetricId == mid && x.DeveloperId == value).ToListAsync();
+                    break;
+                case "project":
+               result = await _context.ToolMetricValues.Where(x => x.ToolMetricId == mid && x.ProjectId == value).ToListAsync();
+                    break;
+                default:
+               result =  await _context.ToolMetricValues.Where(x => x.ToolMetricId == mid).ToListAsync();
+                    break;
+            }
+             
 
+
+            return result;
+        }
+
+        public async Task<List<Developer>> GetToolMetricValuesDeveloperList(int mid)
+        {
+            return await _context.ToolMetricValues.Include(x=>x.Developer).Where(x => x.ToolMetricId == mid).Select(x=>x.Developer).Distinct().ToListAsync();
+        }
+        public async Task<List<Project>> GetToolMetricValuesProjectList(int mid)
+        {
+            return await _context.ToolMetricValues.Include(x => x.Developer).Where(x => x.ToolMetricId == mid).Select(x => x.Project).Distinct().ToListAsync();
+        }
         public bool UpdateToolMetricValue(ToolMetricValue metric)
         {
             _context.ToolMetricValues.Update(metric);

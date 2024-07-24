@@ -10,5 +10,6 @@ namespace DevProdWebApp.Repository
 
         bool UpdateProject(Project dev);
         Task<bool> DeleteProject(int id);
+        Task<Project?> GetProjectByProjectName(string pname);
     }
 }

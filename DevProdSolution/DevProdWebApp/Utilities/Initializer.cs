@@ -15,7 +15,7 @@
         {
             List<int> discrete = new List<int>();
             Random random = new Random();
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 100; i++)
             {
                 discrete.Add(random.Next(0, 1000));
             }
@@ -25,7 +25,7 @@
         {
             List<double> continuous = new List<double>();
             Random random = new Random();
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 100; i++)
             {
                 continuous.Add(0 + (random.NextDouble() * (100 - 0)));
             }
@@ -36,7 +36,7 @@
         {
             List<int> binary = new List<int>();
             Random random = new Random();
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 100; i++)
             {
                 binary.Add(random.Next(0, 2));
             }

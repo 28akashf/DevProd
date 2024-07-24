@@ -40,6 +40,46 @@
                     </div>
                       </div>
                 <div class="row">
+                    <div class="input-field col-md-8">
+
+                        <select id="grouping" title="grouping" asp-for="@Model.Grouping" onchange="checkForGrouping()">
+                            <option value="none">None</option>
+                            <option value="developer">Developer</option>
+                            <option value="project">Project</option>
+                        </select>
+                        <label for="grouping">Grouping</label>
+
+                    </div>
+                </div>
+                <div id="groupingdevrow" class="row">
+                    <div class="input-field col-md-8">
+
+                        <select id="subgroupingdev" title="subgrouping" asp-for="@Model.Grouping">
+                            @foreach (var dev in Model.DeveloperList)
+                            {
+                                <option value="@dev.Username">@dev.Username</option>
+                            }
+                        </select>
+                        <label for="subgrouping">Developer</label>
+
+                    </div>
+                </div>
+                <div id="groupingprojrow" class="row">
+                    <div class="input-field col-md-8">
+
+                        <select id="subgroupingproj" title="subgrouping" asp-for="@Model.SubGrouping">
+                           @foreach(var proj in Model.ProjectList)
+                            {
+                                <option value="@proj.Name">@proj.Name</option>
+                            }
+                          
+                          
+                        </select>
+                        <label for="subgrouping">Project</label>
+
+                    </div>
+                </div>
+                <div class="row">
                     <div class="col-md-12">
 
                         <div class="file-field input-field">
@@ -203,6 +243,20 @@
    function saveSettings() {
         var method = document.getElementById('method').value;
         var preproc = document.getElementById('preproc').value;
+        var grouping = document.getElementById('grouping').value;
+       var subgrouping;
+       switch (grouping) { 
+           case "developer":
+                subgrouping =   document.getElementById('subgroupingdev').value;
+               break;
+                   case "project":
+                subgrouping =   document.getElementById('subgroupingproj').value;
+               break;
+            case "none":
+                subgrouping = "";
+                break;
+       }
+       
        var params = {};
        var paramJson = '';
        var wtarr = [];
@@ -231,7 +285,7 @@
         $.ajax({
             type: "POST",
             url: '@Url.Action("SaveSettings", "Home")',
-            data: { methodology:method, preprocessing:preproc, param:paramJson },
+            data: { methodology:method, preprocessing:preproc, param:paramJson, group:grouping, subgroup:subgrouping },
             success: function (response) {
              
 
@@ -251,6 +305,7 @@
         var instances = M.FormSelect.init(elems, options);
         var instance = M.Tabs.init(tabs, taboptions);
         checkForWeights();
+        checkForGrouping();
     });
 
     function checkForWeights() {
@@ -282,6 +337,29 @@
         }
        
     }
+
+    function checkForGrouping() {
+        var grouping = document.getElementById('grouping').value;
+        var groupingdev = document.getElementById('groupingdevrow');
+        var groupingproj = document.getElementById('groupingprojrow')
+        switch (grouping) { 
+            case 'developer':
+                groupingproj.style.display = "none";
+                groupingdev.style.display = "block";
+                break;
+            case 'project':
+                groupingdev.style.display = "none";
+                groupingproj.style.display = "block";              
+                break;
+            case 'none':
+                groupingdev.style.display = "none";
+                groupingproj.style.display = "none";
+
+                break;
+        }
+    }
+
+
 
     function addNewRowBelow(tblName) {
         var totalRows = document.getElementById(tblName).rows.length;

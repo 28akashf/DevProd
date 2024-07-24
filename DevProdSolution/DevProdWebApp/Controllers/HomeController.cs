@@ -58,7 +58,7 @@ namespace DevProdWebApp.Controllers
             return View(list);
         }
 
-        public async Task<bool> SaveSettings(string methodology, string preprocessing, string param)
+        public async Task<bool> SaveSettings(string methodology, string preprocessing, string param, string group, string subgroup)
         {
             string lambda = string.Empty;
             if(!string.IsNullOrEmpty(param))
@@ -84,13 +84,15 @@ namespace DevProdWebApp.Controllers
             Setting defaultSetting =  await _settingsRepo.GetSettingsById(1);
             if (defaultSetting == null)
             {
-                await _settingsRepo.AddSettings(new Setting() { Methodolgy = methodology, Preprocessing = preprocessing, Parameters=lambda });
+                await _settingsRepo.AddSettings(new Setting() { Methodolgy = methodology, Preprocessing = preprocessing, Parameters=lambda, Grouping=group,SubGrouping=subgroup });
             }
             else
             {
                  defaultSetting.Methodolgy = methodology;
                  defaultSetting.Preprocessing = preprocessing;
                  defaultSetting.Parameters = lambda;
+                 defaultSetting.Grouping = group;
+                 defaultSetting.SubGrouping = subgroup;
                 _settingsRepo.UpdateSettings(defaultSetting);
             }
           
@@ -275,25 +277,96 @@ namespace DevProdWebApp.Controllers
             //ToolMetric tm1 = await _toolMetricRepo.AddToolMetric(new ToolMetric() { Name = "m1", Weight = 0.3, SettingId = 1 });
             //ToolMetric tm2 = await _toolMetricRepo.AddToolMetric(new ToolMetric() { Name = "m2", Weight = 0.4, SettingId = 1 });
             //ToolMetric tm3 = await _toolMetricRepo.AddToolMetric(new ToolMetric() { Name = "m3", Weight = 0.3, SettingId = 1 });
+            //int i = 1;
             //foreach (var item in binaryList)
             //{
-            //    await _toolMetricValueRepo.AddToolMetricValue(new ToolMetricValue() { ToolMetricId = 2, Value = item.ToString() });
+
+            //    int devId = 6;
+            //    int projId = 8;
+            //    if (i <= 33)
+            //    {
+            //        devId = 6;
+            //        projId = 8;
+            //    }
+            //    else if (i > 33 && i < 66)
+            //    {
+            //        devId = 7;
+            //        projId = 9;
+            //    }
+            //    else
+            //    {
+            //        devId = 8;
+            //        projId = 10;
+            //    }
+            //    await _toolMetricValueRepo.AddToolMetricValue(new ToolMetricValue() { ToolMetricId = tm1.Id, Value = item.ToString(), DeveloperId = devId, ProjectId = projId });
+            //    i++;
             //}
+            //i = 1;
             //foreach (var item in continuousList)
             //{
-            //    await _toolMetricValueRepo.AddToolMetricValue(new ToolMetricValue() { ToolMetricId = 3, Value = item.ToString() });
+            //    int devId = 6;
+            //    int projId = 8;
+            //    if (i <= 33)
+            //    {
+            //        devId = 6;
+            //        projId = 8;
+            //    }
+            //    else if (i > 33 && i < 66)
+            //    {
+            //        devId = 7;
+            //        projId = 9;
+            //    }
+            //    else
+            //    {
+            //        devId = 8;
+            //        projId = 10;
+            //    }
+            //    await _toolMetricValueRepo.AddToolMetricValue(new ToolMetricValue() { ToolMetricId = tm2.Id, Value = item.ToString(), DeveloperId = devId, ProjectId = projId });
+            //    i++;
             //}
+            //i = 1;
             //foreach (var item in discreteList)
             //{
-            //    await _toolMetricValueRepo.AddToolMetricValue(new ToolMetricValue() { ToolMetricId = 4, Value = item.ToString() });
+
+            //    int devId = 6;
+            //    int projId = 8;
+            //    if (i <= 33)
+            //    {
+            //        devId = 6;
+            //        projId = 8;
+            //    }
+            //    else if (i > 33 && i <= 66)
+            //    {
+            //        devId = 7;
+            //        projId = 9;
+            //    }
+            //    else
+            //    {
+            //        devId = 8;
+            //        projId = 10;
+            //    }
+            //    await _toolMetricValueRepo.AddToolMetricValue(new ToolMetricValue() { ToolMetricId = tm3.Id, Value = item.ToString(), DeveloperId = devId, ProjectId = projId });
+            //    i++;
             //}
+            var settings = await _settingsRepo.GetSettingsById(1);
             var allMetrics = await _toolMetricRepo.GetAllToolMetrics();
             Dictionary<string, List<ToolMetricValue>> metricDictionary = new Dictionary<string, List<ToolMetricValue>>();
     
             List<int> listCount = new List<int>();
+            int groupValue = 0;
+            switch(settings.Grouping)
+            {
+                case "developer":
+                    groupValue = (await _developerRepo.GetDeveloperByUsername(settings.SubGrouping)).Id;
+                    break;
+                case "project":
+                    groupValue = (_projectRepo.GetProjectByProjectName(settings.SubGrouping)).Id;
+                    break;
+            }
             foreach(var metric in allMetrics)
             {
-                var metricList = await _toolMetricValueRepo.GetToolMetricValuesByMetricId(metric.Id);
+                //    var metricList = await _toolMetricValueRepo.GetToolMetricValuesByMetricId(metric.Id);
+                var metricList = await _toolMetricValueRepo.GetFileteredToolMetricValuesByMetricId(metric.Id,settings.Grouping,groupValue);
                 listCount.Add(metricList.Count);   
                 metricDictionary.Add(metric.Name,metricList);               
             }
@@ -302,7 +375,7 @@ namespace DevProdWebApp.Controllers
             list.maxCount = listCount.Max();
 
             //list.maxCount = Math.Max(list.m1List.Count, Math.Max(list.m2List.Count, list.m3List.Count));
-            var settings =  await _settingsRepo.GetSettingsById(1);
+            
             //PREPROCESSING
             switch(settings.Preprocessing)
             {
@@ -357,10 +430,13 @@ namespace DevProdWebApp.Controllers
 
         public async Task<IActionResult> ToolSettings()
         {
+            List<Developer> developerOptions = new List<Developer>();
+            List<Models.Project> projectOptions = new List<Models.Project>();
             var settings = await _settingsRepo.GetSettingsWithMetricsById(1);
             SettingsViewModel vm = new SettingsViewModel();
             vm.Methodolgy = settings.Methodolgy;
             vm.Preprocessing = settings.Preprocessing;
+            vm.Grouping = settings.Grouping;
             try
             {
             vm.Parameters = settings.Parameters;
@@ -379,33 +455,12 @@ namespace DevProdWebApp.Controllers
                        
                     }
                 vm.ToolMetricScaleList.Add(new MetricScale() { MetricName=metric.Name,ScaleObjects= scaleObjList });
-            }
-           
-               // vm.Parameters = JsonConvert.DeserializeObject<JObject>(settings.Parameters);
-            }
-            catch (Exception)
-            {
-
-            }
-            try
-            {
-               // vm.ScaleM1 = JsonConvert.DeserializeObject<JArray>(JsonConvert.DeserializeObject<Dictionary<string, string>>(settings.Scale)["tblm1"]);
-            }
-            catch (Exception)
-            {
-            }
-            try
-            {
-              //  vm.ScaleM2 = JsonConvert.DeserializeObject<JArray>(JsonConvert.DeserializeObject<Dictionary<string, string>>(settings.Scale)["tblm2"]);
-            }
-            catch (Exception)
-            {
-
-               
-            }
-            try
-            {
-                //vm.ScaleM3 = JsonConvert.DeserializeObject<JArray>(JsonConvert.DeserializeObject<Dictionary<string, string>>(settings.Scale)["tblm3"]);
+                    developerOptions.AddRange(await _toolMetricValueRepo.GetToolMetricValuesDeveloperList(metric.Id));
+                    projectOptions.AddRange(await _toolMetricValueRepo.GetToolMetricValuesProjectList(metric.Id));
+                }
+           vm.DeveloperList = developerOptions.Distinct().ToList();
+           vm.ProjectList = projectOptions.Distinct().ToList();
+                // vm.Parameters = JsonConvert.DeserializeObject<JObject>(settings.Parameters);
             }
             catch (Exception)
             {
@@ -549,11 +604,11 @@ namespace DevProdWebApp.Controllers
             
            var dev = await _developerRepo.AddDeveloper(new Models.Developer() { FirstName=fname,LastName=lname,Username=uname });
             Models.Project? project = await _projectRepo.GetProjectById(projectId);
-            if (project?.Developers == null)
-            {
-                project.Developers = new List<Developer>();
-            }
-                project.Developers.Add(dev);
+            //if (project?.Developers == null)
+            //{
+            //    project.Developers = new List<Developer>();
+            //}
+            //    project.Developers.Add(dev);
             
             _projectRepo.UpdateProject(project);
 
@@ -564,11 +619,11 @@ namespace DevProdWebApp.Controllers
         {
             var newMetric = await _metricRepo.AddMetric(new Models.Metric() { Name = metric, Weight = Double.Parse(weight) });
             Models.Project? project = await _projectRepo.GetProjectById(projectId);
-            if (project?.ProjectMetrics == null)
-            {
-                project.ProjectMetrics = new List<Models.Metric>();
-            }
-            project.ProjectMetrics.Add(newMetric);
+            //if (project?.ProjectMetrics == null)
+            //{
+            //    project.ProjectMetrics = new List<Models.Metric>();
+            //}
+            //project.ProjectMetrics.Add(newMetric);
             _projectRepo.UpdateProject(project);
             newMetric.ProjectName = project.Name;
             _metricRepo.UpdateMetric(newMetric);

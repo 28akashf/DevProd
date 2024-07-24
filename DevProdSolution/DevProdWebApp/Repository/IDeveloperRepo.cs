@@ -6,6 +6,7 @@ namespace DevProdWebApp.Repository
     {
         Task<List<Developer>> GetAllDevelopers();
         Task<Developer?> GetDeveloperById(int id);
+        Task<Developer?> GetDeveloperByUsername(string uname);
         Task<Developer> AddDeveloper(Developer dev);
 
         bool UpdateDeveloper(Developer dev);

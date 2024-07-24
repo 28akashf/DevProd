@@ -52,5 +52,9 @@ namespace DevProdWebApp.Repository
             _context.SaveChanges();
             return true;
         }
+        public async Task<Developer?> GetDeveloperByUsername(string uname)
+        {
+            return await _context.Developers.FirstOrDefaultAsync(x=>x.Username==uname);
+        }
     }
 }

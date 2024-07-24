@@ -4,6 +4,7 @@ using DevProdWebApp.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DevProdWebApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240724154328_SettingsTbl_Grouping")]
+    partial class SettingsTbl_Grouping
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,10 +39,15 @@ namespace DevProdWebApp.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("ProjectId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Username")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
 
                     b.ToTable("Developers");
                 });
@@ -55,6 +63,9 @@ namespace DevProdWebApp.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("ProjectId")
+                        .HasColumnType("int");
+
                     b.Property<string>("ProjectName")
                         .HasColumnType("nvarchar(max)");
 
@@ -62,6 +73,8 @@ namespace DevProdWebApp.Migrations
                         .HasColumnType("float");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
 
                     b.ToTable("Metrics");
                 });
@@ -108,9 +121,6 @@ namespace DevProdWebApp.Migrations
                     b.Property<string>("Scale")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SubGrouping")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
                     b.ToTable("Settings");
@@ -151,12 +161,6 @@ namespace DevProdWebApp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("DeveloperId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ProjectId")
-                        .HasColumnType("int");
-
                     b.Property<int>("ToolMetricId")
                         .HasColumnType("int");
 
@@ -165,13 +169,23 @@ namespace DevProdWebApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DeveloperId");
-
-                    b.HasIndex("ProjectId");
-
                     b.HasIndex("ToolMetricId");
 
                     b.ToTable("ToolMetricValues");
+                });
+
+            modelBuilder.Entity("DevProdWebApp.Models.Developer", b =>
+                {
+                    b.HasOne("DevProdWebApp.Models.Project", null)
+                        .WithMany("Developers")
+                        .HasForeignKey("ProjectId");
+                });
+
+            modelBuilder.Entity("DevProdWebApp.Models.Metric", b =>
+                {
+                    b.HasOne("DevProdWebApp.Models.Project", null)
+                        .WithMany("ProjectMetrics")
+                        .HasForeignKey("ProjectId");
                 });
 
             modelBuilder.Entity("DevProdWebApp.Models.ToolMetric", b =>
@@ -187,25 +201,20 @@ namespace DevProdWebApp.Migrations
 
             modelBuilder.Entity("DevProdWebApp.Models.ToolMetricValue", b =>
                 {
-                    b.HasOne("DevProdWebApp.Models.Developer", "Developer")
-                        .WithMany()
-                        .HasForeignKey("DeveloperId");
-
-                    b.HasOne("DevProdWebApp.Models.Project", "Project")
-                        .WithMany()
-                        .HasForeignKey("ProjectId");
-
                     b.HasOne("DevProdWebApp.Models.ToolMetric", "ToolMetric")
                         .WithMany("ToolMetricValues")
                         .HasForeignKey("ToolMetricId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Developer");
-
-                    b.Navigation("Project");
-
                     b.Navigation("ToolMetric");
+                });
+
+            modelBuilder.Entity("DevProdWebApp.Models.Project", b =>
+                {
+                    b.Navigation("Developers");
+
+                    b.Navigation("ProjectMetrics");
                 });
 
             modelBuilder.Entity("DevProdWebApp.Models.Setting", b =>
