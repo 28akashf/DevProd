@@ -60,16 +60,37 @@ namespace DevProdWebApp.Controllers
 
         public async Task<bool> SaveSettings(string methodology, string preprocessing, string param)
         {
+            string lambda = string.Empty;
+            if(!string.IsNullOrEmpty(param))
+            {
+                var wts = JsonConvert.DeserializeObject<JObject>(param)["weights"];      
+                foreach(var item in wts)
+                {
+                   var metric = await _toolMetricRepo.GetToolMetricByName(item["metric"].ToString().Remove(0,2));
+                    metric.Weight = (double)item["weight"];
+                    _toolMetricRepo.UpdateToolMetric(metric);
+                }
+                try
+                {
+                     lambda = JsonConvert.DeserializeObject<JObject>(param)["lam"].ToString();
+
+                }
+                catch (Exception)
+                {
+
+
+                }
+            }
             Setting defaultSetting =  await _settingsRepo.GetSettingsById(1);
             if (defaultSetting == null)
             {
-                await _settingsRepo.AddSettings(new Setting() { Methodolgy = methodology, Preprocessing = preprocessing, Parameters=param });
+                await _settingsRepo.AddSettings(new Setting() { Methodolgy = methodology, Preprocessing = preprocessing, Parameters=lambda });
             }
             else
             {
                  defaultSetting.Methodolgy = methodology;
                  defaultSetting.Preprocessing = preprocessing;
-                 defaultSetting.Parameters = param;
+                 defaultSetting.Parameters = lambda;
                 _settingsRepo.UpdateSettings(defaultSetting);
             }
           

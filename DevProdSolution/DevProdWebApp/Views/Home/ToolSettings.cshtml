@@ -86,14 +86,9 @@
               
                 <div id="lamrow" class="row">
                     <div class="input-field col-md-12">
-                        @if (Model.Methodolgy == "wtwaspas" && Model.Parameters != null)
-                        {
+                 
                             <input id="lam" type="text" value="@Model.Parameters">
-                        }
-                        else
-                        {
-                            <input id="lam" type="text">
-                        }
+                    
                        
                         <label for="lam">λ (WASPAS)</label>
 
@@ -215,7 +210,7 @@
             var txtInps = document.getElementsByClassName("wtinp");
            for (i = 0; i < txtInps.length;i++) {
                 let wtVal = txtInps[i].value;
-                let metricName = txtInps[i].value;
+                let metricName = txtInps[i].id;
                 wtarr.push({ metric: metricName, weight: wtVal });
            }
             params = { weights:wtarr, 'lam': document.getElementById('lam').value }
