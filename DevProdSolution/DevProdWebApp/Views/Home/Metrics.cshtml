@@ -1,0 +1,119 @@
+﻿@{
+    ViewData["Title"] = "Metrics";
+}
+
+@model List<DevProdWebApp.Models.ToolMetric>
+
+    <div class="container">
+    <h1>@ViewData["Title"]</h1>
+    <div class="row">
+        
+        <div class="col-md-4">
+                  <div class="row input-field">
+                        <input id="metricName" type="text"  />
+                        <label for="metricName">Metric</label>
+                  </div>
+            <div class="row input-field">
+                <input id="weight" type="text" />
+                <label for="weight">Weight</label>
+            </div>
+            <div class="row input-field">
+                <a class="waves-effect waves-light btn" asp-action="ToolDashboard" asp-controller="Home">Add Metric</a>
+            </div>
+            
+          
+        
+        </div>
+        <div class="col-md-2">
+        </div>
+        <div class="col-md-4">
+            <div class="row">
+                <div class="col-md-12">
+
+                    <div class="file-field input-field">
+                        <div class="btn">
+                            <span>Upload File</span>
+                            <input type="file">
+                        </div>
+                        <div class="file-path-wrapper">
+                            <input class="file-path validate" type="text">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="row input-field">
+                <a class="waves-effect waves-light btn" asp-action="ToolDashboard" asp-controller="Home">Add Metric</a>
+            </div>
+        </div>
+        <div class="col-md-2">
+        </div>
+    </div>
+    <div class="row">
+        <table class="table table-striped">
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Weight</th>
+                <th>Actions</th>
+            </tr>
+            @foreach(var x in Model)
+            {
+                <tr>
+                    <td>@x.Id</td>
+                    <td>@x.Name</td>
+                    <td>@x.Weight</td>
+                    <td>
+                        
+                            <a class="waves-effect waves-light btn" asp-action="ToolDashboard" asp-controller="Home">Edit</a>
+                      
+                        
+                            <a class="waves-effect waves-light btn" asp-action="ToolDashboard" asp-controller="Home">Delete</a>
+                        
+                    </td>
+                </tr>
+            }
+           
+
+        </table>
+    </div>
+    </div>
+
+
+    <script type="text/javascript">
+    function addMetric() {
+        var name = document.getElementById('metricName').value;
+        var weight = document.getElementById('weight').value;
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("AddMetric", "Home")',
+            data: {name:name,weight:weight},
+            success: function (response) {
+
+
+            },
+            error: function (xhr, status, error) {
+
+            }
+        });
+
+    }
+    function uploadMetric() {
+        var name = document.getElementById('metricName').value;
+        var weight = document.getElementById('weight').value;
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("UploadMetric", "Home")',
+            data: { name: name, weight: weight },
+            success: function (response) {
+
+
+            },
+            error: function (xhr, status, error) {
+
+            }
+        });
+
+    }
+    </script>
+

@@ -107,13 +107,22 @@ namespace DevProdWebApp.Controllers
              _toolMetricRepo.UpdateToolMetric(metric);
                  return true;
         }
+        public async Task<bool> AddMetric(string name, string weight)
+        {            
+           await _toolMetricRepo.AddToolMetric(new ToolMetric() { Name=name,SettingId=1,Weight=Double.Parse(weight)});
+            return true;
+        }
         public async Task<IActionResult> Projects()
         {
             var list = await _projectRepo.GetAllProjects();
             return View(list);
         }
+        public async Task<IActionResult> Metrics()
+        {
+            var vm = await _toolMetricRepo.GetAllToolMetrics();
+            return View(vm);
+        }
 
-      
 
         public async Task<IActionResult> Developers()
         {
