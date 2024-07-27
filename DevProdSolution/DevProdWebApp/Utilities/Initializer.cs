@@ -42,5 +42,15 @@
             }
             return binary;
         }
+
+        public static DateTime GenerateRandomDate()
+        {
+            Random gen = new Random();
+            DateTime start = new DateTime(2024, 4, 1);
+            int range = (DateTime.Today - start).Days;
+            return start.AddDays(gen.Next(range));
+        
+        }
+        
     }
 }

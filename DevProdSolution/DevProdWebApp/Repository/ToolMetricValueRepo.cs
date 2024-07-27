@@ -63,6 +63,9 @@ namespace DevProdWebApp.Repository
                 case "project":
                result = await _context.ToolMetricValues.Where(x => x.ToolMetricId == mid && x.ProjectId == value).ToListAsync();
                     break;
+                case "date":
+                    result = await _context.ToolMetricValues.Where(x => x.ToolMetricId == mid && x.TimeStamp >= DateTime.Now.AddDays((0-value))).ToListAsync();
+                    break;
                 default:
                result =  await _context.ToolMetricValues.Where(x => x.ToolMetricId == mid).ToListAsync();
                     break;

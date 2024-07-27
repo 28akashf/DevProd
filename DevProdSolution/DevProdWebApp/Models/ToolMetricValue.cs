@@ -21,6 +21,8 @@ namespace DevProdWebApp.Models
         public int? ProjectId { get; set; }
         public Project? Project { get; set; }
 
+        public DateTime? TimeStamp { get; set; }
+
 
     }
 }

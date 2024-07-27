@@ -307,7 +307,8 @@ namespace DevProdWebApp.Controllers
             //        devId = 8;
             //        projId = 10;
             //    }
-            //    await _toolMetricValueRepo.AddToolMetricValue(new ToolMetricValue() { ToolMetricId = tm1.Id, Value = item.ToString(), DeveloperId = devId, ProjectId = projId });
+            //    DateTime dt =  Initializer.GenerateRandomDate();
+            //    await _toolMetricValueRepo.AddToolMetricValue(new ToolMetricValue() { ToolMetricId = tm1.Id, Value = item.ToString(), DeveloperId = devId, ProjectId = projId , TimeStamp = dt});
             //    i++;
             //}
             //i = 1;
@@ -330,7 +331,7 @@ namespace DevProdWebApp.Controllers
             //        devId = 8;
             //        projId = 10;
             //    }
-            //    await _toolMetricValueRepo.AddToolMetricValue(new ToolMetricValue() { ToolMetricId = tm2.Id, Value = item.ToString(), DeveloperId = devId, ProjectId = projId });
+            //    await _toolMetricValueRepo.AddToolMetricValue(new ToolMetricValue() { ToolMetricId = tm2.Id, Value = item.ToString(), DeveloperId = devId, ProjectId = projId,, TimeStamp = dt });
             //    i++;
             //}
             //i = 1;
@@ -354,7 +355,7 @@ namespace DevProdWebApp.Controllers
             //        devId = 8;
             //        projId = 10;
             //    }
-            //    await _toolMetricValueRepo.AddToolMetricValue(new ToolMetricValue() { ToolMetricId = tm3.Id, Value = item.ToString(), DeveloperId = devId, ProjectId = projId });
+            //    await _toolMetricValueRepo.AddToolMetricValue(new ToolMetricValue() { ToolMetricId = tm3.Id, Value = item.ToString(), DeveloperId = devId, ProjectId = projId, , TimeStamp = dt });
             //    i++;
             //}
             var settings = await _settingsRepo.GetSettingsById(1);

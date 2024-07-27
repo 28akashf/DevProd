@@ -46,6 +46,7 @@
                             <option value="none">None</option>
                             <option value="developer">Developer</option>
                             <option value="project">Project</option>
+                            <option value="days">Days</option>
                         </select>
                         <label for="grouping">Grouping</label>
 
@@ -54,13 +55,13 @@
                 <div id="groupingdevrow" class="row">
                     <div class="input-field col-md-8">
 
-                        <select id="subgroupingdev" title="subgrouping" asp-for="@Model.Grouping">
+                        <select id="subgroupingdev" title="subgrouping" asp-for="@Model.SubGrouping">
                             @foreach (var dev in Model.DeveloperList)
                             {
                                 <option value="@dev.Username">@dev.Username</option>
                             }
                         </select>
-                        <label for="subgrouping">Developer</label>
+                        <label for="subgroupingdev">Developer</label>
 
                     </div>
                 </div>
@@ -75,11 +76,29 @@
                           
                           
                         </select>
-                        <label for="subgrouping">Project</label>
+                        <label for="subgroupingproj">Project</label>
 
                     </div>
                 </div>
-              
+                <div id="groupingdaysrow" class="row">
+                    <div class="input-field col-md-8">
+
+                        <select id="subgroupingdays" title="subgrouping" asp-for="@Model.SubGrouping">
+                           
+                                <option value="10">Last 10 days</option>
+                            <option value="15">Last 15 days</option>
+                            @for(int i = 30 ; i < 360;i=i+30)
+                            {
+                                <option value="@i">Last @i days</option>
+                            }
+
+                            <option value="365">Last 365 days</option>
+                            
+                        </select>
+                        <label for="subgroupingdays">Days</label>
+
+                    </div>
+                </div>
                 <div class="row">
                    
                     <div class="col-md-2">
@@ -325,21 +344,30 @@
     }
 
     function checkForGrouping() {
-        var grouping = document.getElementById('grouping').value;
+        var grouping = document.getElementById('grouping').value;   
         var groupingdev = document.getElementById('groupingdevrow');
         var groupingproj = document.getElementById('groupingprojrow')
+        var groupingdays = document.getElementById('groupingdaysrow')
         switch (grouping) { 
             case 'developer':
                 groupingproj.style.display = "none";
+                groupingdays.style.display = "none";
                 groupingdev.style.display = "block";
                 break;
             case 'project':
                 groupingdev.style.display = "none";
+                groupingdays.style.display = "none";
                 groupingproj.style.display = "block";              
+                break;
+            case 'days':
+                groupingdev.style.display = "none";
+                groupingproj.style.display = "none";
+                groupingdays.style.display = "block";
                 break;
             case 'none':
                 groupingdev.style.display = "none";
                 groupingproj.style.display = "none";
+                groupingdays.style.display = "none";
 
                 break;
         }
