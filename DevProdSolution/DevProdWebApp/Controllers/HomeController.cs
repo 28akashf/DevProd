@@ -239,6 +239,132 @@ namespace DevProdWebApp.Controllers
             return dictionaryProcessed; 
             
         }
+        public Dictionary<string, List<ToolMetricValue>> LogTransformRawData(Dictionary<string, List<ToolMetricValue>> dictionaryRaw)
+        {
+            Dictionary<string, List<ToolMetricValue>> dictionaryProcessed = new Dictionary<string, List<ToolMetricValue>>();
+            foreach (var item in dictionaryRaw.Keys)
+            {
+                var arrCast = dictionaryRaw[item].ToList();
+                List<ToolMetricValue> arrCastCopy = new List<ToolMetricValue>();
+                for (int i = 0; i < arrCast.Count; i++)
+                {
+                    arrCastCopy.Add(new ToolMetricValue() { Id = arrCast[i].Id, ToolMetric = arrCast[i].ToolMetric, ToolMetricId = arrCast[i].ToolMetricId, Value = arrCast[i].Value });
+                    arrCastCopy[i].Value = LogTransform(Double.Parse(arrCastCopy[i].Value)).ToString();
+                }
+                dictionaryProcessed.Add(item, arrCastCopy);
+            }
+            return dictionaryProcessed;
+
+        }
+        public Dictionary<string, List<ToolMetricValue>> ExponentialTransformRawData(Dictionary<string, List<ToolMetricValue>> dictionaryRaw)
+        {
+            Dictionary<string, List<ToolMetricValue>> dictionaryProcessed = new Dictionary<string, List<ToolMetricValue>>();
+            foreach (var item in dictionaryRaw.Keys)
+            {
+                var arrCast = dictionaryRaw[item].ToList();
+                List<ToolMetricValue> arrCastCopy = new List<ToolMetricValue>();
+                for (int i = 0; i < arrCast.Count; i++)
+                {
+                    arrCastCopy.Add(new ToolMetricValue() { Id = arrCast[i].Id, ToolMetric = arrCast[i].ToolMetric, ToolMetricId = arrCast[i].ToolMetricId, Value = arrCast[i].Value });
+                    arrCastCopy[i].Value = ExponentialTransform(Double.Parse(arrCastCopy[i].Value)).ToString();
+                }
+                dictionaryProcessed.Add(item, arrCastCopy);
+            }
+            return dictionaryProcessed;
+
+        }
+        public Dictionary<string, List<ToolMetricValue>> BoxCoxTransformRawData(Dictionary<string, List<ToolMetricValue>> dictionaryRaw)
+        {
+            Dictionary<string, List<ToolMetricValue>> dictionaryProcessed = new Dictionary<string, List<ToolMetricValue>>();
+            foreach (var item in dictionaryRaw.Keys)
+            {
+                var arrCast = dictionaryRaw[item].ToList();
+                List<ToolMetricValue> arrCastCopy = new List<ToolMetricValue>();
+                for (int i = 0; i < arrCast.Count; i++)
+                {
+                    arrCastCopy.Add(new ToolMetricValue() { Id = arrCast[i].Id, ToolMetric = arrCast[i].ToolMetric, ToolMetricId = arrCast[i].ToolMetricId, Value = arrCast[i].Value });
+                    arrCastCopy[i].Value = BoxCoxTransform(Double.Parse(arrCastCopy[i].Value), 1).ToString();
+                }
+                dictionaryProcessed.Add(item, arrCastCopy);
+            }
+            return dictionaryProcessed;
+
+        }
+       
+        public Dictionary<string, List<ToolMetricValue>> UnitvectorScalingRawData(Dictionary<string, List<ToolMetricValue>> dictionaryRaw)
+        {
+            Dictionary<string, List<ToolMetricValue>> dictionaryProcessed = new Dictionary<string, List<ToolMetricValue>>();
+            foreach (var item in dictionaryRaw.Keys)
+            {
+                var arrCast = dictionaryRaw[item].ToList();
+                var sumOfSquares = arrCast.Sum(x => Double.Parse(x.Value)* Double.Parse(x.Value));
+
+                List<ToolMetricValue> arrCastCopy = new List<ToolMetricValue>();
+                for (int i = 0; i < arrCast.Count; i++)
+                {
+                    arrCastCopy.Add(new ToolMetricValue() { Id = arrCast[i].Id, ToolMetric = arrCast[i].ToolMetric, ToolMetricId = arrCast[i].ToolMetricId, Value = arrCast[i].Value });
+                    arrCastCopy[i].Value = UnitVectorScaling(Double.Parse(arrCastCopy[i].Value), sumOfSquares).ToString();
+                }
+                dictionaryProcessed.Add(item, arrCastCopy);
+            }
+            return dictionaryProcessed;
+
+        }
+        public Dictionary<string, List<ToolMetricValue>> DecimalScalingRawData(Dictionary<string, List<ToolMetricValue>> dictionaryRaw)
+        {
+            Dictionary<string, List<ToolMetricValue>> dictionaryProcessed = new Dictionary<string, List<ToolMetricValue>>();
+            foreach (var item in dictionaryRaw.Keys)
+            {
+                var arrCast = dictionaryRaw[item].ToList();
+                var max = arrCast.Max(x => Double.Parse(x.Value));
+
+                List<ToolMetricValue> arrCastCopy = new List<ToolMetricValue>();
+                for (int i = 0; i < arrCast.Count; i++)
+                {
+                    arrCastCopy.Add(new ToolMetricValue() { Id = arrCast[i].Id, ToolMetric = arrCast[i].ToolMetric, ToolMetricId = arrCast[i].ToolMetricId, Value = arrCast[i].Value });
+                    arrCastCopy[i].Value = DecimalScaling(Double.Parse(arrCastCopy[i].Value), max).ToString();
+                }
+                dictionaryProcessed.Add(item, arrCastCopy);
+            }
+            return dictionaryProcessed;
+
+        }
+        public Dictionary<string, List<ToolMetricValue>> SigmoidTransformRawData(Dictionary<string, List<ToolMetricValue>> dictionaryRaw)
+        {
+            Dictionary<string, List<ToolMetricValue>> dictionaryProcessed = new Dictionary<string, List<ToolMetricValue>>();
+            foreach (var item in dictionaryRaw.Keys)
+            {
+                var arrCast = dictionaryRaw[item].ToList();
+                List<ToolMetricValue> arrCastCopy = new List<ToolMetricValue>();
+                for (int i = 0; i < arrCast.Count; i++)
+                {
+                    arrCastCopy.Add(new ToolMetricValue() { Id = arrCast[i].Id, ToolMetric = arrCast[i].ToolMetric, ToolMetricId = arrCast[i].ToolMetricId, Value = arrCast[i].Value });
+                    arrCastCopy[i].Value = SigmoidTransform(Double.Parse(arrCastCopy[i].Value)).ToString();
+                }
+                dictionaryProcessed.Add(item, arrCastCopy);
+            }
+            return dictionaryProcessed;
+
+        }
+        public Dictionary<string, List<ToolMetricValue>> MaxAbsScalingRawData(Dictionary<string, List<ToolMetricValue>> dictionaryRaw)
+        {
+            Dictionary<string, List<ToolMetricValue>> dictionaryProcessed = new Dictionary<string, List<ToolMetricValue>>();
+            foreach (var item in dictionaryRaw.Keys)
+            {
+                var arrCast = dictionaryRaw[item].ToList();
+                var maxAbs = arrCast.Max(x => Math.Abs(Double.Parse(x.Value)));
+                List<ToolMetricValue> arrCastCopy = new List<ToolMetricValue>();
+                for (int i = 0; i < arrCast.Count; i++)
+                {
+                    arrCastCopy.Add(new ToolMetricValue() { Id = arrCast[i].Id, ToolMetric = arrCast[i].ToolMetric, ToolMetricId = arrCast[i].ToolMetricId, Value = arrCast[i].Value });
+                    arrCastCopy[i].Value = MaxAbsScaling(Double.Parse(arrCastCopy[i].Value), maxAbs).ToString();
+                }
+                dictionaryProcessed.Add(item, arrCastCopy);
+            }
+            return dictionaryProcessed;
+
+        }
+
         public JArray LoadJson(string preprocs)
         {
                       
@@ -256,6 +382,7 @@ namespace DevProdWebApp.Controllers
                         case "zscore":
                             ZScoreNormalizeRawData(array);
                             break;
+                       
                         default:
                             break;
 
@@ -276,6 +403,87 @@ namespace DevProdWebApp.Controllers
             double normalizedValue = (value - min) / (max - min);
             return normalizedValue;
         }
+        public static double LogTransform(double value)
+        {
+            return Math.Log(value + 1); // Adding 1 to avoid log(0)
+        }
+
+
+        public static double ExponentialTransform(double value)
+        {
+            return Math.Exp(value);
+        }
+
+        public static double BoxCoxTransform(double value, double lambda)
+        {
+            if (lambda == 0)
+                return Math.Log(value);
+            else
+                return (Math.Pow(value, lambda) - 1) / lambda;
+        }
+
+        public static double MaxAbsScaling(double value, double maxAbs)
+        {
+            return value / maxAbs;
+        }
+
+        //public static double[] QuantileTransform(double[] data)
+        //{
+        //    var ranks = data.Select(x => Statistics.QuantileRank(data, x)).ToArray();
+        //    return ranks;
+        //}
+
+        //public static double[] RankTransform(double[] data)
+        //{
+        //    var sortedData = data.OrderBy(x => x).ToArray();
+        //    return data.Select(x => Array.IndexOf(sortedData, x) + 1).ToArray();
+        //}
+
+        public static double UnitVectorScaling(double value, double sumOfSquares)
+        {
+            double norm = Math.Sqrt(sumOfSquares);
+            return value / norm; ;
+        }
+        public static double DecimalScaling(double value,double max)
+        {
+            int j = (int)Math.Ceiling(Math.Log10(max));
+            return  value / Math.Pow(10, j);
+        }
+        public static double SigmoidTransform(double value)
+        {
+            return 1 / (1 + Math.Exp(-value));
+        }
+
+        //public static double[] RobustScaler(double[] data)
+        //{
+        //    double median = Median(data);
+        //    double q1 = Percentile(data, 25);
+        //    double q3 = Percentile(data, 75);
+        //    double iqr = q3 - q1;
+
+        //    return data.Select(x => (x - median) / iqr).ToArray();
+        //}
+
+        //private static double Median(double[] data)
+        //{
+        //    var sortedData = data.OrderBy(x => x).ToArray();
+        //    int n = sortedData.Length;
+        //    if (n % 2 == 0)
+        //        return (sortedData[n / 2 - 1] + sortedData[n / 2]) / 2.0;
+        //    else
+        //        return sortedData[n / 2];
+        //}
+
+        //private static double Percentile(double[] data, double percentile)
+        //{
+        //    var sortedData = data.OrderBy(x => x).ToArray();
+        //    int n = sortedData.Length;
+        //    double rank = percentile / 100 * (n - 1);
+        //    int lowerIndex = (int)Math.Floor(rank);
+        //    int upperIndex = (int)Math.Ceiling(rank);
+        //    double weight = rank - lowerIndex;
+        //    return (1 - weight) * sortedData[lowerIndex] + weight * sortedData[upperIndex];
+        //}
 
         public async Task<IActionResult> ToolDashboard()
         {
@@ -394,6 +602,27 @@ namespace DevProdWebApp.Controllers
                     break;
                 case "zscore":
                     list.metricProcDictionary = ZScoreNormalizeRawData(metricDictionary);
+                    break;
+                case "log":
+                    list.metricProcDictionary = LogTransformRawData(metricDictionary);
+                    break;
+                case "exp":
+                    list.metricProcDictionary = ExponentialTransformRawData(metricDictionary);
+                    break;
+                case "sigmoid":
+                    list.metricProcDictionary = SigmoidTransformRawData(metricDictionary);
+                    break;
+                case "decimal":
+                    list.metricProcDictionary = DecimalScalingRawData(metricDictionary);
+                    break;
+                case "boxcox":
+                    list.metricProcDictionary = BoxCoxTransformRawData(metricDictionary);
+                    break;
+                case "unitvector":
+                    list.metricProcDictionary = UnitvectorScalingRawData(metricDictionary);
+                    break;
+                case "maxabs":
+                    list.metricProcDictionary = MaxAbsScalingRawData(metricDictionary);
                     break;
                 default:
                     break;
