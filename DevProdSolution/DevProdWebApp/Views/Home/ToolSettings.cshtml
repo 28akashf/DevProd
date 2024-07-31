@@ -6,13 +6,20 @@
 <div>
    
   
-    <div class="container">
+    <div class="container grey lighten-5">
         <div class="row">
             <div class="col-md-4"></div>
-            <div class="col-md-4"> <h3> Customization</h3></div>
+            <div class="col-md-4"> <h2 class="grey-text text-darken-1"> Customization</h2></div>
             </div>
            <div class="row">
-                  <div class="col-md-8">
+               <div class="col-md-12">
+            <div class="card darken-1">
+                <div class="card-content">
+                    <span class="card-title">SETTINGS</span>
+                    <div class="row"></div>
+                    <div class="row">
+                  <div class="col-md-6">
+         
                       <div class="row">
  
                       
@@ -116,9 +123,10 @@
                     </div>
                 </div>
 
-          
+         
                   </div>
                   <div class="col-md-4">
+             
                       @for(int i = 0; i < Model.ToolMetricList.Count;i++)
                       {
                     string wtrowid = "wt" + @Model.ToolMetricList[i].Name + (i + 1) + "row";
@@ -146,13 +154,19 @@
 
                     </div>
                 </div>
-                    
+                 
                   </div>
-         
-         
+                        </div>
+                </div>
+            </div>
+            </div>
            </div>
         <div class="row">
+            <div class="card darken-1">
+                <div class="card-content">
+                    <span class="card-title">SCALE</span>
             <div class="col-md-12">
+               
                 <ul class="tabs">
                     @for(int i = 0; i < Model.ToolMetricList.Count; i++)
                     {
@@ -167,16 +181,17 @@
                     }
                    
                 </ul>
+              
             </div>
             @foreach(var metricScale in Model.ToolMetricScaleList)
             {
                 string divId = "test" + metricScale.MetricName;
                 <div id="@divId" class="col-md-12">
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-2">
                         </div>
-                        <div class="col-md-4">
-                            <h3>SCALE (@metricScale.MetricName)</h3>
+                        <div class="col-md-8">
+                        
                             <table id="@metricScale.MetricName" class="table-responsive">
                                 <thead>
                                     <tr>
@@ -239,12 +254,13 @@
                             <a class="waves-effect waves-light btn" onclick="deleteLastRow('@metricScale.MetricName')">Delete Row</a>
                             <a class="waves-effect waves-light btn" onclick="createScale('@metricScale.MetricName')">Save</a>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-2">
                         </div>
                     </div>
                 </div>
             }
-            
+                </div>
+            </div>
       
         </div>
     </div>
