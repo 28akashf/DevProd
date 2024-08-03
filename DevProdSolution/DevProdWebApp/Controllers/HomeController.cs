@@ -58,6 +58,12 @@ namespace DevProdWebApp.Controllers
             return View(list);
         }
 
+        public async Task<IActionResult> ModifyMetric(int mId)
+        {
+            var metric = await _toolMetricRepo.GetToolMetricById(mId);
+            return View(metric);
+        }
+
         public async Task<bool> SaveSettings(string methodology, string preprocessing, string param, string group, string subgroup)
         {
             string lambda = string.Empty;
@@ -109,7 +115,27 @@ namespace DevProdWebApp.Controllers
         }
         public async Task<bool> AddMetric(string name, string weight)
         {            
-           await _toolMetricRepo.AddToolMetric(new ToolMetric() { Name=name,SettingId=1,Weight=Double.Parse(weight)});
+           await _toolMetricRepo.AddToolMetric(new ToolMetric() { Name=name,SettingId=1, Weight=Double.Parse(weight)});
+            return true;
+        }
+        public async Task<bool> DeleteMetric(int id)
+        {
+            try
+            {
+                await _toolMetricValueRepo.DeleteAllToolMetricValuesByMetricId(id);
+            }
+            catch (Exception)
+            {
+            }
+            await _toolMetricRepo.DeleteToolMetric(id);
+            return true;
+        }
+        public async Task<bool> EditMetric(int id,string name, string weight)
+        {
+            ToolMetric toolMetric = await _toolMetricRepo.GetToolMetricById(id);
+            toolMetric.Name = name;
+            toolMetric.Weight = Double.Parse(weight);
+            _toolMetricRepo.UpdateToolMetric(toolMetric);
             return true;
         }
         public async Task<IActionResult> Projects()
@@ -584,9 +610,20 @@ namespace DevProdWebApp.Controllers
             foreach(var metric in allMetrics)
             {
                 //    var metricList = await _toolMetricValueRepo.GetToolMetricValuesByMetricId(metric.Id);
-                var metricList = await _toolMetricValueRepo.GetFileteredToolMetricValuesByMetricId(metric.Id,settings.Grouping,groupValue);
-                listCount.Add(metricList.Count);   
-                metricDictionary.Add(metric.Name,metricList);               
+                try
+                {
+                    var metricList = await _toolMetricValueRepo.GetFileteredToolMetricValuesByMetricId(metric.Id, settings.Grouping, groupValue);
+                    if (metricList.Count>0)
+                    {
+                        listCount.Add(metricList.Count);
+                        metricDictionary.Add(metric.Name, metricList); 
+                    }
+                }
+                catch (Exception)
+                {
+
+               
+                }              
             }
             MList list = new MList();
             list.metricDictionary = metricDictionary;

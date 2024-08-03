@@ -14,5 +14,6 @@ namespace DevProdWebApp.Repository
         Task<List<Project>> GetToolMetricValuesProjectList(int mid);
         Task<List<Developer>> GetToolMetricValuesDeveloperList(int mid);
         Task<List<ToolMetricValue>> GetFileteredToolMetricValuesByMetricId(int mid, string filter, int value);
+        public  Task<bool> DeleteAllToolMetricValuesByMetricId(int mid);
     }
 }

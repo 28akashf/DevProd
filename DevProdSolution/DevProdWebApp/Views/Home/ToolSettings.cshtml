@@ -15,7 +15,7 @@
                <div class="col-md-12">
             <div class="card darken-1">
                 <div class="card-content">
-                    <span class="card-title">SETTINGS</span>
+                    <span class="card-title">Settings</span>
                     <div class="row"></div>
                     <div class="row">
                   <div class="col-md-6">
@@ -164,7 +164,7 @@
         <div class="row">
             <div class="card darken-1">
                 <div class="card-content">
-                    <span class="card-title">SCALE</span>
+                    <span class="card-title">Scale</span>
             <div class="col-md-12">
                
                 <ul class="tabs">
@@ -269,6 +269,7 @@
 <script type="text/javascript">
     
    function saveSettings() {
+    
         var method = document.getElementById('method').value;
         var preproc = document.getElementById('preproc').value;
         var grouping = document.getElementById('grouping').value;
@@ -315,11 +316,11 @@
             url: '@Url.Action("SaveSettings", "Home")',
             data: { methodology:method, preprocessing:preproc, param:paramJson, group:grouping, subgroup:subgrouping },
             success: function (response) {
-             
 
+              
             },
             error: function (xhr, status, error) {
-               
+             
             }
         });
 

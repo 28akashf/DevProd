@@ -42,6 +42,26 @@ namespace DevProdWebApp.Repository
             }
         }
 
+        public async Task<bool> DeleteAllToolMetricValuesByMetricId(int mid)
+        {
+            var ToolMetricValue = await _context.ToolMetricValues.Where(x=>x.ToolMetricId==mid).ToListAsync();
+            if (ToolMetricValue != null)
+            {
+                foreach (var item in ToolMetricValue)
+                {
+                    _context.ToolMetricValues.Remove(item);
+                
+                }
+                _context.SaveChanges();
+                return true;
+
+            }
+            else
+            {
+                return false;
+            }
+        }
+
 
         public async Task<ToolMetricValue?> GetToolMetricValueById(int id)
         {
