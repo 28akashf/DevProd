@@ -8,7 +8,7 @@
     <h1>@ViewData["Title"]</h1>
     <div class="row">
 
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="row input-field">
                 <input id="metricName" type="text" value="@Model.Name" />
                 <label for="metricName">Metric</label>
@@ -24,16 +24,53 @@
 
 
         </div>
-        <div class="col-md-2">
+        <div class="col-md-1">
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
+            <div class="row input-field">
+                <input id="metricValue" type="text"  />
+                <label for="metricValue">Metric Value</label>
+            </div>
+            <div class="row input-field">
+                <select id="devId" title="developer">
+                    @foreach(var i in ViewData["dev"] as List<Developer>)
+                    {
+                        <option value="@i.Id">@i.Username</option>
+                    }
+                   
+                </select>
+                <label for="devId">Developer Id</label>
+            </div>
+            <div class="row input-field">
+                <select id="projId" title="project">
+                    @foreach (var i in ViewData["proj"] as List<Project>)
+                    {
+                        <option value="@i.Id">@i.Name</option>
+                    }
+                </select>
+                <label for="projId">Project Id</label>
+            </div>
+            <div class="row input-field">
+                <input id="date" type="text" placeholder="dd/mm/yyyy" />
+                <label for="date">Date</label>
+            </div>
+            <div class="row input-field">
+                <a class="waves-effect waves-light btn" onclick="addMetricValue(@Model.Id)">Add Value</a>
+            </div>
+
+
+
+        </div>
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-3">
             <div class="row">
                 <div class="col-md-12">
 
                     <div class="file-field input-field">
                         <div class="btn">
                             <span>Upload File</span>
-                            <input type="file">
+                            <input id="fileupload" type="file" names="files">
                         </div>
                         <div class="file-path-wrapper">
                             <input class="file-path validate" type="text">
@@ -43,47 +80,49 @@
                 </div>
             </div>
             <div class="row input-field">
-                <a class="waves-effect waves-light btn" onclick="uploadMetric()">Upload Metric</a>
+                <a class="waves-effect waves-light btn" onclick="uploadMetric(@Model.Id)">Upload Metric</a>
             </div>
         </div>
         <div class="col-md-2">
         </div>
     </div>
-   @*  <div class="row">
+    <div class="row">
         <table class="table table-striped">
             <tr>
                 <th>Id</th>
-                <th>Name</th>
-                <th>Weight</th>
+                <th>Value</th>
+                <th>Developer Id</th>
+                <th>Project Id</th>
                 <th>Actions</th>
             </tr>
-            @foreach (var x in Model)
+            @foreach (var x in ViewData["vals"] as List<ToolMetricValue>)
             {
                 <tr>
                     <td>@x.Id</td>
-                    <td>@x.Name</td>
-                    <td>@x.Weight</td>
+                    <td>@x.Value</td>
+                    <td>@x.DeveloperId</td>
+                    <td>@x.ProjectId</td>
                     <td>
-
-                        <a class="waves-effect waves-light btn" asp-action="ToolDashboard" asp-controller="Home">Edit</a>
-
-
                         <a class="waves-effect waves-light btn" onclick="deleteMetric(@x.Id)">Delete</a>
-
                     </td>
                 </tr>
             }
 
 
         </table>
-    </div> *@
+    </div>
 </div>
 
 
 <script type="text/javascript">
 
+    document.addEventListener('DOMContentLoaded', function () {
+        var elems = document.querySelectorAll('select');
+        var options = document.querySelectorAll('option');      
+        var instances = M.FormSelect.init(elems, options);
+    });
+
     function editMetric(id) {
-        alert('hello...');
         var name = document.getElementById('metricName').value;
         var weight = document.getElementById('weight').value;
         $.ajax({
@@ -100,12 +139,14 @@
         });
     }
 
-    function deleteMetric(id) {
-
+    function uploadMetric(id) {
+        alert(fileupload.files.length);
+        let formData = new FormData();
+        formData.append("file", fileupload.files[0]);
         $.ajax({
             type: "POST",
-            url: '@Url.Action("DeleteMetric", "Home")',
-            data: { id: id },
+            url: '@Url.Action("UploadMetricValues", "Home")',
+            data: formData,
             success: function (response) {
 
                 location.reload();
@@ -115,6 +156,40 @@
             }
         });
 
+    }
+    function deleteMetric(id) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("DeleteMetricValues", "Home")',
+            data: {id:id},
+            success: function (response) {
+
+                location.reload();
+            },
+            error: function (xhr, status, error) {
+
+            }
+        });
+
+    }
+
+    function addMetricValue(id) {
+        var value = document.getElementById('metricValue').value;
+        var proj = document.getElementById('projId').value;
+        var dev = document.getElementById('devId').value;
+        var date = document.getElementById('date').value;
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("AddMetricValue", "Home")',
+            data: { mid: id, value: value, proj:proj, dev:dev, date:date },
+            success: function (response) {
+                location.reload();
+
+            },
+            error: function (xhr, status, error) {
+
+            }
+        });
     }
   
 </script>

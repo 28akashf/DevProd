@@ -61,6 +61,9 @@ namespace DevProdWebApp.Controllers
         public async Task<IActionResult> ModifyMetric(int mId)
         {
             var metric = await _toolMetricRepo.GetToolMetricById(mId);
+            ViewData["dev"] = await _developerRepo.GetAllDevelopers();
+            ViewData["proj"] = await _projectRepo.GetAllProjects();
+            ViewData["vals"] = await _toolMetricValueRepo.GetToolMetricValuesByMetricId(mId);
             return View(metric);
         }
 
@@ -116,6 +119,31 @@ namespace DevProdWebApp.Controllers
         public async Task<bool> AddMetric(string name, string weight)
         {            
            await _toolMetricRepo.AddToolMetric(new ToolMetric() { Name=name,SettingId=1, Weight=Double.Parse(weight)});
+            return true;
+        }
+
+        public async Task<bool> AddMetricValue(int mid, string value, string proj, string dev, string date)
+        {
+            var splitDate = date.Split('/');
+            await _toolMetricValueRepo.AddToolMetricValue(new ToolMetricValue() { ToolMetricId=mid,Value=value,DeveloperId=int.Parse(dev), ProjectId = int.Parse(proj),TimeStamp=new DateTime(int.Parse(splitDate[2]), int.Parse(splitDate[1]), int.Parse(splitDate[0]))});
+            return true;
+        }
+
+
+        public async Task<bool> DeleteMetricValue(int id)
+        {
+            await _toolMetricValueRepo.DeleteToolMetricValue(id);
+            return true;
+        }
+
+        [HttpPost("/upload")]
+        public async Task<bool> UploadMetricValues(IFormFile file)
+        {
+            //foreach()
+            //{ 
+            //var splitDate = date.Split('/');
+            //await _toolMetricValueRepo.AddToolMetricValue(new ToolMetricValue() { ToolMetricId = mid, Value = value, DeveloperId = int.Parse(devId), ProjectId = int.Parse(projId), TimeStamp = new DateTime(int.Parse(splitDate[2]), int.Parse(splitDate[1]), int.Parse(splitDate[0])) });
+            //}
             return true;
         }
         public async Task<bool> DeleteMetric(int id)
