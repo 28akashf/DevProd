@@ -4,6 +4,7 @@ using DevProdWebApp.Models;
 using DevProdWebApp.Repository;
 using DevProdWebApp.Utilities;
 using DevProdWebApp.ViewModels;
+using ExcelDataReader;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -136,15 +137,33 @@ namespace DevProdWebApp.Controllers
             return true;
         }
 
-        [HttpPost("/upload")]
-        public async Task<bool> UploadMetricValues(IFormFile file)
+        [HttpPost]
+        public async Task<IActionResult> UploadMetricValues(IFormFile file)
         {
-            //foreach()
-            //{ 
-            //var splitDate = date.Split('/');
-            //await _toolMetricValueRepo.AddToolMetricValue(new ToolMetricValue() { ToolMetricId = mid, Value = value, DeveloperId = int.Parse(devId), ProjectId = int.Parse(projId), TimeStamp = new DateTime(int.Parse(splitDate[2]), int.Parse(splitDate[1]), int.Parse(splitDate[0])) });
-            //}
-            return true;
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            using (var stream = new MemoryStream())
+            {
+                file.CopyTo(stream);
+                stream.Position = 0;
+                using (var reader = ExcelReaderFactory.CreateReader(stream))
+                {
+                    reader.Read();
+                    while (reader.Read()) //Each row of the file
+                    {
+                      string val =  reader.GetValue(0).ToString();
+                      int devId =   int.Parse(reader.GetValue(1).ToString());
+                      int projId =   int.Parse(reader.GetValue(2).ToString());
+                      int mid =   int.Parse(reader.GetValue(3).ToString());
+                      string date =  reader.GetValue(4).ToString();
+                      var splitDate = date.Split(' ')[0].Split('-');
+                      await _toolMetricValueRepo.AddToolMetricValue(new ToolMetricValue() { ToolMetricId = mid, Value = val, DeveloperId = devId, ProjectId = projId, TimeStamp = new DateTime(int.Parse(splitDate[2]), int.Parse(splitDate[1]), int.Parse(splitDate[0])) });
+                    }
+                }
+            }
+              
+
+               
+                return RedirectToAction("Metrics");
         }
         public async Task<bool> DeleteMetric(int id)
         {

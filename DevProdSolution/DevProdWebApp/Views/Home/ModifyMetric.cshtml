@@ -64,24 +64,29 @@
         <div class="col-md-1">
         </div>
         <div class="col-md-3">
+              <form method="post" asp-controller="Home" asp-action="UploadMetricValues" enctype="multipart/form-data"> 
             <div class="row">
                 <div class="col-md-12">
+                    
 
                     <div class="file-field input-field">
+                      
                         <div class="btn">
                             <span>Upload File</span>
-                            <input id="fileupload" type="file" names="files">
+                            <input id="fileupload" type="file" name="file">
                         </div>
                         <div class="file-path-wrapper">
                             <input class="file-path validate" type="text">
                         </div>
+                      
                     </div>
 
                 </div>
             </div>
             <div class="row input-field">
-                <a class="waves-effect waves-light btn" onclick="uploadMetric(@Model.Id)">Upload Metric</a>
+                <button class="waves-effect waves-light btn" type="submit" >Upload Metric</button>
             </div>
+              </form>
         </div>
         <div class="col-md-2">
         </div>
@@ -146,7 +151,7 @@
         $.ajax({
             type: "POST",
             url: '@Url.Action("UploadMetricValues", "Home")',
-            data: formData,
+            body: formData,
             success: function (response) {
 
                 location.reload();
@@ -160,7 +165,7 @@
     function deleteMetric(id) {
         $.ajax({
             type: "POST",
-            url: '@Url.Action("DeleteMetricValues", "Home")',
+            url: '@Url.Action("DeleteMetricValue", "Home")',
             data: {id:id},
             success: function (response) {
 
