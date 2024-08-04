@@ -13,6 +13,7 @@ builder.Services.AddScoped<IDeveloperRepo,DeveloperRepo>();
 builder.Services.AddScoped<IProjectRepo,ProjectRepo>();
 builder.Services.AddScoped<IMetricRepo,MetricRepo>();
 builder.Services.AddScoped<ISettingsRepo,SettingsRepo>();
+builder.Services.AddScoped<IGlobalConfigRepo,GlobalConfigRepo>();
 builder.Services.AddScoped<IToolMetricRepo,ToolMetricRepo>();
 builder.Services.AddScoped<IToolMetricValueRepo,ToolMetricValueRepo>();
 

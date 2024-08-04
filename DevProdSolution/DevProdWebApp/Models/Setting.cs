@@ -6,6 +6,7 @@ namespace DevProdWebApp.Models
     {
         [Key]
         public int Id { get; set; }
+        public string? Name { get; set; }
         public string? Methodolgy { get; set; }
         public string? Preprocessing { get; set; }
         public string? Grouping { get; set; }

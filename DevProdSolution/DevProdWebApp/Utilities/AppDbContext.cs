@@ -15,6 +15,7 @@ namespace DevProdWebApp.Utilities
         public DbSet<Setting> Settings { get; set; }
         public DbSet<ToolMetric> ToolMetric { get; set; }
         public DbSet<ToolMetricValue> ToolMetricValues { get; set; }
+        public DbSet<GlobalConfig> GlobalConfigs { get; set; }
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
             {
             }

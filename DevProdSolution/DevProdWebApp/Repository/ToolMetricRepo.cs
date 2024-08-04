@@ -45,9 +45,9 @@ namespace DevProdWebApp.Repository
             return await _context.ToolMetric.FirstOrDefaultAsync(x=>x.Name==name);
         }
 
-        public async Task<List<ToolMetric>> GetAllToolMetrics()
+        public async Task<List<ToolMetric>> GetAllToolMetricsBySettingId(int settingId)
         {
-            return await _context.ToolMetric.ToListAsync();
+            return await _context.ToolMetric.Where(x=>x.SettingId==settingId).ToListAsync();
         }
 
         public bool UpdateToolMetric(ToolMetric metric)

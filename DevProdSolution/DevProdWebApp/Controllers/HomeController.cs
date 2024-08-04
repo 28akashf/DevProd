@@ -28,10 +28,11 @@ namespace DevProdWebApp.Controllers
         private readonly IMetricRepo _metricRepo;
         private readonly IDeveloperRepo _developerRepo;
         private readonly ISettingsRepo _settingsRepo;
+        private readonly IGlobalConfigRepo _globalConfigRepo;
         private readonly IToolMetricRepo _toolMetricRepo;
         private readonly IToolMetricValueRepo _toolMetricValueRepo;
 
-        public HomeController(ILogger<HomeController> logger, IProjectRepo projectRepo, IMetricRepo metricRepo, IDeveloperRepo developerRepo, ISettingsRepo settingsRepo, IToolMetricRepo toolMetricRepo, IToolMetricValueRepo toolMetricValueRepo)
+        public HomeController(ILogger<HomeController> logger, IProjectRepo projectRepo, IMetricRepo metricRepo, IDeveloperRepo developerRepo, ISettingsRepo settingsRepo, IToolMetricRepo toolMetricRepo, IToolMetricValueRepo toolMetricValueRepo, IGlobalConfigRepo globalConfigRepo)
         {
             _logger = logger;
             _projectRepo = projectRepo;
@@ -40,6 +41,7 @@ namespace DevProdWebApp.Controllers
             _settingsRepo = settingsRepo;
             _toolMetricRepo = toolMetricRepo;
             _toolMetricValueRepo = toolMetricValueRepo;
+            _globalConfigRepo = globalConfigRepo;
         }
 
         public IActionResult Index()
@@ -91,7 +93,8 @@ namespace DevProdWebApp.Controllers
 
                 }
             }
-            Setting defaultSetting =  await _settingsRepo.GetSettingsById(1);
+            var settingId = await _globalConfigRepo.GetCurrentSettingId();
+            Setting defaultSetting =  await _settingsRepo.GetSettingsById(settingId);
             if (defaultSetting == null)
             {
                 await _settingsRepo.AddSettings(new Setting() { Methodolgy = methodology, Preprocessing = preprocessing, Parameters=lambda, Grouping=group,SubGrouping=subgroup });
@@ -118,8 +121,9 @@ namespace DevProdWebApp.Controllers
                  return true;
         }
         public async Task<bool> AddMetric(string name, string weight)
-        {            
-           await _toolMetricRepo.AddToolMetric(new ToolMetric() { Name=name,SettingId=1, Weight=Double.Parse(weight)});
+        {
+            var settingId = await _globalConfigRepo.GetCurrentSettingId();
+           await _toolMetricRepo.AddToolMetric(new ToolMetric() { Name=name,SettingId= settingId, Weight=Double.Parse(weight)});
             return true;
         }
 
@@ -148,15 +152,23 @@ namespace DevProdWebApp.Controllers
                 using (var reader = ExcelReaderFactory.CreateReader(stream))
                 {
                     reader.Read();
-                    while (reader.Read()) //Each row of the file
+                    try
                     {
-                      string val =  reader.GetValue(0).ToString();
-                      int devId =   int.Parse(reader.GetValue(1).ToString());
-                      int projId =   int.Parse(reader.GetValue(2).ToString());
-                      int mid =   int.Parse(reader.GetValue(3).ToString());
-                      string date =  reader.GetValue(4).ToString();
-                      var splitDate = date.Split(' ')[0].Split('-');
-                      await _toolMetricValueRepo.AddToolMetricValue(new ToolMetricValue() { ToolMetricId = mid, Value = val, DeveloperId = devId, ProjectId = projId, TimeStamp = new DateTime(int.Parse(splitDate[2]), int.Parse(splitDate[1]), int.Parse(splitDate[0])) });
+                        while (reader.Read()) //Each row of the file
+                        {
+                            string val = reader.GetValue(0).ToString();
+                            int devId = int.Parse(reader.GetValue(1).ToString());
+                            int projId = int.Parse(reader.GetValue(2).ToString());
+                            int mid = int.Parse(reader.GetValue(3).ToString());
+                            string date = reader.GetValue(4).ToString();
+                            var splitDate = date.Split(' ')[0].Split('-');
+                            await _toolMetricValueRepo.AddToolMetricValue(new ToolMetricValue() { ToolMetricId = mid, Value = val, DeveloperId = devId, ProjectId = projId, TimeStamp = new DateTime(int.Parse(splitDate[2]), int.Parse(splitDate[1]), int.Parse(splitDate[0])) });
+                        }
+                    }
+                    catch (Exception)
+                    {
+
+                        
                     }
                 }
             }
@@ -192,7 +204,8 @@ namespace DevProdWebApp.Controllers
         }
         public async Task<IActionResult> Metrics()
         {
-            var vm = await _toolMetricRepo.GetAllToolMetrics();
+            var settingId = await _globalConfigRepo.GetCurrentSettingId();
+            var vm = await _toolMetricRepo.GetAllToolMetricsBySettingId(settingId);
             return View(vm);
         }
 
@@ -639,8 +652,9 @@ namespace DevProdWebApp.Controllers
             //    await _toolMetricValueRepo.AddToolMetricValue(new ToolMetricValue() { ToolMetricId = tm3.Id, Value = item.ToString(), DeveloperId = devId, ProjectId = projId, , TimeStamp = dt });
             //    i++;
             //}
-            var settings = await _settingsRepo.GetSettingsById(1);
-            var allMetrics = await _toolMetricRepo.GetAllToolMetrics();
+            var settingId = await _globalConfigRepo.GetCurrentSettingId();
+            var settings = await _settingsRepo.GetSettingsById(settingId);
+            var allMetrics = await _toolMetricRepo.GetAllToolMetricsBySettingId(settings.Id);
             Dictionary<string, List<ToolMetricValue>> metricDictionary = new Dictionary<string, List<ToolMetricValue>>();
     
             List<int> listCount = new List<int>();
@@ -673,112 +687,121 @@ namespace DevProdWebApp.Controllers
                 }              
             }
             MList list = new MList();
-            list.metricDictionary = metricDictionary;
-            list.maxCount = listCount.Max();
-
-            //list.maxCount = Math.Max(list.m1List.Count, Math.Max(list.m2List.Count, list.m3List.Count));
-            
-            //PREPROCESSING
-            switch(settings.Preprocessing)
+            try
             {
-                case "minmax":
-                 list.metricProcDictionary =  MinMaxNormalizeRawData(metricDictionary);
-                    break;
-                case "zscore":
-                    list.metricProcDictionary = ZScoreNormalizeRawData(metricDictionary);
-                    break;
-                case "log":
-                    list.metricProcDictionary = LogTransformRawData(metricDictionary);
-                    break;
-                case "exp":
-                    list.metricProcDictionary = ExponentialTransformRawData(metricDictionary);
-                    break;
-                case "sigmoid":
-                    list.metricProcDictionary = SigmoidTransformRawData(metricDictionary);
-                    break;
-                case "decimal":
-                    list.metricProcDictionary = DecimalScalingRawData(metricDictionary);
-                    break;
-                case "boxcox":
-                    list.metricProcDictionary = BoxCoxTransformRawData(metricDictionary);
-                    break;
-                case "unitvector":
-                    list.metricProcDictionary = UnitvectorScalingRawData(metricDictionary);
-                    break;
-                case "maxabs":
-                    list.metricProcDictionary = MaxAbsScalingRawData(metricDictionary);
-                    break;
-                default:
-                    break;
-            }
+               
+                list.metricDictionary = metricDictionary;
+                list.maxCount = listCount.Max();
 
-            //METHODOLOGY
+                //list.maxCount = Math.Max(list.m1List.Count, Math.Max(list.m2List.Count, list.m3List.Count));
 
-             //STEP 1:
-             Dictionary<ToolMetric,double> stdMetricValues = new Dictionary<ToolMetric, double>();
-            foreach (var keys in list.metricProcDictionary.Keys)
-            {
-                var metric = await _toolMetricRepo.GetToolMetricByName(keys);
-                var scale =  JsonConvert.DeserializeObject<JArray>(metric.Scale);
-                List<double> stdValList = new List<double>();
-                double acceptVal = (double)scale[scale.Count - 1]["UpperBound"];
-                foreach (var val in list.metricProcDictionary[keys])
+                //PREPROCESSING
+                switch (settings.Preprocessing)
                 {
-                    double currentVal = Double.Parse(val.Value);                  
-                    double stdVal = currentVal * (.5 / acceptVal);
-                    stdValList.Add(stdVal);
+                    case "minmax":
+                        list.metricProcDictionary = MinMaxNormalizeRawData(metricDictionary);
+                        break;
+                    case "zscore":
+                        list.metricProcDictionary = ZScoreNormalizeRawData(metricDictionary);
+                        break;
+                    case "log":
+                        list.metricProcDictionary = LogTransformRawData(metricDictionary);
+                        break;
+                    case "exp":
+                        list.metricProcDictionary = ExponentialTransformRawData(metricDictionary);
+                        break;
+                    case "sigmoid":
+                        list.metricProcDictionary = SigmoidTransformRawData(metricDictionary);
+                        break;
+                    case "decimal":
+                        list.metricProcDictionary = DecimalScalingRawData(metricDictionary);
+                        break;
+                    case "boxcox":
+                        list.metricProcDictionary = BoxCoxTransformRawData(metricDictionary);
+                        break;
+                    case "unitvector":
+                        list.metricProcDictionary = UnitvectorScalingRawData(metricDictionary);
+                        break;
+                    case "maxabs":
+                        list.metricProcDictionary = MaxAbsScalingRawData(metricDictionary);
+                        break;
+                    default:
+                        break;
                 }
-                stdMetricValues.Add(metric,stdValList.Average());
 
+                //METHODOLOGY
+
+                //STEP 1:
+                Dictionary<ToolMetric, double> stdMetricValues = new Dictionary<ToolMetric, double>();
+                foreach (var keys in list.metricProcDictionary.Keys)
+                {
+                    var metric = await _toolMetricRepo.GetToolMetricByName(keys);
+                    var scale = JsonConvert.DeserializeObject<JArray>(metric.Scale);
+                    List<double> stdValList = new List<double>();
+                    double acceptVal = (double)scale[scale.Count - 1]["UpperBound"];
+                    foreach (var val in list.metricProcDictionary[keys])
+                    {
+                        double currentVal = Double.Parse(val.Value);
+                        double stdVal = currentVal * (.5 / acceptVal);
+                        stdValList.Add(stdVal);
+                    }
+                    stdMetricValues.Add(metric, stdValList.Average());
+
+                }
+
+                //STEP 2:
+                double result = 0;
+                switch (settings.Methodolgy)
+                {
+                    case "sum":
+                        result = stdMetricValues.Values.Average();
+                        break;
+                    case "wtsum":
+                        foreach (var key in stdMetricValues.Keys)
+                        {
+                            result += (stdMetricValues[key] * key.Weight);
+                        }
+
+                        break;
+                    case "wtprod":
+                        result = 1;
+                        foreach (var key in stdMetricValues.Keys)
+                        {
+                            result *= Math.Pow(stdMetricValues[key], key.Weight);
+                        }
+                        break;
+                    case "wtwaspas":
+                        double wtsum = 0;
+                        double wtprod = 1;
+                        foreach (var key in stdMetricValues.Keys)
+                        {
+                            wtsum += (stdMetricValues[key] * key.Weight);
+                        }
+                        foreach (var key in stdMetricValues.Keys)
+                        {
+                            wtprod *= Math.Pow(stdMetricValues[key], key.Weight);
+                        }
+                        double lambda = Double.Parse(settings.Parameters);
+                        result = (lambda * wtsum) + ((1 - lambda) * wtprod);
+                        break;
+                    case "gmean":
+                        double prod = 1;
+                        foreach (var key in stdMetricValues.Keys)
+                        {
+                            prod *= stdMetricValues[key];
+                        }
+                        result = Math.Pow(prod, (1.0 / stdMetricValues.Keys.Count));
+                        break;
+                    default:
+                        break;
+                }
+                list.score = Math.Round(result, 2);
             }
-
-            //STEP 2:
-            double result = 0;
-            switch (settings.Methodolgy)
+            catch (Exception)
             {
-                case "sum":
-                    result = stdMetricValues.Values.Average();
-                    break;
-                case "wtsum":   
-                    foreach(var key in stdMetricValues.Keys)
-                    {
-                        result += (stdMetricValues[key] * key.Weight);
-                    }
 
-                    break;
-                case "wtprod":
-                    result = 1;
-                    foreach (var key in stdMetricValues.Keys)
-                    {
-                        result *= Math.Pow(stdMetricValues[key],key.Weight);
-                    }
-                    break;
-                case "wtwaspas":
-                    double wtsum = 0;
-                    double wtprod = 1;
-                    foreach (var key in stdMetricValues.Keys)
-                    {
-                        wtsum += (stdMetricValues[key] * key.Weight);
-                    }
-                    foreach (var key in stdMetricValues.Keys)
-                    {
-                        wtprod *= Math.Pow(stdMetricValues[key], key.Weight);
-                    }
-                    double lambda = Double.Parse(settings.Parameters);
-                    result = (lambda * wtsum) + ((1 - lambda) * wtprod);
-                    break;
-                case "gmean":
-                    double prod = 1;
-                    foreach (var key in stdMetricValues.Keys)
-                    {
-                        prod *= stdMetricValues[key];
-                    }
-                    result = Math.Pow(prod, (1.0 / stdMetricValues.Keys.Count));
-                    break;
-                default:
-                    break;
+                
             }
-            list.score = Math.Round(result,2);
 
             return View(list);
         }
@@ -787,7 +810,8 @@ namespace DevProdWebApp.Controllers
         {
             List<Developer> developerOptions = new List<Developer>();
             List<Models.Project> projectOptions = new List<Models.Project>();
-            var settings = await _settingsRepo.GetSettingsWithMetricsById(1);
+            var settingId = await _globalConfigRepo.GetCurrentSettingId();
+            var settings = await _settingsRepo.GetSettingsWithMetricsById(settingId);
             SettingsViewModel vm = new SettingsViewModel();
             vm.Methodolgy = settings.Methodolgy;
             vm.Preprocessing = settings.Preprocessing;
