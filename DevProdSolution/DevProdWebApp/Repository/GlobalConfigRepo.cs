@@ -17,5 +17,13 @@ namespace DevProdWebApp.Repository
           var setting = await  _context.GlobalConfigs.FirstOrDefaultAsync(x => x.ConfigKey == "CurrentSetting");
             return int.Parse(setting.ConfigValue);
         }
+        public async Task<bool> ChangeSettingId(string id)
+        {
+            var setting = await _context.GlobalConfigs.FirstOrDefaultAsync(x => x.ConfigKey == "CurrentSetting");
+            setting.ConfigValue = id;
+            _context.GlobalConfigs.Update(setting);
+            _context.SaveChanges();
+            return true;
+        }
     }
 }

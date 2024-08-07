@@ -40,6 +40,10 @@ namespace DevProdWebApp.Repository
         {
             return await _context.Settings.FindAsync(id);
         }
+        public async Task<List<Setting>> GetAllSettings()
+        {
+            return await _context.Settings.ToListAsync();
+        }
 
         public async Task<Setting?> GetSettingsWithMetricsById(int id)
         {

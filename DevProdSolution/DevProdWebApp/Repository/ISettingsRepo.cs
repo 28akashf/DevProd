@@ -10,5 +10,6 @@ namespace DevProdWebApp.Repository
         bool UpdateSettings(Setting dev);
         Task<Setting> AddSettings(Setting dev);
         Task<bool> DeleteSettings(int id);
+        public Task<List<Setting>> GetAllSettings();
     }
 }

@@ -48,7 +48,18 @@ namespace DevProdWebApp.Controllers
         {
             return View();
         }
-
+        public  async Task<IActionResult> Profiles()
+        {
+          var setId = await _globalConfigRepo.GetCurrentSettingId();
+            ViewData["CurrentSettings"] =  await _settingsRepo.GetSettingsById(setId);
+            var vm = await _settingsRepo.GetAllSettings();
+            return View(vm);
+        }
+        public async Task<bool> SetSettings(int setId)
+        {
+            await _globalConfigRepo.ChangeSettingId(setId.ToString());
+            return true;
+        }
         public string Test(string param)
         {
             return "Testing....!"+param;
@@ -482,35 +493,35 @@ namespace DevProdWebApp.Controllers
         public static double ZScoreNormalize(double value, double mean, double stdDev)
         {
             double normalizedValue = (value - mean) / stdDev;
-            return normalizedValue;
+            return Math.Round(normalizedValue,2);
         }
         public static double MinMaxNormalize(double value, double min, double max )
         {           
             double normalizedValue = (value - min) / (max - min);
-            return normalizedValue;
+            return Math.Round(normalizedValue, 2) ;
         }
         public static double LogTransform(double value)
         {
-            return Math.Log(value + 1); // Adding 1 to avoid log(0)
+            return Math.Round(Math.Log(value + 1),2); // Adding 1 to avoid log(0)
         }
 
 
         public static double ExponentialTransform(double value)
         {
-            return Math.Exp(value);
+            return Math.Round(Math.Exp(value),2);
         }
 
         public static double BoxCoxTransform(double value, double lambda)
         {
             if (lambda == 0)
-                return Math.Log(value);
+                return Math.Round(Math.Log(value),2);
             else
-                return (Math.Pow(value, lambda) - 1) / lambda;
+                return Math.Round((Math.Pow(value, lambda) - 1) / lambda,2);
         }
 
         public static double MaxAbsScaling(double value, double maxAbs)
         {
-            return value / maxAbs;
+            return Math.Round(value / maxAbs, 2);
         }
 
         //public static double[] QuantileTransform(double[] data)
@@ -528,16 +539,16 @@ namespace DevProdWebApp.Controllers
         public static double UnitVectorScaling(double value, double sumOfSquares)
         {
             double norm = Math.Sqrt(sumOfSquares);
-            return value / norm; ;
+            return Math.Round(value / norm,2) ;
         }
         public static double DecimalScaling(double value,double max)
         {
             int j = (int)Math.Ceiling(Math.Log10(max));
-            return  value / Math.Pow(10, j);
+            return Math.Round(value / Math.Pow(10, j));
         }
         public static double SigmoidTransform(double value)
         {
-            return 1 / (1 + Math.Exp(-value));
+            return Math.Round(1 / (1 + Math.Exp(-value)));
         }
 
         //public static double[] RobustScaler(double[] data)
