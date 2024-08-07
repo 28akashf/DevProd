@@ -13,17 +13,19 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/DevProdWebApp.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/custom.css" asp-append-version="true" />
+
 </head>
-<body class="grey lighten-5">
+<body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3 grey darken-3">
+     @*    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3 grey darken-3">
             <div class="container-fluid">
                 <a class="navbar-brand text-white" asp-area="" asp-controller="Home" asp-action="Index">DevProdWebApp</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                </button> *@
+              @*   <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
@@ -44,14 +46,38 @@
                             <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Metrics">Metrics</a>
                         </li>
                     </ul>
-                </div>
-            </div>
-        </nav>
+                </div> *@
+         @*    </div>
+        </nav> *@
+ 
+
+        <ul id="slide-out" class="sidenav sidenav-fixed grey lighten-5">
+
+            <div class="sidebg">
+            
+           </div>
+            <li><div class="divider"></div></li>
+            <li class="menupad">FEATURES</li>
+            <li><a> <i class="material-icons prefix">settings</i>Dashboard</a></li>
+            <li><a> <i class="material-icons prefix">settings</i>Settings</a></li>
+            <li><a><i class="material-icons prefix">build</i>Metrics</a></li>
+            <li><div class="divider"></div></li>
+            <li class="menupad">SPECIFICS</li>
+            <li><a><i class="material-icons prefix">person</i>Developers</a></li>
+            <li><a><i class="material-icons prefix">assignment</i>Projects</a></li>
+            <li><div class="divider"></div></li>
+            <li class="menupad">INFO</li>
+            <li><a><i class="material-icons prefix">person</i>Help</a></li>
+            <li><a><i class="material-icons prefix">assignment</i>About</a></li>
+            <li><div class="divider"></div></li>
+        </ul>
+
     </header>
     <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+
+                <main role="main" class="pb-3">
+                    @RenderBody()
+                </main>
     </div>
 
     <footer class="border-top footer text-muted">
@@ -67,5 +93,13 @@
   @*   <script type="text/javascript" src="js/materialize.min.js"></script> *@
     <!-- Compiled and minified JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script type="text/javascript">
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var elems = document.querySelectorAll('.sidenav');
+            var options = document.querySelectorAll('.li');
+            var instances = M.Sidenav.init(elems, options);
+        });
+    </script>
 </body>
 </html>

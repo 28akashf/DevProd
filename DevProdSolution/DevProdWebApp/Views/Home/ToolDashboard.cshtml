@@ -4,13 +4,81 @@
 @model DevProdWebApp.ViewModels.MList;
 <div class="container">
     <div class="row">
-        <div class="col-md-4"></div>
-        <div class="col-md-4"> <h2 class="grey-text text-darken-1"> Dashboard</h2></div>
+        </div>
+    <div class="row">
+            <div class="row">
+                <div class="input-field col s6">
+                    <i class="material-icons prefix">search</i>
+                    <textarea id="icon_prefix2" class="materialize-textarea"></textarea>
+                </div>
+            </div>
+       
     </div>
-    <div class="row">     
-            <div class="col-md-9">
+    <div class="row">
+    <div class="row">
+        <div class="col-md-9"><h5> Scores</h5><h7 class="grey-text text-darken-1"> Overall productivity for analysis</h7>
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="card blue-grey darken-1">
+                            <div class="card-content white-text">
+                                <span class="card-title">Productivity Score</span>
+
+                                <h1>@Model.score</h1>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        </div>
+                    <div class="col-md-5">
+                        <div class="card grey darken-1">
+                            <div class="card-content white-text">
+                                <span class="card-title">Productivity Score</span>
+
+                                <h1>@Model.score</h1>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <h6 class="grey-text text-darken-1"> Welcome to the </h6><h1>Dev Pro Dashboard</h1>
+               
+                </div>
+            </div>
+          
+            <div class="col-md-3">
+
+                <div class="row">
+                    <div class="col s12 m6">
+                        <div class="card black">
+                            <div class="card-content white-text">
+                                <span class="card-title">Plans</span>
+
+                                <p>Plans range from 1000 Euros to 2000 Euros. The platform utilizes the power of methodologies to perform flexible operations for different situations.</p>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+    </div>
+
+
+       
+     @*    <div class="row">
+        <a class="waves-effect waves-light btn" asp-controller="Home" asp-action="ToolSettings"><i class="material-icons center white-text">build</i></a>
+ *@
+       
+   
+    </div>
+    <div class="row">
+        <div class="col-md-12">
             <div class="card darken-1">
-                <div class="card-content">
+                <div class="card-content ">
                     <span class="card-title">Data</span>
 
                    
@@ -18,7 +86,7 @@
                 <div class="row">
 
                      <div class="col-md-12">
-                    <ul class="tabs">
+                            <ul class="tabs ">
 
                         <li class="tab col-md-5"><a class="active" href="#test1">Raw</a></li>
                         <li class="tab col-md-5"><a href="#test2">Processed</a></li>
@@ -26,8 +94,8 @@
                      </div>
                 <div id="test1" class="col-md-12">
 
-                    <table class="responsive-table striped">
-                      <thead>
+                            <table class="responsive-table">
+                                <thead class="grey lighten-2">
                             <tr>
                                @foreach (var key in Model.metricDictionary.Keys)
                                 {
@@ -70,8 +138,8 @@
 
                 </div>
                 <div id="test2" class="col-md-12">
-                    <table class="responsive-table striped">
-                        <thead>
+                    <table class="responsive-table">
+                                <thead class="grey lighten-2">
                             <tr>
                                 @foreach (var key in Model.metricProcDictionary.Keys)
                                 {
@@ -117,37 +185,7 @@
             </div>
            
                
-       
-        <div class="col-md-3">
-
-            <div class="row">
-                <div class="col s12 m6">
-                    <div class="card blue-grey darken-1">
-                        <div class="card-content white-text">
-                            <span class="card-title">Productivity Score</span>
-                         
-                            <h1>@Model.score</h1>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col s12 m6">
-                    <div class="card orange darken-3">
-                        <div class="card-content white-text">
-                            <span class="card-title">Settings</span>
-
-                            <a class="waves-effect waves-light btn" asp-controller="Home" asp-action="ToolSettings"><i class="material-icons center white-text">build</i></a>
-                        </div>
-
-                    </div>
-                </div>
-             
-                
-            </div>
-            
-        </div>
+    
     
     </div>
 </div>
