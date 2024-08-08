@@ -60,3 +60,7 @@ tr{
         background-color: white;
         outline: none;
     }
+
+.sidenav li > a {
+text-decoration:none;
+}

@@ -58,18 +58,18 @@
            </div>
             <li><div class="divider"></div></li>
             <li class="menupad">FEATURES</li>
-            <li><a> <i class="material-icons prefix">settings</i>Dashboard</a></li>
-            <li><a> <i class="material-icons prefix">settings</i>Settings</a></li>
-            <li><a><i class="material-icons prefix">build</i>Metrics</a></li>
+            <li><a asp-controller="Home" asp-action="ToolDashboard"> <i class="material-icons prefix">insert_chart</i>Dashboard</a></li>
+            <li><a asp-controller="Home" asp-action="ToolSettings"> <i class="material-icons prefix">settings</i>Settings</a></li>
+            <li><a asp-controller="Home" asp-action="Metrics"><i class="material-icons prefix">build</i>Metrics</a></li>
             <li><div class="divider"></div></li>
             <li class="menupad">SPECIFICS</li>
-            <li><a><i class="material-icons prefix">person</i>Developers</a></li>
-            <li><a><i class="material-icons prefix">assignment</i>Projects</a></li>
-            <li><a><i class="material-icons prefix">assignment</i>Profiles</a></li>
+            <li><a asp-controller="Home" asp-action="Developers"><i class="material-icons prefix">person</i>Developers</a></li>
+            <li><a asp-controller="Home" asp-action="Projects"><i class="material-icons prefix">assignment</i>Projects</a></li>
+            <li><a asp-controller="Home" asp-action="Profiles"><i class="material-icons prefix">assignment_ind</i>Profiles</a></li>
             <li><div class="divider"></div></li>
             <li class="menupad">INFO</li>
-            <li><a><i class="material-icons prefix">person</i>Help</a></li>
-            <li><a><i class="material-icons prefix">assignment</i>About</a></li>
+            <li><a asp-controller="Home" asp-action="Settings"><i class="material-icons prefix">live_help</i>Help</a></li>
+            <li><a asp-controller="Home" asp-action="Settings"><i class="material-icons prefix">info</i>About</a></li>
             <li><div class="divider"></div></li>
         </ul>
 

@@ -310,7 +310,7 @@ namespace DevProdWebApp.Controllers
                 for (int i = 0; i < arrCast.Count; i++)
                 {
                     arrCastCopy.Add(new ToolMetricValue() { Id = arrCast[i].Id, ToolMetric = arrCast[i].ToolMetric, ToolMetricId = arrCast[i].ToolMetricId, Value = arrCast[i].Value });
-                    arrCastCopy[i].Value =  MinMaxNormalize(Double.Parse(arrCast[i].Value), min, max).ToString();
+                    arrCastCopy[i].Value =  MinMaxNormalize(Double.Parse(arrCast[i].Value), min, max).ToString("F2");
                 }
                 dictionaryProcessed.Add(item, arrCastCopy);
             }
@@ -329,7 +329,7 @@ namespace DevProdWebApp.Controllers
                 for (int i = 0; i < arrCast.Count; i++)
                 {
                     arrCastCopy.Add(new ToolMetricValue() { Id = arrCast[i].Id, ToolMetric = arrCast[i].ToolMetric, ToolMetricId = arrCast[i].ToolMetricId, Value = arrCast[i].Value });
-                    arrCastCopy[i].Value = ZScoreNormalize(Double.Parse(arrCastCopy[i].Value), mean, stdDev).ToString();
+                    arrCastCopy[i].Value = ZScoreNormalize(Double.Parse(arrCastCopy[i].Value), mean, stdDev).ToString("F2");
                 }
                 dictionaryProcessed.Add(item, arrCastCopy);
             }
@@ -346,7 +346,7 @@ namespace DevProdWebApp.Controllers
                 for (int i = 0; i < arrCast.Count; i++)
                 {
                     arrCastCopy.Add(new ToolMetricValue() { Id = arrCast[i].Id, ToolMetric = arrCast[i].ToolMetric, ToolMetricId = arrCast[i].ToolMetricId, Value = arrCast[i].Value });
-                    arrCastCopy[i].Value = LogTransform(Double.Parse(arrCastCopy[i].Value)).ToString();
+                    arrCastCopy[i].Value = LogTransform(Double.Parse(arrCastCopy[i].Value)).ToString("F2");
                 }
                 dictionaryProcessed.Add(item, arrCastCopy);
             }
@@ -363,7 +363,7 @@ namespace DevProdWebApp.Controllers
                 for (int i = 0; i < arrCast.Count; i++)
                 {
                     arrCastCopy.Add(new ToolMetricValue() { Id = arrCast[i].Id, ToolMetric = arrCast[i].ToolMetric, ToolMetricId = arrCast[i].ToolMetricId, Value = arrCast[i].Value });
-                    arrCastCopy[i].Value = ExponentialTransform(Double.Parse(arrCastCopy[i].Value)).ToString();
+                    arrCastCopy[i].Value = ExponentialTransform(Double.Parse(arrCastCopy[i].Value)).ToString("F2");
                 }
                 dictionaryProcessed.Add(item, arrCastCopy);
             }
@@ -380,7 +380,7 @@ namespace DevProdWebApp.Controllers
                 for (int i = 0; i < arrCast.Count; i++)
                 {
                     arrCastCopy.Add(new ToolMetricValue() { Id = arrCast[i].Id, ToolMetric = arrCast[i].ToolMetric, ToolMetricId = arrCast[i].ToolMetricId, Value = arrCast[i].Value });
-                    arrCastCopy[i].Value = BoxCoxTransform(Double.Parse(arrCastCopy[i].Value), 1).ToString();
+                    arrCastCopy[i].Value = BoxCoxTransform(Double.Parse(arrCastCopy[i].Value), 1).ToString("F2");
                 }
                 dictionaryProcessed.Add(item, arrCastCopy);
             }
@@ -400,7 +400,7 @@ namespace DevProdWebApp.Controllers
                 for (int i = 0; i < arrCast.Count; i++)
                 {
                     arrCastCopy.Add(new ToolMetricValue() { Id = arrCast[i].Id, ToolMetric = arrCast[i].ToolMetric, ToolMetricId = arrCast[i].ToolMetricId, Value = arrCast[i].Value });
-                    arrCastCopy[i].Value = UnitVectorScaling(Double.Parse(arrCastCopy[i].Value), sumOfSquares).ToString();
+                    arrCastCopy[i].Value = UnitVectorScaling(Double.Parse(arrCastCopy[i].Value), sumOfSquares).ToString("F2");
                 }
                 dictionaryProcessed.Add(item, arrCastCopy);
             }
@@ -419,7 +419,7 @@ namespace DevProdWebApp.Controllers
                 for (int i = 0; i < arrCast.Count; i++)
                 {
                     arrCastCopy.Add(new ToolMetricValue() { Id = arrCast[i].Id, ToolMetric = arrCast[i].ToolMetric, ToolMetricId = arrCast[i].ToolMetricId, Value = arrCast[i].Value });
-                    arrCastCopy[i].Value = DecimalScaling(Double.Parse(arrCastCopy[i].Value), max).ToString();
+                    arrCastCopy[i].Value = DecimalScaling(Double.Parse(arrCastCopy[i].Value), max).ToString("F2");
                 }
                 dictionaryProcessed.Add(item, arrCastCopy);
             }
@@ -436,7 +436,7 @@ namespace DevProdWebApp.Controllers
                 for (int i = 0; i < arrCast.Count; i++)
                 {
                     arrCastCopy.Add(new ToolMetricValue() { Id = arrCast[i].Id, ToolMetric = arrCast[i].ToolMetric, ToolMetricId = arrCast[i].ToolMetricId, Value = arrCast[i].Value });
-                    arrCastCopy[i].Value = SigmoidTransform(Double.Parse(arrCastCopy[i].Value)).ToString();
+                    arrCastCopy[i].Value = SigmoidTransform(Double.Parse(arrCastCopy[i].Value)).ToString("F2");
                 }
                 dictionaryProcessed.Add(item, arrCastCopy);
             }
@@ -454,7 +454,7 @@ namespace DevProdWebApp.Controllers
                 for (int i = 0; i < arrCast.Count; i++)
                 {
                     arrCastCopy.Add(new ToolMetricValue() { Id = arrCast[i].Id, ToolMetric = arrCast[i].ToolMetric, ToolMetricId = arrCast[i].ToolMetricId, Value = arrCast[i].Value });
-                    arrCastCopy[i].Value = MaxAbsScaling(Double.Parse(arrCastCopy[i].Value), maxAbs).ToString();
+                    arrCastCopy[i].Value = MaxAbsScaling(Double.Parse(arrCastCopy[i].Value), maxAbs).ToString("F2");
                 }
                 dictionaryProcessed.Add(item, arrCastCopy);
             }
