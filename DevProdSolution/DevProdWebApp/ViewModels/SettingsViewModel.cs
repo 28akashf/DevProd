@@ -10,6 +10,7 @@ namespace DevProdWebApp.ViewModels
         public string? Grouping { get; set; }
         public string? SubGrouping { get; set; }
         public string? Parameters { get; set; }
+        public string? ScaleMethod { get; set; }
         public List<ToolMetric> ToolMetricList { get; set; }
         public  List<MetricScale> ToolMetricScaleList { get; set; }
         public  List<Developer> DeveloperList { get; set; }

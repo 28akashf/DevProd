@@ -1,4 +1,6 @@
+using Accord.Math;
 using Accord.Statistics;
+using Accord.Statistics.Distributions.Univariate;
 using Azure;
 using DevProdWebApp.Models;
 using DevProdWebApp.Repository;
@@ -81,7 +83,7 @@ namespace DevProdWebApp.Controllers
             return View(metric);
         }
 
-        public async Task<bool> SaveSettings(string methodology, string preprocessing, string param, string group, string subgroup)
+        public async Task<bool> SaveSettings(string methodology, string preprocessing, string param, string group, string subgroup,string scalemethod)
         {
             string lambda = string.Empty;
             if(!string.IsNullOrEmpty(param))
@@ -108,7 +110,7 @@ namespace DevProdWebApp.Controllers
             Setting defaultSetting =  await _settingsRepo.GetSettingsById(settingId);
             if (defaultSetting == null)
             {
-                await _settingsRepo.AddSettings(new Setting() { Methodolgy = methodology, Preprocessing = preprocessing, Parameters=lambda, Grouping=group,SubGrouping=subgroup });
+                await _settingsRepo.AddSettings(new Setting() { Methodolgy = methodology, Preprocessing = preprocessing, Parameters=lambda, Grouping=group,SubGrouping=subgroup, Scale=scalemethod });
             }
             else
             {
@@ -117,6 +119,7 @@ namespace DevProdWebApp.Controllers
                  defaultSetting.Parameters = lambda;
                  defaultSetting.Grouping = group;
                  defaultSetting.SubGrouping = subgroup;
+                defaultSetting.Scale = scalemethod;
                 _settingsRepo.UpdateSettings(defaultSetting);
             }
           
@@ -670,21 +673,30 @@ namespace DevProdWebApp.Controllers
     
             List<int> listCount = new List<int>();
             int groupValue = 0;
-            switch(settings.Grouping)
-            {
-                case "developer":
-                    groupValue = (await _developerRepo.GetDeveloperByUsername(settings.SubGrouping)).Id;
-                    break;
-                case "project":
-                    groupValue = (await _projectRepo.GetProjectByProjectName(settings.SubGrouping)).Id;
-                    break;
-            }
+            //switch(settings.Grouping)
+            //{
+            //    case "developer":
+            //        groupValue = (await _developerRepo.GetDeveloperByUsername(settings.SubGrouping)).Id;
+            //        break;
+            //    case "project":
+            //        groupValue = (await _projectRepo.GetProjectByProjectName(settings.SubGrouping)).Id;
+            //        break;
+            //    case "devproj":
+            //        groupValue = (await _developerRepo.GetDeveloperByUsername(settings.SubGrouping)).Id;
+            //        break;
+            //    case "devdays":
+            //        groupValue = (await _developerRepo.GetDeveloperByUsername(settings.SubGrouping)).Id;
+            //        break;
+            //    case "devprojdays":
+            //        groupValue = (await _developerRepo.GetDeveloperByUsername(settings.SubGrouping)).Id;
+            //        break;
+            //}
             foreach(var metric in allMetrics)
             {
                 //    var metricList = await _toolMetricValueRepo.GetToolMetricValuesByMetricId(metric.Id);
                 try
                 {
-                    var metricList = await _toolMetricValueRepo.GetFileteredToolMetricValuesByMetricId(metric.Id, settings.Grouping, groupValue);
+                    var metricList = await _toolMetricValueRepo.GetFileteredToolMetricValuesByMetricId(metric.Id, settings.Grouping, settings.SubGrouping);
                     if (metricList.Count>0)
                     {
                         listCount.Add(metricList.Count);
@@ -752,9 +764,26 @@ namespace DevProdWebApp.Controllers
                     double acceptVal = (double)scale[scale.Count - 1]["UpperBound"];
                     foreach (var val in list.metricProcDictionary[keys])
                     {
+                        var mean = list.metricProcDictionary[keys].Average(x=>double.Parse(x.Value));
+                        var stdDev = Measures.StandardDeviation(list.metricProcDictionary[keys].Select(x=>double.Parse(x.Value)).ToArray());
                         double currentVal = Double.Parse(val.Value);
-                        double stdVal = currentVal * (.5 / acceptVal);
-                        stdValList.Add(stdVal);
+                        switch (settings.Scale) 
+                        {
+                            case "polynomial":
+                                double stdVal = currentVal * (.5 / acceptVal);
+                                stdValList.Add(stdVal);
+                                break;
+                            case "bernoulli":
+                                double bernoulli = currentVal / (1-currentVal);
+                                stdVal = (currentVal - acceptVal) / bernoulli;
+                                var normalDist = new NormalDistribution(mean, stdDev);
+                                double pnorm = normalDist.DistributionFunction(stdVal);
+                                stdValList.Add(pnorm);
+                                break;
+
+                        }
+                       
+                     
                     }
                     stdMetricValues.Add(metric, stdValList.Average());
 
@@ -828,6 +857,7 @@ namespace DevProdWebApp.Controllers
             vm.Preprocessing = settings.Preprocessing;
             vm.Grouping = settings.Grouping;
             vm.SubGrouping = settings.SubGrouping;
+            vm.ScaleMethod = settings.Scale;
             try
             {
             vm.Parameters = settings.Parameters;

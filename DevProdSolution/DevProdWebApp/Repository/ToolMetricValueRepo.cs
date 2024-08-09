@@ -72,19 +72,47 @@ namespace DevProdWebApp.Repository
         {
             return await _context.ToolMetricValues.Where(x=>x.ToolMetricId==mid).ToListAsync();
         }
-        public async Task<List<ToolMetricValue>> GetFileteredToolMetricValuesByMetricId(int mid,string filter,int value)
+        public async Task<List<ToolMetricValue>> GetFileteredToolMetricValuesByMetricId(int mid,string filter,string value)
         {
             List<ToolMetricValue> result = null;
             switch(filter)
             {
                 case "developer":
-                    result = await _context.ToolMetricValues.Where(x => x.ToolMetricId == mid && x.DeveloperId == value).ToListAsync();
+                    int id = int.Parse(value);
+                    result = await _context.ToolMetricValues.Where(x => x.ToolMetricId == mid && x.DeveloperId == id).ToListAsync();
                     break;
                 case "project":
-               result = await _context.ToolMetricValues.Where(x => x.ToolMetricId == mid && x.ProjectId == value).ToListAsync();
+                     id = int.Parse(value);
+                    result = await _context.ToolMetricValues.Where(x => x.ToolMetricId == mid && x.ProjectId == id).ToListAsync();
                     break;
-                case "date":
-                    result = await _context.ToolMetricValues.Where(x => x.ToolMetricId == mid && x.TimeStamp >= DateTime.Now.AddDays((0-value))).ToListAsync();
+                case "days":
+                    int days = int.Parse(value);
+                    result = await _context.ToolMetricValues.Where(x => x.ToolMetricId == mid && x.TimeStamp >= DateTime.Now.AddDays((0-days))).ToListAsync();
+                    break;
+                case "devproj":
+                    string[] valArr = value.Split("#####");
+                    int devId = int.Parse(valArr[0]);
+                    int projId = int.Parse(valArr[1]);
+                    result = await _context.ToolMetricValues.Where(x => x.ToolMetricId == mid && x.DeveloperId==devId && x.ProjectId==projId).ToListAsync();
+                    break;
+                case "devdays":
+                    valArr = value.Split("#####");
+                    devId = int.Parse(valArr[0]);
+                    days = int.Parse(valArr[1]);
+                    result = await _context.ToolMetricValues.Where(x => x.ToolMetricId == mid  && x.DeveloperId == devId && x.TimeStamp >= DateTime.Now.AddDays((0 - days))).ToListAsync();
+                    break;
+                case "projdays":
+                    valArr = value.Split("#####");
+                    projId = int.Parse(valArr[0]);
+                    days = int.Parse(valArr[1]);
+                    result = await _context.ToolMetricValues.Where(x => x.ToolMetricId == mid && x.ProjectId==projId && x.TimeStamp >= DateTime.Now.AddDays((0 - days))).ToListAsync();
+                    break;
+                case "devprojdays":
+                    valArr = value.Split("#####");
+                    devId = int.Parse(valArr[0]);
+                    projId = int.Parse(valArr[1]);
+                    days = int.Parse(valArr[2]);
+                    result = await _context.ToolMetricValues.Where(x => x.ToolMetricId == mid && x.DeveloperId == devId && x.ProjectId == projId &&  x.TimeStamp >= DateTime.Now.AddDays((0 - days))).ToListAsync();
                     break;
                 default:
                result =  await _context.ToolMetricValues.Where(x => x.ToolMetricId == mid).ToListAsync();

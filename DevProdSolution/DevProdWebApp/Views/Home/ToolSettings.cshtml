@@ -53,6 +53,17 @@
                         <label for="preproc">Data Preprocessing</label>
                     </div>
                       </div>
+                                <div class="row">
+                                    <div class="input-field col-md-8">
+
+                                        <select id="scalemethod" title="scalemethod" asp-for="@Model.ScaleMethod">
+                                            <option value="polynomial">Polynomial</option>
+                                            <option value="bernoulli">Bernoulli</option>
+                                        </select>
+                                        <label for="scalemethod">Scale Method</label>
+
+                                    </div>
+                                </div>
                 <div class="row">
                     <div class="input-field col-md-8">
 
@@ -60,19 +71,24 @@
                             <option value="none">None</option>
                             <option value="developer">Developer</option>
                             <option value="project">Project</option>
-                            <option value="days">Days</option>
+                                            <option value="days">Days</option>
+                                            <option value="projdays">Project and Days</option>
+                                            <option value="devdays">Developer and Days</option>
+                                            <option value="devproj">Project and Developer</option>
+                                            <option value="devprojdays">Project Developer and Days</option>
                         </select>
                         <label for="grouping">Grouping</label>
 
                     </div>
                 </div>
+                              
                 <div id="groupingdevrow" class="row">
                     <div class="input-field col-md-8">
 
                         <select id="subgroupingdev" title="subgrouping" asp-for="@Model.SubGrouping">
                             @foreach (var dev in Model.DeveloperList)
                             {
-                                <option value="@dev.Username">@dev.Username</option>
+                                <option value="@dev.Id">@dev.Username</option>
                             }
                         </select>
                         <label for="subgroupingdev">Developer</label>
@@ -85,7 +101,7 @@
                         <select id="subgroupingproj" title="subgrouping" asp-for="@Model.SubGrouping">
                            @foreach(var proj in Model.ProjectList)
                             {
-                                <option value="@proj.Name">@proj.Name</option>
+                                <option value="@proj.Id">@proj.Name</option>
                             }
                           
                           
@@ -271,6 +287,7 @@
    function saveSettings() {
     
         var method = document.getElementById('method').value;
+        var scalemethod = document.getElementById('scalemethod').value;
         var preproc = document.getElementById('preproc').value;
         var grouping = document.getElementById('grouping').value;
        var subgrouping;
@@ -278,9 +295,24 @@
            case "developer":
                 subgrouping =   document.getElementById('subgroupingdev').value;
                break;
-                   case "project":
+           case "project":
                 subgrouping =   document.getElementById('subgroupingproj').value;
                break;
+            case "days":
+                subgrouping = document.getElementById('subgroupingdays').value;
+                break;
+            case "devdays":
+                subgrouping = document.getElementById('subgroupingdays').value;
+                break;
+            case "devproj":
+                subgrouping = document.getElementById('subgroupingdev').value+'#####'+document.getElementById('subgroupingproj').value;
+                break;
+            case "projdays":
+                subgrouping = document.getElementById('subgroupingproj').value + '#####' + document.getElementById('subgroupingdays').value;
+                break;
+            case "devprojdays":
+                subgrouping = document.getElementById('subgroupingdev').value + '#####' + document.getElementById('subgroupingproj').value + '#####' + document.getElementById('subgroupingdays').value;
+                break;
             case "none":
                 subgrouping = "";
                 break;
@@ -314,7 +346,7 @@
         $.ajax({
             type: "POST",
             url: '@Url.Action("SaveSettings", "Home")',
-            data: { methodology:method, preprocessing:preproc, param:paramJson, group:grouping, subgroup:subgrouping },
+            data: { methodology:method, preprocessing:preproc, param:paramJson, group:grouping, subgroup:subgrouping, scalemethod:scalemethod },
             success: function (response) {
 
               
@@ -338,7 +370,7 @@
     });
 
     function checkForWeights() {
-        var method = document.getElementById('method').value;
+        var method = document.getElementById('method').value; 
         var wtm = document.getElementsByClassName("wtrow");
         var lam = document.getElementById("lamrow");
        
@@ -386,6 +418,26 @@
             case 'days':
                 groupingdev.style.display = "none";
                 groupingproj.style.display = "none";
+                groupingdays.style.display = "block";
+                break;
+            case 'devproj':
+                groupingdev.style.display = "block";
+                groupingproj.style.display = "block";
+                groupingdays.style.display = "none";
+                break;
+            case 'devdays':
+                groupingdev.style.display = "block";
+                groupingproj.style.display = "none";
+                groupingdays.style.display = "block";
+                break;
+            case 'projdays':
+                groupingdev.style.display = "none";
+                groupingproj.style.display = "block";
+                groupingdays.style.display = "block";
+                break;
+            case 'devprojdays':
+                groupingdev.style.display = "block";
+                groupingproj.style.display = "block";
                 groupingdays.style.display = "block";
                 break;
             case 'none':
