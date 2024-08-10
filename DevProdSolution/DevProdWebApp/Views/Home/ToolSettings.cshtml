@@ -18,7 +18,7 @@
                     <span class="card-title">Settings</span>
                     <div class="row"></div>
                     <div class="row">
-                  <div class="col-md-6">
+                  <div class="col-md-8">
          
                       <div class="row">
  
@@ -85,20 +85,41 @@
                 <div id="groupingdevrow" class="row">
                     <div class="input-field col-md-8">
 
-                        <select id="subgroupingdev" title="subgrouping" asp-for="@Model.SubGrouping">
+                       @*  <select id="subgroupingdev" title="subgrouping" asp-for="@Model.SubGrouping">
                             @foreach (var dev in Model.DeveloperList)
                             {
                                 <option value="@dev.Id">@dev.Username</option>
                             }
                         </select>
-                        <label for="subgroupingdev">Developer</label>
+                        <label for="subgroupingdev">Developer</label> *@
+                                        <p>
+                                        @foreach (var dev in Model.DeveloperList)
+                                        {
+                                                var did = "d" + dev.Id;
+                                            <label for="@did">
+
+                                                    @if (Model.SubGroupingDev != null && Model.SubGroupingDev.Contains(did))
+                                                    {
+                                                        <input type="checkbox" class="devbox" id="@did"  checked="checked"/>
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="checkbox" class="devbox" id="@did" />
+                                                    }
+
+                                                <span>@dev.Username</span>
+                                            </label>
+                                       
+                                        }
+                                        </p>
+                       
 
                     </div>
                 </div>
                 <div id="groupingprojrow" class="row">
                     <div class="input-field col-md-8">
 
-                        <select id="subgroupingproj" title="subgrouping" asp-for="@Model.SubGrouping">
+                      @*   <select id="subgroupingproj" title="subgrouping" asp-for="@Model.SubGrouping">
                            @foreach(var proj in Model.ProjectList)
                             {
                                 <option value="@proj.Id">@proj.Name</option>
@@ -106,14 +127,36 @@
                           
                           
                         </select>
-                        <label for="subgroupingproj">Project</label>
+                        <label for="subgroupingproj">Project</label> *@
+
+                                        <p>
+                                            @foreach (var proj in Model.ProjectList)
+                                            {
+                                                var pid = "p" + proj.Id;
+                                                <label for="@pid">
+                                                    @if (Model.SubGroupingProj != null && Model.SubGroupingProj.Contains(pid))
+                                                    {
+                                                        <input type="checkbox" class="projbox" id="@pid" checked="checked" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="checkbox" class="projbox" id="@pid" />
+                                                    }
+
+
+                                                  
+                                                    <span>@proj.Name</span>
+                                                </label>
+
+                                            }
+                                        </p>
 
                     </div>
                 </div>
                 <div id="groupingdaysrow" class="row">
                     <div class="input-field col-md-8">
 
-                        <select id="subgroupingdays" title="subgrouping" asp-for="@Model.SubGrouping">
+                        <select id="subgroupingdays" title="subgrouping" asp-for="@Model.SubGroupingDays">
                            
                                 <option value="10">Last 10 days</option>
                             <option value="15">Last 15 days</option>
@@ -290,31 +333,88 @@
         var scalemethod = document.getElementById('scalemethod').value;
         var preproc = document.getElementById('preproc').value;
         var grouping = document.getElementById('grouping').value;
-       var subgrouping;
+       var subgrouping = {};
+        let devIdArr = [];
+        let projIdArr = [];
+       let devchck;
+       let projchck;
        switch (grouping) { 
            case "developer":
-                subgrouping =   document.getElementById('subgroupingdev').value;
+             //   subgrouping =   document.getElementById('subgroupingdev').value;              
+           devchck =  document.getElementsByClassName("devbox");
+               for (let chck of devchck) {
+                   if (chck.checked)
+                        devIdArr.push(chck.id.substring(1))
+               }
+                subgrouping["dev"] = devIdArr;
                break;
            case "project":
-                subgrouping =   document.getElementById('subgroupingproj').value;
+             //   subgrouping =   document.getElementById('subgroupingproj').value;       
+                projchck = document.getElementsByClassName("projbox");
+                for (let chck of projchck) {
+                    if (chck.checked)
+                        projIdArr.push(chck.id.substring(1))
+                }
+                subgrouping["proj"] = projIdArr;
                break;
             case "days":
-                subgrouping = document.getElementById('subgroupingdays').value;
+                subgrouping["days"] = document.getElementById('subgroupingdays').value;
                 break;
             case "devdays":
-                subgrouping = document.getElementById('subgroupingdays').value;
+                subgrouping["days"] = document.getElementById('subgroupingdays').value;
+                devchck = document.getElementsByClassName("devbox");
+                for (let chck of devchck) {
+                    if (chck.checked)
+                        devIdArr.push(chck.id)
+                }
+                subgrouping["dev"] = devIdArr;
                 break;
             case "devproj":
-                subgrouping = document.getElementById('subgroupingdev').value+'#####'+document.getElementById('subgroupingproj').value;
+             //   subgrouping = document.getElementById('subgroupingdev').value+'#####'+document.getElementById('subgroupingproj').value;
+
+                devchck = document.getElementsByClassName("devbox");
+                for (let chck of devchck) {
+                    if (chck.checked)
+                        devIdArr.push(chck.id)
+                }
+                subgrouping["dev"] = devIdArr;
+                projchck = document.getElementsByClassName("projbox");
+                for (let chck of projchck) {
+                    if (chck.checked)
+                        projIdArr.push(chck.id)
+                }
+                subgrouping["proj"] = projIdArr;
                 break;
             case "projdays":
-                subgrouping = document.getElementById('subgroupingproj').value + '#####' + document.getElementById('subgroupingdays').value;
-                break;
+            //    subgrouping = document.getElementById('subgroupingproj').value + '#####' + document.getElementById('subgroupingdays').value;
+                subgrouping["days"] = document.getElementById('subgroupingdays').value;
+
+                projchck = document.getElementsByClassName("projbox");
+                for (let chck of projchck) {
+                    if (chck.checked)
+                        projIdArr.push(chck.id)
+                }
+                subgrouping["proj"] = projIdArr;
+            break;
             case "devprojdays":
-                subgrouping = document.getElementById('subgroupingdev').value + '#####' + document.getElementById('subgroupingproj').value + '#####' + document.getElementById('subgroupingdays').value;
-                break;
+             //   subgrouping = document.getElementById('subgroupingdev').value + '#####' + document.getElementById('subgroupingproj').value + '#####' + document.getElementById('subgroupingdays').value;
+                subgrouping["days"] = document.getElementById('subgroupingdays').value;
+                devchck = document.getElementsByClassName("devbox");
+                for (let chck of devchck) {
+                    if (chck.checked)
+                        devIdArr.push(chck.id)
+                }
+                subgrouping["dev"] = devIdArr;
+
+                projchck = document.getElementsByClassName("projbox");
+                for (let chck of projchck) {
+                    if (chck.checked)
+                        projIdArr.push(chck.id)
+                }
+                subgrouping["proj"] = projIdArr;
+             break;
             case "none":
-                subgrouping = "";
+             //   subgrouping = "";
                 break;
        }
        
@@ -346,7 +446,7 @@
         $.ajax({
             type: "POST",
             url: '@Url.Action("SaveSettings", "Home")',
-            data: { methodology:method, preprocessing:preproc, param:paramJson, group:grouping, subgroup:subgrouping, scalemethod:scalemethod },
+            data: { methodology:method, preprocessing:preproc, param:paramJson, group:grouping, subgroup:JSON.stringify(subgrouping), scalemethod:scalemethod },
             success: function (response) {
 
               

@@ -8,7 +8,9 @@ namespace DevProdWebApp.ViewModels
         public string? Methodolgy { get; set; }
         public string? Preprocessing { get; set; }
         public string? Grouping { get; set; }
-        public string? SubGrouping { get; set; }
+        public List<string>? SubGroupingDev { get; set; }
+        public List<string>? SubGroupingProj { get; set; }
+        public string? SubGroupingDays { get; set; }
         public string? Parameters { get; set; }
         public string? ScaleMethod { get; set; }
         public List<ToolMetric> ToolMetricList { get; set; }

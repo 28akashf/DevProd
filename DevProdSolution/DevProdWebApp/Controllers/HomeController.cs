@@ -696,7 +696,7 @@ namespace DevProdWebApp.Controllers
                 //    var metricList = await _toolMetricValueRepo.GetToolMetricValuesByMetricId(metric.Id);
                 try
                 {
-                    var metricList = await _toolMetricValueRepo.GetFileteredToolMetricValuesByMetricId(metric.Id, settings.Grouping, settings.SubGrouping);
+                    var metricList = await _toolMetricValueRepo.GetFilteredToolMetricValuesByMetricId(metric.Id, settings.Grouping, settings.SubGrouping);
                     if (metricList.Count>0)
                     {
                         listCount.Add(metricList.Count);
@@ -855,9 +855,49 @@ namespace DevProdWebApp.Controllers
             SettingsViewModel vm = new SettingsViewModel();
             vm.Methodolgy = settings.Methodolgy;
             vm.Preprocessing = settings.Preprocessing;
-            vm.Grouping = settings.Grouping;
-            vm.SubGrouping = settings.SubGrouping;
+            vm.Grouping = settings.Grouping;        
             vm.ScaleMethod = settings.Scale;
+
+           var obj = JsonConvert.DeserializeObject<JObject>(settings.SubGrouping);
+            try
+            {
+                var devIdList = obj["dev"].ToObject<List<string>>();
+                for(int i = 0; i < devIdList.Count; i++)
+                {
+                    devIdList[i] = "d" + devIdList[i];
+                }
+                vm.SubGroupingDev = devIdList;
+            }
+            catch (Exception)
+            {
+
+            }
+
+            try
+            {
+                var projIdList = obj["proj"].ToObject<List<string>>();
+                for (int i = 0; i < projIdList.Count; i++)
+                {
+                    projIdList[i] = "p" + projIdList[i];
+                }
+                vm.SubGroupingProj = projIdList;
+            }
+            catch (Exception)
+            {
+
+               
+            }
+
+            try
+            {
+                vm.SubGroupingDays = obj["days"].ToString();
+            }
+            catch (Exception)
+            {
+
+                
+            }
+
             try
             {
             vm.Parameters = settings.Parameters;

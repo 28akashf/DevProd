@@ -64,3 +64,7 @@ tr{
 .sidenav li > a {
 text-decoration:none;
 }
+
+span {
+    padding-right: 40px;
+}
