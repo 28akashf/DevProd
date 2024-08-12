@@ -33,9 +33,9 @@
                     <div class="col-md-5">
                         <div class="card grey darken-1">
                             <div class="card-content white-text">
-                                <span class="card-title">Overall Score</span>
+                                <span class="card-title">Setting</span>
 
-                                <h1>@Model.score</h1>
+                                <h1>@Model.settingName</h1>
                             </div>
 
                         </div>
@@ -43,7 +43,7 @@
 
                 </div>
                 <div class="row">
-                    <h6 class="grey-text text-darken-1"> Welcome to the </h6><h1>Dev Pro Dashboard</h1>
+                    <h6 class="grey-text text-darken-1"> Welcome to the </h6><h1>Dev Metric Dashboard</h1>
                
                 </div>
             </div>
@@ -88,8 +88,9 @@
                      <div class="col-md-12">
                             <ul class="tabs ">
 
-                        <li class="tab col-md-5"><a class="active" href="#test1">Raw</a></li>
-                        <li class="tab col-md-5"><a href="#test2">Processed</a></li>
+                        <li class="tab col-md-4"><a class="active" href="#test1">Raw</a></li>
+                                <li class="tab col-md-4"><a href="#test2">Processed</a></li>
+                                <li class="tab col-md-3"><a href="#test3">Metric</a></li>
                     </ul>
                      </div>
                 <div id="test1" class="col-md-12">
@@ -178,6 +179,46 @@
 
                     </table>
                 </div>
+                        <div id="test3" class="col-md-12">
+                            <table class="responsive-table">
+                                <thead class="grey lighten-2">
+                                    <tr>
+                                        @foreach (var key in Model.metricAggrDictionary.Keys)
+                                        {
+                                            <th>
+                                                @key.Name
+                                            </th>
+                                        }
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                               
+                                        <tr>
+                                            @foreach (var key in Model.metricAggrDictionary.Keys)
+                                            {
+
+                                                @try
+                                                {
+                                                    <td>
+                                                        @Model.metricAggrDictionary[key].ToString("F2")
+                                                    </td>
+                                                }
+                                                catch (Exception ex)
+                                                {
+
+                                                }
+
+
+                                            }
+                                        </tr>
+                                    
+
+
+
+
+                            </table>
+                        </div>
                 </div>
                 </div>
 

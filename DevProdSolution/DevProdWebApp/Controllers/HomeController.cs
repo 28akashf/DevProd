@@ -712,7 +712,7 @@ namespace DevProdWebApp.Controllers
             MList list = new MList();
             try
             {
-               
+                list.settingName = settings.Name;
                 list.metricDictionary = metricDictionary;
                 list.maxCount = listCount.Max();
 
@@ -788,7 +788,7 @@ namespace DevProdWebApp.Controllers
                     stdMetricValues.Add(metric, stdValList.Average());
 
                 }
-
+                list.metricAggrDictionary = stdMetricValues;
                 //STEP 2:
                 double result = 0;
                 switch (settings.Methodolgy)

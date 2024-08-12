@@ -37,7 +37,9 @@ namespace DevProdWebApp.ViewModels
     {
         public Dictionary<string,List<ToolMetricValue>> metricDictionary { get; set; }   
         public Dictionary<string,List<ToolMetricValue>> metricProcDictionary { get; set; }
+        public Dictionary<ToolMetric,double> metricAggrDictionary { get; set; }
         public int maxCount { get; set; }
         public double score { get; set; }
+        public string settingName { get; set; }
     }
 }

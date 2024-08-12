@@ -5,7 +5,11 @@
 @model List<DevProdWebApp.Models.ToolMetric>
 
     <div class="container">
-    <h1>@ViewData["Title"]</h1>
+    <div class="row">
+        <h3>@ViewData["Title"]</h3>
+        <h6 class="grey-text text-darken-1">Manage metrics that are used for data processing </h6>
+        </div>
+  
     <div class="row">
         
         <div class="col-md-4">
@@ -18,7 +22,7 @@
                 <label for="weight">Weight</label>
             </div> *@
             <div class="row input-field">
-                <a class="waves-effect waves-light btn" onclick="addMetric()">AddMetric</a>
+                <a class="waves-effect waves-light btn" onclick="addMetric()">Add Metric</a>
             </div>
             
           
@@ -51,7 +55,7 @@
     </div>
     <div class="row">
         <table class="table">
-            <tr>
+            <tr class="grey lighten-2">
                 <th>Id</th>
                 <th>Name</th>
            @*      <th>Weight</th> *@

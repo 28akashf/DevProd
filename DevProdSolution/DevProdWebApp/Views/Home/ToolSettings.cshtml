@@ -1,16 +1,16 @@
 ﻿@{
-    ViewData["Title"] = "Tool";
+    ViewData["Title"] = "Customization";
 }
 @model DevProdWebApp.ViewModels.SettingsViewModel
-<h1>@ViewData["Tool Settings"]</h1>
+
 <div>
-   
+  
   
     <div class="container">
         <div class="row">
-            <div class="col-md-4"></div>
-            <div class="col-md-4"> <h2 class="grey-text text-darken-1"> Customization</h2></div>
-            </div>
+            <h3>@ViewData["Title"]</h3>
+            <h6 class="grey-text text-darken-1">Customize the settings used at different stages of data processing </h6>
+        </div>
            <div class="row">
                <div class="col-md-12">
             <div class="card darken-1">
@@ -247,13 +247,12 @@
                 string divId = "test" + metricScale.MetricName;
                 <div id="@divId" class="col-md-12">
                     <div class="row">
-                        <div class="col-md-2">
-                        </div>
-                        <div class="col-md-8">
                         
-                            <table id="@metricScale.MetricName" class="table-responsive">
+                        <div class="col-md-12">
+                        
+                            <table id="@metricScale.MetricName" class="responsive-table">
                                 <thead>
-                                    <tr>
+                                    <tr class="grey lighten-2">
                                         <th>Rating</th>
                                         <th>Lower Bound</th>
                                         <th>Upper Bound</th>
@@ -295,13 +294,13 @@
                                             string lb = "tbl" + metricScale.MetricName + "l_"+(i+1);
                                             <tr>
                                                 <td>
-                                                    <input id="@desc" type="text" placeholder="Rating" value="@metricScale.ScaleObjects[i].Description">
+                                                    <input id="@desc" type="text" placeholder="Rating" value="@metricScale.ScaleObjects[i].Description" class="txtcenter">
                                                 </td>
                                                 <td>
-                                                    <input id="@lb" type="text" placeholder="Lower Bound" value="@metricScale.ScaleObjects[i].LowerBound">
+                                                            <input id="@lb" type="text" placeholder="Lower Bound" value="@metricScale.ScaleObjects[i].LowerBound" class="txtcenter">
                                                 </td>
                                                 <td>
-                                                    <input id="@ub" type="text" placeholder="Upper Bound" value="@metricScale.ScaleObjects[i].UpperBound">
+                                                            <input id="@ub" type="text" placeholder="Upper Bound" value="@metricScale.ScaleObjects[i].UpperBound" class="txtcenter">
                                                 </td>
                                             </tr>
                                         }
@@ -313,8 +312,7 @@
                             <a class="waves-effect waves-light btn" onclick="deleteLastRow('@metricScale.MetricName')">Delete Row</a>
                             <a class="waves-effect waves-light btn" onclick="createScale('@metricScale.MetricName')">Save</a>
                         </div>
-                        <div class="col-md-2">
-                        </div>
+                       
                     </div>
                 </div>
             }
@@ -557,7 +555,7 @@
         var lastRow = document.getElementById(tblName).rows[totalRows - 1];
         console.log(lastRow);
          var newRow = $('<tr/>');
-        newRow.html('<td><input id = "tbl' + tblName + '_' + rowNumberNew + '" type = "text" placeholder = "Rating" ></td><td><input id="tbl' + tblName + 'l_' + rowNumberNew + '" type = "text" placeholder = "Lower Bound"></td><td><input id="tbl' + tblName + 'u_' + rowNumberNew + '" type = "text" placeholder = "Upper Bound" ></td>');
+        newRow.html('<td><input class="txtcenter" id = "tbl' + tblName + '_' + rowNumberNew + '" type = "text" placeholder = "Rating" ></td><td><input class="txtcenter" id="tbl' + tblName + 'l_' + rowNumberNew + '" type = "text" placeholder = "Lower Bound"></td><td><input class="txtcenter" id="tbl' + tblName + 'u_' + rowNumberNew + '" type = "text" placeholder = "Upper Bound" ></td>');
          $(newRow).insertAfter(lastRow);      
     }
 

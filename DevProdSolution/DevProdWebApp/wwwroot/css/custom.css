@@ -39,6 +39,9 @@ table {
 td {
     text-align: center;
 }
+.txtcenter {
+    text-align: center;
+}
 tr{
     border-bottom: 0.1px solid lightgrey;
 }
@@ -68,3 +71,12 @@ text-decoration:none;
 span {
     padding-right: 40px;
 }
+
+.logo {
+  
+}
+
+    .logo > img {
+        height: 100px;
+        width: 180px;
+    }
