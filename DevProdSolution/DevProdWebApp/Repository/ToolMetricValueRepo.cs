@@ -77,7 +77,12 @@ namespace DevProdWebApp.Repository
         public async Task<List<ToolMetricValue>> GetFilteredToolMetricValuesByMetricId(int mid,string filter,string value)
         {
             List<ToolMetricValue> result = null;
-            JObject obj = JsonConvert.DeserializeObject<JObject>(value);
+            JObject obj = null;
+            if (value!=null)
+            {
+              obj =  JsonConvert.DeserializeObject<JObject>(value);
+            }
+          
             switch(filter)
             {
                 case "developer":

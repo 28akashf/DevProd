@@ -13,10 +13,10 @@
                         <input id="metricName" type="text"  />
                         <label for="metricName">Metric</label>
                   </div>
-            <div class="row input-field">
+          @*   <div class="row input-field">
                 <input id="weight" type="text" />
                 <label for="weight">Weight</label>
-            </div>
+            </div> *@
             <div class="row input-field">
                 <a class="waves-effect waves-light btn" onclick="addMetric()">AddMetric</a>
             </div>
@@ -54,7 +54,7 @@
             <tr>
                 <th>Id</th>
                 <th>Name</th>
-                <th>Weight</th>
+           @*      <th>Weight</th> *@
                 <th>Actions</th>
             </tr>
             @foreach(var x in Model)
@@ -62,7 +62,7 @@
                 <tr>
                     <td>@x.Id</td>
                     <td>@x.Name</td>
-                    <td>@x.Weight</td>
+@*                     <td>@x.Weight</td> *@
                     <td>
 
                         <a class="waves-effect waves-light btn" asp-action="ModifyMetric" asp-controller="Home" asp-route-mid="@x.Id">Edit</a>
@@ -83,13 +83,12 @@
     <script type="text/javascript">
 
     function addMetric(){
-        alert('hello...');
         var name = document.getElementById('metricName').value;
-        var weight = document.getElementById('weight').value;
+      //  var weight = document.getElementById('weight').value;
         $.ajax({
             type: "POST",
             url: '@Url.Action("AddMetric", "Home")',
-            data: {name:name,weight:weight},
+            data: {name:name},
             success: function (response) {
                 location.reload();
 

@@ -134,10 +134,10 @@ namespace DevProdWebApp.Controllers
              _toolMetricRepo.UpdateToolMetric(metric);
                  return true;
         }
-        public async Task<bool> AddMetric(string name, string weight)
+        public async Task<bool> AddMetric(string name)
         {
             var settingId = await _globalConfigRepo.GetCurrentSettingId();
-           await _toolMetricRepo.AddToolMetric(new ToolMetric() { Name=name,SettingId= settingId, Weight=Double.Parse(weight)});
+           await _toolMetricRepo.AddToolMetric(new ToolMetric() { Name=name,SettingId= settingId});
             return true;
         }
 
@@ -799,7 +799,7 @@ namespace DevProdWebApp.Controllers
                     case "wtsum":
                         foreach (var key in stdMetricValues.Keys)
                         {
-                            result += (stdMetricValues[key] * key.Weight);
+                            result += (stdMetricValues[key] * key.Weight.Value);
                         }
 
                         break;
@@ -807,7 +807,7 @@ namespace DevProdWebApp.Controllers
                         result = 1;
                         foreach (var key in stdMetricValues.Keys)
                         {
-                            result *= Math.Pow(stdMetricValues[key], key.Weight);
+                            result *= Math.Pow(stdMetricValues[key], key.Weight.Value);
                         }
                         break;
                     case "wtwaspas":
@@ -815,11 +815,11 @@ namespace DevProdWebApp.Controllers
                         double wtprod = 1;
                         foreach (var key in stdMetricValues.Keys)
                         {
-                            wtsum += (stdMetricValues[key] * key.Weight);
+                            wtsum += (stdMetricValues[key] * key.Weight.Value);
                         }
                         foreach (var key in stdMetricValues.Keys)
                         {
-                            wtprod *= Math.Pow(stdMetricValues[key], key.Weight);
+                            wtprod *= Math.Pow(stdMetricValues[key], key.Weight.Value);
                         }
                         double lambda = Double.Parse(settings.Parameters);
                         result = (lambda * wtsum) + ((1 - lambda) * wtprod);
@@ -857,7 +857,8 @@ namespace DevProdWebApp.Controllers
             vm.Preprocessing = settings.Preprocessing;
             vm.Grouping = settings.Grouping;        
             vm.ScaleMethod = settings.Scale;
-
+            if (settings.SubGrouping != null) 
+            {
            var obj = JsonConvert.DeserializeObject<JObject>(settings.SubGrouping);
             try
             {
@@ -897,7 +898,7 @@ namespace DevProdWebApp.Controllers
 
                 
             }
-
+            }
             try
             {
             vm.Parameters = settings.Parameters;

@@ -8,7 +8,7 @@ namespace DevProdWebApp.Models
         [Key]
         public int Id { get; set; }
         public string? Name { get; set; }
-        public double Weight { get; set; }
+        public double? Weight { get; set; }
         public string? Scale { get; set; }
 
         public List<ToolMetricValue>? ToolMetricValues { get; set; }
